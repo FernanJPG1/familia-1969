@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Gentleman's Cut • SaaS B2B Barbershop & WhatsApp Engine</title>
+  
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Socket.io Client -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #080C14;
+      --bg-surface: #0E1422;
+      --bg-card: rgba(18, 26, 44, 0.7);
+      --bg-card-hover: rgba(26, 37, 62, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-gold: rgba(245, 158, 11, 0.35);
+      --gold-primary: #F59E0B;
+      --gold-hover: #D97706;
+      --gold-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
+      --text-main: #F3F4F6;
+      --text-muted: #94A3B8;
+      --accent-blue: #3B82F6;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #EF4444;
+      --accent-purple: #8B5CF6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.05) 0%, transparent 45%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Glassmorphism */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    /* Header Bar */
+    header {
+      background: rgba(10, 15, 26, 0.88);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      width: 44px;
+      height: 44px;
+      background: var(--gold-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #080C14;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+      animation: gentleFloat 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes gentleFloat {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-3px); }
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-glass);
+      gap: 4px;
+    }
+
+    .nav-tab-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-tab-btn.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .nav-tab-btn:hover:not(.active) {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-emerald);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-gold {
+      background: var(--gold-gradient);
+      color: #080C14;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    }
+    .btn-gold:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-glass);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Main Container */
+    .dashboard-container {
+      max-width: 1780px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Date Controller Bar */
+    .date-control-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: rgba(18, 26, 44, 0.6);
+      border-radius: 14px;
+      border: 1px solid var(--border-glass);
+    }
+
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .date-indicator {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .kpi-card {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 70%);
+      border-radius: 0 0 0 90px;
+    }
+
+    .kpi-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    /* Layout Split: Timeline & WhatsApp Simulator */
+    .layout-split {
+      display: grid;
+      grid-template-columns: 1fr 430px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1380px) {
+      .layout-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Timeline Section */
+    .timeline-wrapper {
+      padding: 24px;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .timeline-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .barbers-columns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .barbers-columns-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .barber-column {
+      background: rgba(12, 17, 30, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .barber-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .barber-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .barber-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 13px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .barber-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .barber-badge {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Appointment Cards in Timeline */
+    .appointment-card {
+      background: rgba(22, 32, 54, 0.85);
+      border: 1px solid var(--border-glass);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      transition: all 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .appointment-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .app-time-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-confirmed {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-completed {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .status-cancelled {
+      background: rgba(107, 114, 128, 0.2);
+      color: #9CA3AF;
+      border: 1px solid rgba(107, 114, 128, 0.3);
+      text-decoration: line-through;
+    }
+
+    .status-no_show {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .app-client {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-service {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .app-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    .app-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn-sm {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn-sm:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #FFF;
+    }
+
+    /* Lunch Block in Timeline */
+    .schedule-block-card {
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(239, 68, 68, 0.06),
+        rgba(239, 68, 68, 0.06) 10px,
+        rgba(239, 68, 68, 0.12) 10px,
+        rgba(239, 68, 68, 0.12) 20px
+      );
+      border: 1px dashed rgba(239, 68, 68, 0.3);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #FCA5A5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Quick Booking Slot Placeholder */
+    .empty-slot-placeholder {
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .empty-slot-placeholder:hover {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--border-gold);
+      color: var(--gold-primary);
+    }
+
+    /* WhatsApp Phone Mockup */
+    .phone-container {
+      background: #111B21;
+      border-radius: 36px;
+      border: 8px solid #2A3942;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 720px;
+      position: sticky;
+      top: 86px;
+    }
+
+    .phone-notch {
+      background: #2A3942;
+      height: 20px;
+      width: 140px;
+      margin: 0 auto;
+      border-radius: 0 0 14px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .notch-camera {
+      width: 8px;
+      height: 8px;
+      background: #080C14;
+      border-radius: 50%;
+    }
+
+    .wa-header {
+      background: #202C33;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .wa-user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wa-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--gold-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #080C14;
+    }
+
+    .wa-user-text h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #E9EDEF;
+    }
+
+    .wa-user-text p {
+      font-size: 11px;
+      color: #8696A0;
+    }
+
+    .wa-chat-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background-color: #0B141A;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    .wa-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      position: relative;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .wa-incoming {
+      background: #202C33;
+      color: #E9EDEF;
+      align-self: flex-start;
+      border-top-left-radius: 0;
+    }
+
+    .wa-outgoing {
+      background: #005C4B;
+      color: #E9EDEF;
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+
+    .wa-time {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    .wa-btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .wa-interactive-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #53BDEB;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .wa-interactive-btn:hover {
+      background: rgba(83, 189, 235, 0.18);
+    }
+
+    .wa-input-bar {
+      background: #202C33;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wa-input {
+      flex: 1;
+      background: #2A3942;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 20px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .wa-send-btn {
+      width: 36px;
+      height: 36px;
+      background: #00A884;
+      border: none;
+      border-radius: 50%;
+      color: #FFF;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+    }
+    .wa-send-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: #202C33;
+      border-radius: 12px;
+      width: fit-content;
+      color: #8696A0;
+      font-size: 11px;
+    }
+    .typing-dot {
+      width: 5px;
+      height: 5px;
+      background: #8696A0;
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-4px); }
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #111827;
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 14px;
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .modal-close-btn:hover { color: #FFF; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-control {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--gold-primary);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1E293B;
+      border-left: 4px solid var(--gold-primary);
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 120;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Header Superior -->
+  <header>
+    <div class="brand-container">
+      <div class="logo-badge">
+        <i class="fa-solid fa-scissors"></i>
+      </div>
+      <div class="brand-text">
+        <h1 id="shop-name">The Gentleman's Cut <span style="font-size: 11px; color: var(--gold-primary);"><i class="fa-solid fa-circle-check"></i> B2B Enterprise</span></h1>
+        <span>Sincronización en Vivo con WhatsApp Meta Cloud API</span>
+      </div>
+    </div>
+
+    <!-- Navegación por Vistas / Pestañas -->
+    <nav class="nav-tabs">
+      <button class="nav-tab-btn active" id="tab-timeline-btn" onclick="switchView('timeline')">
+        <i class="fa-solid fa-calendar-week"></i> Timeline Diario
+      </button>
+      <button class="nav-tab-btn" id="tab-engine-btn" onclick="switchView('engine')">
+        <i class="fa-solid fa-microchip"></i> Availability Engine
+      </button>
+      <button class="nav-tab-btn" id="tab-finance-btn" onclick="switchView('finance')">
+        <i class="fa-solid fa-chart-pie"></i> Comisiones & Caja
+      </button>
+    </nav>
+
+    <div class="header-actions">
+      <div class="status-badge">
+        <div class="pulse-dot"></div>
+        <span id="socket-status">WebSocket Conectado</span>
+      </div>
+
+      <button class="btn btn-outline" onclick="openNewAppointmentModal()">
+        <i class="fa-solid fa-plus"></i> Nueva Cita Manual
+      </button>
+
+      <button class="btn btn-gold" onclick="resetWhatsAppChat()">
+        <i class="fa-brands fa-whatsapp"></i> Reiniciar Demo Bot
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. Contenedor Principal del Dashboard -->
+  <main class="dashboard-container">
+
+    <!-- Barra de Control de Fecha y Filtro -->
+    <div class="date-control-bar">
+      <div class="date-nav">
+        <button class="action-btn-sm" onclick="changeDate(-1)"><i class="fa-solid fa-chevron-left"></i> Día Anterior</button>
+        <div class="date-indicator">
+          <i class="fa-regular fa-calendar" style="color: var(--gold-primary);"></i>
+          <span id="current-date-label">Hoy (Lunes, 26 de Octubre)</span>
+        </div>
+        <button class="action-btn-sm" onclick="changeDate(1)">Día Siguiente <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 12px; color: var(--text-muted);">Acciones Rápidas del Bot:</span>
+        <button class="action-btn-sm" onclick="runAutoBookingDemo()" style="color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.4);">
+          <i class="fa-solid fa-bolt"></i> Auto-Reserva en 3s
+        </button>
+        <button class="action-btn-sm" onclick="triggerNextReminder()" style="color: var(--gold-primary); border-color: var(--border-gold);">
+          <i class="fa-solid fa-bell"></i> Simular Recordatorio T-2h
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <section class="kpi-grid">
+      <!-- Citas del Día -->
+      <div class="glass-card kpi-card">
+        <div>
+          <div class="kpi-title">Turnos Agendados Hoy</div>
+          <div class="kpi-value" id="kpi-total-bookings">3</div>
+          <div class="kpi-sub" style="color: var(--accent-emerald);">
+            <i class="fa-solid fa-calendar-check"></i> <span id="kpi-completed-text">0 completadas</span>
+          </div>
+        </div>
+        <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA;">
+          <i class="fa-solid fa-calendar-day"></i>
+        </div>
+      </div>
+
+      <!-- Facturación Bruta y Neta -->
+      <div class="glass-card kpi-card">
+        <div>
+          <div class="kpi-title">Facturación Bruta Proyectada</div>
+          <div class="kpi-value" id="kpi-revenue">$90,000</div>
+          <div class="kpi-sub" style="color: var(--gold-primary);" id="kpi-net-revenue">
+            <i class="fa-solid fa-sack-dollar"></i> $46,250 neto barbería
+          </div>
+        </div>
+        <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24;">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+      </div>
+
+      <!-- Tasa de Ocupación con Barra -->
+      <div class="glass-card kpi-card">
+        <div>
+          <div class="kpi-title">Ocupación de Sillones</div>
+          <div class="kpi-value" id="kpi-occupancy">38%</div>
+          <div class="kpi-sub" style="color: var(--text-muted);">
+            Intervalos calculados con 10m buffer
+          </div>
+        </div>
+        <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">
+          <i class="fa-solid fa-chair"></i>
+        </div>
+      </div>
+
+      <!-- Sistema Anti-No-Show -->
+      <div class="glass-card kpi-card">
+        <div>
+          <div class="kpi-title">Protección Anti-Ausentismo</div>
+          <div class="kpi-value" style="color: #34D399;">Activa (T-2h)</div>
+          <div class="kpi-sub" style="color: var(--text-muted);" id="kpi-noshow-sub">
+            <i class="fa-solid fa-shield-halved"></i> 0 turnos perdidos hoy
+          </div>
+        </div>
+        <div class="kpi-icon" style="background: rgba(139, 92, 246, 0.15); color: #A78BFA;">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================== -->
+    <!-- VISTA 1: TIMELINE DIARIO OPERATIVO (PRINCIPAL) -->
+    <!-- ====================================================================== -->
+    <div id="view-timeline" class="layout-split">
+
+      <!-- COLUMNA IZQUIERDA: Timeline Diario Operativo -->
+      <div class="glass-card timeline-wrapper">
+        <div class="timeline-header">
+          <div>
+            <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--gold-primary);"></i> Timeline Diario de Barberos</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+              Jornada laboral de 09:00 a 19:00 • Bloques de servicio + 10 min buffer de limpieza/preparación
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #34D399; display: inline-block;"></span> Confirmada
+            </span>
+            <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #60A5FA; display: inline-block;"></span> Completada
+            </span>
+            <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #F87171; display: inline-block;"></span> No-Show
+            </span>
+          </div>
+        </div>
+
+        <!-- Columnas de Barberos -->
+        <div class="barbers-columns-grid" id="barbers-timeline-container">
+          <!-- Renderizado dinámicamente con JavaScript -->
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: Mockup de Teléfono con Simulador de WhatsApp -->
+      <div>
+        <div class="phone-container">
+          <div class="phone-notch">
+            <div class="notch-camera"></div>
+          </div>
+
+          <!-- Cabecera de WhatsApp -->
+          <div class="wa-header">
+            <div class="wa-user-info">
+              <div class="wa-avatar">
+                <i class="fa-solid fa-scissors"></i>
+              </div>
+              <div class="wa-user-text">
+                <h4>The Gentleman's Cut</h4>
+                <p>Bot de Reservas 24/7 • En línea</p>
+              </div>
+            </div>
+            <div style="color: #8696A0; font-size: 16px; display: flex; gap: 12px; align-items: center;">
+              <i class="fa-solid fa-volume-high" id="sound-toggle" onclick="toggleSound()" style="cursor: pointer;" title="Activar/Silenciar sonido de chat"></i>
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+          </div>
+
+          <!-- Cuerpo de Conversación -->
+          <div class="wa-chat-body" id="wa-chat-body">
+            <!-- Mensajes inyectados dinámicamente -->
+          </div>
+
+          <div id="wa-typing" style="display: none; padding: 4px 16px;">
+            <div class="typing-indicator">
+              <span>Escribiendo</span>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+          </div>
+
+          <!-- Barra de Input -->
+          <div class="wa-input-bar">
+            <input type="text" class="wa-input" id="wa-text-input" placeholder="Escribe un mensaje o tu nombre..." onkeypress="handleKeyPress(event)">
+            <button class="wa-send-btn" onclick="sendTextMessage()">
+              <i class="fa-solid fa-paper-plane" style="font-size: 13px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <p style="font-size: 12px; color: var(--text-muted);">
+            💡 <strong>Algoritmo Atómico:</strong> Cada slot elegido pasa por verificación con Mutex Lock para prevenir doble-reserva en alta concurrencia.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- VISTA 2: INSPECTOR DEL AVAILABILITY ENGINE -->
+    <!-- ====================================================================== -->
+    <div id="view-engine" class="glass-card" style="display: none; padding: 28px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <div>
+          <h2><i class="fa-solid fa-microchip" style="color: var(--gold-primary);"></i> Inspector del Motor de Disponibilidad (AvailabilityEngine)</h2>
+          <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+            Auditoría matemática de cálculo de intervalos: <code>Duración del Servicio + Buffer de 10 minutos</code>.
+          </p>
+        </div>
+
+        <button class="btn btn-outline" onclick="loadEngineInspection()">
+          <i class="fa-solid fa-arrows-rotate"></i> Recalcular Slots
+        </button>
+      </div>
+
+      <!-- Controles de Prueba -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="form-group">
+          <label class="form-label">Servicio a Evaluar</label>
+          <select id="engine-service-select" class="form-control" onchange="loadEngineInspection()">
+            <!-- Opciones cargadas con JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Barbero</label>
+          <select id="engine-barber-select" class="form-control" onchange="loadEngineInspection()">
+            <option value="">Todos los Barberos Activos</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fecha de Cálculo</label>
+          <input type="date" id="engine-date-input" class="form-control" onchange="loadEngineInspection()">
+        </div>
+      </div>
+
+      <!-- Resultados del Algoritmo -->
+      <div id="engine-results-container" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Se inyecta la cuadrícula de intervalos -->
+      </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- VISTA 3: COMISIONES & FINANZAS -->
+    <!-- ====================================================================== -->
+    <div id="view-finance" class="glass-card" style="display: none; padding: 28px;">
+      <div style="margin-bottom: 24px;">
+        <h2><i class="fa-solid fa-chart-pie" style="color: var(--gold-primary);"></i> Reporte de Comisiones y Rendimiento</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
+          Desglose financiero por barbero según su porcentaje de comisión contractual.
+        </p>
+      </div>
+
+      <div id="commissions-table-container">
+        <!-- Renderizado dinámicamente con JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: DETALLES DE CITA -->
+  <!-- ====================================================================== -->
+  <div class="modal-overlay" id="appointment-modal" onclick="closeModalOnOverlay(event, 'appointment-modal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-app-title"><i class="fa-regular fa-calendar-check" style="color: var(--gold-primary);"></i> Detalle de Turno</h3>
+        <button class="modal-close-btn" onclick="closeModal('appointment-modal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="modal-app-content" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Inyectado dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: AGENDAR CITA MANUAL -->
+  <!-- ====================================================================== -->
+  <div class="modal-overlay" id="new-appointment-modal" onclick="closeModalOnOverlay(event, 'new-appointment-modal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-plus-circle" style="color: var(--gold-primary);"></i> Agendar Nueva Cita Manual</h3>
+        <button class="modal-close-btn" onclick="closeModal('new-appointment-modal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="new-app-form" onsubmit="handleManualBookingSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label">Nombre del Cliente *</label>
+          <input type="text" id="manual-client-name" class="form-control" required placeholder="Ej: Santiago Restrepo">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">WhatsApp Teléfono *</label>
+          <input type="text" id="manual-client-phone" class="form-control" required placeholder="Ej: 573001234567">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">Barbero *</label>
+            <select id="manual-barber-select" class="form-control" required></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Servicio *</label>
+            <select id="manual-service-select" class="form-control" required></select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">Fecha *</label>
+            <input type="date" id="manual-date" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Hora de Inicio *</label>
+            <input type="time" id="manual-time" class="form-control" required value="10:00">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas Adicionales</label>
+          <input type="text" id="manual-notes" class="form-control" placeholder="Ej: Reserva telefónica para evento">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('new-appointment-modal')">Cancelar</button>
+          <button type="submit" class="btn btn-gold"><i class="fa-solid fa-check"></i> Confirmar Cita</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Inicializar conexión WebSocket
+    const socket = io();
+
+    socket.on('connect', () => {
+      document.getElementById('socket-status').innerText = 'WebSocket Conectado (En Vivo)';
+    });
+
+    socket.on('disconnect', () => {
+      document.getElementById('socket-status').innerText = 'Reconectando...';
+    });
+
+    socket.on('dashboard:refresh', () => {
+      loadDashboard();
+      playChime(600, 0.1);
+      showToast('⚡ Timeline sincronizado en tiempo real');
+    });
+
+    socket.on('appointment:updated', (data) => {
+      loadDashboard();
+      playChime(750, 0.1);
+      showToast(`Estado de cita actualizado: ${data.status}`);
+    });
+
+    socket.on('whatsapp:reminder_sent', (data) => {
+      injectReminderIntoWhatsApp(data.message);
+      playChime(850, 0.15);
+      showToast('🔔 Recordatorio T-2h disparado al cliente en WhatsApp');
+    });
+
+    // Estado Global de la App
+    let currentDashboardData = null;
+    let selectedDate = new Date().toISOString().split('T')[0];
+    let soundEnabled = true;
+
+    // Web Audio API para micro-chimes sin archivos externos
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playChime(freq = 600, duration = 0.1) {
+      if (!soundEnabled) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const el = document.getElementById('sound-toggle');
+      if (soundEnabled) {
+        el.className = 'fa-solid fa-volume-high';
+        el.title = 'Sonido Activado';
+        playChime(700, 0.1);
+      } else {
+        el.className = 'fa-solid fa-volume-xmark';
+        el.title = 'Sonido Silenciado';
+      }
+    }
+
+    // Navegación de Vistas
+    function switchView(viewName) {
+      document.getElementById('view-timeline').style.display = viewName === 'timeline' ? 'grid' : 'none';
+      document.getElementById('view-engine').style.display = viewName === 'engine' ? 'block' : 'none';
+      document.getElementById('view-finance').style.display = viewName === 'finance' ? 'block' : 'none';
+
+      document.getElementById('tab-timeline-btn').className = 'nav-tab-btn' + (viewName === 'timeline' ? ' active' : '');
+      document.getElementById('tab-engine-btn').className = 'nav-tab-btn' + (viewName === 'engine' ? ' active' : '');
+      document.getElementById('tab-finance-btn').className = 'nav-tab-btn' + (viewName === 'finance' ? ' active' : '');
+
+      if (viewName === 'engine') loadEngineInspection();
+      if (viewName === 'finance') loadFinanceReport();
+    }
+
+    function changeDate(daysOffset) {
+      const parts = selectedDate.split('-').map(Number);
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() + daysOffset);
+
+      selectedDate = d.toISOString().split('T')[0];
+      updateDateLabel(d);
+      loadDashboard();
+    }
+
+    function updateDateLabel(d) {
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      const todayStr = new Date().toISOString().split('T')[0];
+      const prefix = selectedDate === todayStr ? 'Hoy' : '';
+      document.getElementById('current-date-label').innerText = 
+        `${prefix ? prefix + ' • ' : ''}${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]}`;
+    }
+
+    // ========================================================================
+    // CARGAR Y RENDERIZAR DASHBOARD
+    // ========================================================================
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`/api/dashboard/today?date=${selectedDate}`);
+        const data = await res.json();
+        currentDashboardData = data;
+        renderDashboard(data);
+        populateModalSelects(data);
+      } catch (err) {
+        console.error('Error cargando dashboard:', err);
+      }
+    }
+
+    function renderDashboard(data) {
+      // 1. KPIs
+      document.getElementById('kpi-total-bookings').innerText = data.metrics.totalBookings;
+      document.getElementById('kpi-completed-text').innerText = `${data.metrics.completedCount} completadas`;
+      document.getElementById('kpi-revenue').innerText = `$${data.metrics.totalRevenue.toLocaleString('es-CO')}`;
+      document.getElementById('kpi-net-revenue').innerHTML = `<i class="fa-solid fa-sack-dollar"></i> $${data.metrics.netBarbershopRevenue.toLocaleString('es-CO')} neto barbería`;
+      document.getElementById('kpi-occupancy').innerText = `${data.metrics.occupancyPercentage}%`;
+      document.getElementById('kpi-noshow-sub').innerText = `${data.metrics.noShowCount} ausencias registradas`;
+
+      // 2. Columnas de Barberos
+      const container = document.getElementById('barbers-timeline-container');
+      container.innerHTML = '';
+
+      data.barbers.forEach((barber) => {
+        const barberCol = document.createElement('div');
+        barberCol.className = 'barber-column';
+
+        // Filtrar citas de este barbero
+        const barberAppointments = data.appointments.filter(a => a.barberId === barber.id);
+        const barberBlocks = (data.blocks || []).filter(b => b.barberId === barber.id);
+
+        barberCol.innerHTML = `
+          <div class="barber-card-header">
+            <div class="barber-info">
+              <div class="barber-avatar" style="background: ${barber.colorTag};">
+                ${barber.name.substring(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <div class="barber-name">${barber.name}</div>
+                <div class="barber-badge">${barber.phone} • ${barber.commissionPercentage}% comisión</div>
+              </div>
+            </div>
+            <div style="font-size: 12px; font-weight: 700; color: ${barber.colorTag};">
+              ${barberAppointments.filter(a => a.status !== 'cancelled').length} turnos
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${renderBarberAppointments(barberAppointments, barber, barberBlocks)}
+            
+            <div class="empty-slot-placeholder" onclick="openNewAppointmentModal('${barber.id}')">
+              <i class="fa-solid fa-plus-circle"></i> + Asignar turno rápido
+            </div>
+          </div>
+        `;
+
+        container.appendChild(barberCol);
+      });
+    }
+
+    function renderBarberAppointments(appointments, barber, blocks) {
+      let html = '';
+      const sorted = [...appointments].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+      // Bloque de almuerzo
+      const hasLunch = blocks && blocks.some(b => b.reason.toLowerCase().includes('almuerzo'));
+
+      sorted.forEach((app, idx) => {
+        const start = new Date(app.startTime);
+        const end = new Date(app.endTime);
+        const formatTime = (d) => {
+          let h = d.getHours();
+          const m = String(d.getMinutes()).padStart(2, '0');
+          const p = h >= 12 ? 'PM' : 'AM';
+          if (h > 12) h -= 12;
+          if (h === 0) h = 12;
+          return `${h}:${m} ${p}`;
+        };
+
+        const timeStr = `${formatTime(start)} - ${formatTime(end)}`;
+
+        html += `
+          <div class="appointment-card" style="border-left-color: ${barber.colorTag};" onclick="openAppointmentDetails('${app.id}')">
+            <div class="app-time-row">
+              <span class="app-time"><i class="fa-regular fa-clock"></i> ${timeStr}</span>
+              <span class="status-pill status-${app.status}">${app.status}</span>
+            </div>
+
+            <div class="app-client">
+              <i class="fa-regular fa-user" style="opacity: 0.7;"></i> ${app.clientName}
+              ${app.clientNoShows > 0 ? `<span style="font-size: 10px; background: rgba(239, 68, 68, 0.2); color: #F87171; padding: 1px 6px; border-radius: 4px;" title="Cliente con inasistencias previas">⚠️ No-show previo (${app.clientNoShows})</span>` : ''}
+            </div>
+            
+            <div class="app-service">
+              <i class="fa-solid fa-scissors" style="color: ${barber.colorTag};"></i>
+              ${app.serviceName} (${app.serviceDuration} min)
+            </div>
+
+            <div class="app-footer">
+              <span class="app-price">$${app.totalPrice.toLocaleString('es-CO')}</span>
+              
+              <div class="app-actions" onclick="event.stopPropagation()">
+                ${app.status !== 'completed' && app.status !== 'cancelled' ? `
+                  <button class="action-btn-sm" title="Marcar como Completada" onclick="updateAppointmentStatus('${app.id}', 'completed')">
+                    <i class="fa-solid fa-check" style="color: #34D399;"></i>
+                  </button>
+                  <button class="action-btn-sm" title="Simular Recordatorio T-2h" onclick="triggerReminder('${app.id}')">
+                    <i class="fa-solid fa-bell" style="color: #FBBF24;"></i>
+                  </button>
+                  <button class="action-btn-sm" title="Registrar Ausencia (No-Show)" onclick="updateAppointmentStatus('${app.id}', 'no_show')">
+                    <i class="fa-solid fa-user-xmark" style="color: #F87171;"></i>
+                  </button>
+                  <button class="action-btn-sm" title="Cancelar Turno" onclick="updateAppointmentStatus('${app.id}', 'cancelled')">
+                    <i class="fa-solid fa-trash" style="color: #9CA3AF;"></i>
+                  </button>
+                ` : `
+                  <span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Cerrado</span>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Intercalar bloque de almuerzo visual
+        if (hasLunch && start.getHours() <= 12 && (!sorted[idx + 1] || new Date(sorted[idx + 1].startTime).getHours() >= 14)) {
+          html += `
+            <div class="schedule-block-card">
+              <i class="fa-solid fa-utensils"></i> 13:00 - 14:00 Receso de Almuerzo (Bloqueado)
+            </div>
+          `;
+        }
+      });
+
+      if (sorted.length === 0) {
+        if (hasLunch) {
+          html += `
+            <div class="schedule-block-card">
+              <i class="fa-solid fa-utensils"></i> 13:00 - 14:00 Receso de Almuerzo (Bloqueado)
+            </div>
+          `;
+        }
+      }
+
+      return html;
+    }
+
+    async function updateAppointmentStatus(id, status) {
+      try {
+        const res = await fetch(`/api/appointments/${id}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadDashboard();
+          closeModal('appointment-modal');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function triggerReminder(id) {
+      try {
+        const res = await fetch(`/api/appointments/${id}/trigger-reminder`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('🔔 Recordatorio T-2h enviado al cliente');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ========================================================================
+    // MODALES Y GESTIÓN DE CITAS
+    // ========================================================================
+    function openAppointmentDetails(appId) {
+      const app = currentDashboardData?.appointments?.find(a => a.id === appId);
+      if (!app) return;
+
+      const content = document.getElementById('modal-app-content');
+      const start = new Date(app.startTime);
+      const end = new Date(app.endTime);
+
+      content.innerHTML = `
+        <div style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid var(--border-glass);">
+          <div style="font-size: 16px; font-weight: 700; color: #FFF; margin-bottom: 4px;">${app.clientName}</div>
+          <div style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> ${app.clientPhone}
+            <a href="https://wa.me/${app.clientPhone}" target="_blank" style="color: #53BDEB; text-decoration: none; font-size: 12px; margin-left: 6px;">Abrir WhatsApp</a>
+          </div>
+
+          ${app.clientNoShows > 0 ? `
+            <div style="margin-top: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #FCA5A5;">
+              <i class="fa-solid fa-triangle-exclamation"></i> <strong>Riesgo de Ausentismo:</strong> Este cliente tiene ${app.clientNoShows} no-show registrado previamente.
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Barbero</div>
+            <div style="font-size: 14px; font-weight: 700; margin-top: 2px;">${app.barberName}</div>
+            <div style="font-size: 11px; color: var(--gold-primary); margin-top: 2px;">Comisión: ${app.barberCommissionPct}% ($${(app.commissionAmount || 0).toLocaleString('es-CO')})</div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Servicio</div>
+            <div style="font-size: 14px; font-weight: 700; margin-top: 2px;">${app.serviceName}</div>
+            <div style="font-size: 11px; color: #E2E8F0; margin-top: 2px;">$${app.totalPrice.toLocaleString('es-CO')} • ${app.serviceDuration}m</div>
+          </div>
+        </div>
+
+        <div style="font-size: 13px; color: var(--text-muted);">
+          <strong>Notas:</strong> ${app.notes || 'Sin notas adicionales'}
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Cambiar Estado del Turno:</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-outline" style="font-size: 12px; color: #34D399;" onclick="updateAppointmentStatus('${app.id}', 'completed')">
+              <i class="fa-solid fa-check"></i> Completar
+            </button>
+            <button class="btn btn-outline" style="font-size: 12px; color: #FBBF24;" onclick="triggerReminder('${app.id}')">
+              <i class="fa-solid fa-bell"></i> Enviar Recordatorio T-2h
+            </button>
+            <button class="btn btn-outline" style="font-size: 12px; color: #F87171;" onclick="updateAppointmentStatus('${app.id}', 'no_show')">
+              <i class="fa-solid fa-user-xmark"></i> Marcar No-Show
+            </button>
+            <button class="btn btn-outline" style="font-size: 12px; color: #9CA3AF;" onclick="updateAppointmentStatus('${app.id}', 'cancelled')">
+              <i class="fa-solid fa-trash"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('appointment-modal').classList.add('active');
+    }
+
+    function openNewAppointmentModal(barberId) {
+      document.getElementById('manual-date').value = selectedDate;
+      if (barberId) {
+        document.getElementById('manual-barber-select').value = barberId;
+      }
+      document.getElementById('new-appointment-modal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function closeModalOnOverlay(e, modalId) {
+      if (e.target.id === modalId) {
+        closeModal(modalId);
+      }
+    }
+
+    function populateModalSelects(data) {
+      const barberSelect = document.getElementById('manual-barber-select');
+      const serviceSelect = document.getElementById('manual-service-select');
+      const engineServiceSelect = document.getElementById('engine-service-select');
+      const engineBarberSelect = document.getElementById('engine-barber-select');
+
+      if (barberSelect) {
+        barberSelect.innerHTML = data.barbers.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+      }
+
+      if (serviceSelect) {
+        serviceSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} (${s.durationMinutes}m - $${s.price.toLocaleString('es-CO')})</option>`).join('');
+      }
+
+      if (engineServiceSelect && engineServiceSelect.options.length === 0) {
+        engineServiceSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} (${s.durationMinutes}m)</option>`).join('');
+      }
+
+      if (engineBarberSelect && engineBarberSelect.options.length <= 1) {
+        engineBarberSelect.innerHTML = `<option value="">Todos los Barberos Activos</option>` + 
+          data.barbers.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+      }
+    }
+
+    async function handleManualBookingSubmit(e) {
+      e.preventDefault();
+      const barberId = document.getElementById('manual-barber-select').value;
+      const serviceId = document.getElementById('manual-service-select').value;
+      const clientName = document.getElementById('manual-client-name').value;
+      const clientPhone = document.getElementById('manual-client-phone').value;
+      const date = document.getElementById('manual-date').value;
+      const time = document.getElementById('manual-time').value;
+      const notes = document.getElementById('manual-notes').value;
+
+      const startTimeISO = new Date(`${date}T${time}:00`).toISOString();
+
+      try {
+        const res = await fetch('/api/appointments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            barberId,
+            serviceId,
+            clientName,
+            clientPhone,
+            startTimeISO,
+            notes,
+          }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          closeModal('new-appointment-modal');
+          loadDashboard();
+          showToast('✅ Cita agendada con éxito en el Timeline');
+        } else {
+          alert(data.error || 'No se pudo agendar la cita');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ========================================================================
+    // MOTOR DE WHATSAPP SIMULADO (INTERACTIVO)
+    // ========================================================================
+    const chatBody = document.getElementById('wa-chat-body');
+
+    function appendMessage(sender, text, buttons = [], sections = []) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `wa-msg wa-${sender}`;
+
+      const now = new Date();
+      const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      let content = `<div style="white-space: pre-line;">${text}</div>`;
+
+      // Botones interactivos
+      if (buttons && buttons.length > 0) {
+        content += `<div class="wa-btn-container">`;
+        buttons.forEach(btn => {
+          content += `<button class="wa-interactive-btn" onclick="sendButtonClick('${btn.id}', '${btn.title.replace(/'/g, "\\'")}')">${btn.title}</button>`;
+        });
+        content += `</div>`;
+      }
+
+      // Secciones de Lista interactiva
+      if (sections && sections.length > 0) {
+        content += `<div class="wa-btn-container">`;
+        sections.forEach(sec => {
+          sec.rows.forEach(row => {
+            content += `
+              <button class="wa-interactive-btn" style="text-align: left;" onclick="sendListClick('${row.id}', '${row.title.replace(/'/g, "\\'")}')">
+                <div style="font-weight: 700;">${row.title}</div>
+                ${row.description ? `<div style="font-size: 10px; opacity: 0.8;">${row.description}</div>` : ''}
+              </button>
+            `;
+          });
+        });
+        content += `</div>`;
+      }
+
+      content += `<div class="wa-time">${timeStr} <i class="fa-solid fa-check-double" style="color: #53BDEB;"></i></div>`;
+      msgDiv.innerHTML = content;
+      chatBody.appendChild(msgDiv);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      playChime(sender === 'outgoing' ? 500 : 700, 0.08);
+    }
+
+    function showTyping() {
+      document.getElementById('wa-typing').style.display = 'block';
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    function hideTyping() {
+      document.getElementById('wa-typing').style.display = 'none';
+    }
+
+    async function sendTextMessage() {
+      const input = document.getElementById('wa-text-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage('outgoing', text);
+      input.value = '';
+      showTyping();
+
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'text', text })
+        });
+        const reply = await res.json();
+        setTimeout(() => {
+          hideTyping();
+          appendMessage('incoming', reply.body, reply.buttons, reply.sections);
+        }, 400);
+      } catch (err) {
+        hideTyping();
+        console.error(err);
+      }
+    }
+
+    async function sendButtonClick(buttonId, title) {
+      appendMessage('outgoing', title);
+      showTyping();
+
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'interactive_button', buttonId })
+        });
+        const reply = await res.json();
+        setTimeout(() => {
+          hideTyping();
+          appendMessage('incoming', reply.body, reply.buttons, reply.sections);
+        }, 350);
+      } catch (err) {
+        hideTyping();
+        console.error(err);
+      }
+    }
+
+    async function sendListClick(listId, title) {
+      appendMessage('outgoing', title);
+      showTyping();
+
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'interactive_list', listId })
+        });
+        const reply = await res.json();
+        setTimeout(() => {
+          hideTyping();
+          appendMessage('incoming', reply.body, reply.buttons, reply.sections);
+        }, 350);
+      } catch (err) {
+        hideTyping();
+        console.error(err);
+      }
+    }
+
+    function injectReminderIntoWhatsApp(reminderMessage) {
+      appendMessage('incoming', reminderMessage.body, reminderMessage.buttons, reminderMessage.sections);
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        sendTextMessage();
+      }
+    }
+
+    async function resetWhatsAppChat() {
+      chatBody.innerHTML = '';
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'text', text: 'reiniciar' })
+        });
+        const reply = await res.json();
+        appendMessage('incoming', reply.body, reply.buttons, reply.sections);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // DEMO AUTOMÁTICA EN 3 SEGUNDOS
+    async function runAutoBookingDemo() {
+      showToast('🚀 Ejecutando demo de reserva rápida...');
+      await resetWhatsAppChat();
+
+      setTimeout(async () => {
+        // Seleccionar Servicio 1
+        await sendListClick('SERVICE_srv-1', 'Corte Clásico & Fade Premium');
+
+        setTimeout(async () => {
+          // Seleccionar Barbero 1 (Mateo Silva)
+          await sendListClick('BARBER_barber-1', 'Mateo Silva (Master Barber)');
+
+          setTimeout(async () => {
+            // Seleccionar Fecha Hoy
+            const todayStr = new Date().toISOString().split('T')[0];
+            await sendButtonClick(`DATE_${todayStr}`, 'Hoy');
+
+            setTimeout(async () => {
+              // Buscar primer slot disponible
+              const firstSlotBtn = document.querySelector('.wa-interactive-btn[onclick*="SLOT_"]');
+              if (firstSlotBtn) {
+                firstSlotBtn.click();
+              } else {
+                // Enviar nombre
+                document.getElementById('wa-text-input').value = 'Julián Castro (Demo)';
+                sendTextMessage();
+              }
+            }, 600);
+          }, 600);
+        }, 600);
+      }, 600);
+    }
+
+    function triggerNextReminder() {
+      const activeApp = currentDashboardData?.appointments?.find(a => a.status === 'confirmed');
+      if (activeApp) {
+        triggerReminder(activeApp.id);
+      } else {
+        showToast('No hay citas confirmadas pendientes para disparar recordatorio');
+      }
+    }
+
+    // ========================================================================
+    // INSPECTOR DEL AVAILABILITY ENGINE
+    // ========================================================================
+    async function loadEngineInspection() {
+      const serviceId = document.getElementById('engine-service-select').value || 'srv-1';
+      const barberId = document.getElementById('engine-barber-select').value;
+      const date = document.getElementById('engine-date-input').value || selectedDate;
+      document.getElementById('engine-date-input').value = date;
+
+      const container = document.getElementById('engine-results-container');
+      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">Calculando intervalos...</div>`;
+
+      try {
+        const url = `/api/availability?serviceId=${serviceId}&date=${date}${barberId ? '&barberId=' + barberId : ''}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        let html = '';
+        data.results.forEach(resItem => {
+          html += `
+            <div style="background: rgba(14, 20, 36, 0.7); border: 1px solid var(--border-glass); border-radius: 14px; padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div style="width: 12px; height: 12px; border-radius: 50%; background: ${resItem.barber.colorTag};"></div>
+                  <h3 style="font-size: 16px; font-weight: 700;">${resItem.barber.name}</h3>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                  <span style="font-size: 12px; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 4px 10px; border-radius: 20px;">
+                    ${resItem.freeSlotsCount} de ${resItem.totalGeneratedSlots} slots libres
+                  </span>
+                  <span style="font-size: 12px; background: rgba(245, 158, 11, 0.15); color: #FBBF24; padding: 4px 10px; border-radius: 20px;">
+                    Buffer: 10 min
+                  </span>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px;">
+                ${resItem.slots.map(slot => `
+                  <div style="
+                    background: ${slot.available ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'};
+                    border: 1px solid ${slot.available ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
+                    padding: 10px;
+                    border-radius: 8px;
+                    text-align: center;
+                  ">
+                    <div style="font-size: 13px; font-weight: 700; color: ${slot.available ? '#34D399' : '#FCA5A5'};">
+                      ${slot.formattedTime}
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                      ${slot.available ? '✓ DISPONIBLE' : '✕ OCUPADO / BLOQUE'}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div style="color: #F87171;">Error al consultar el AvailabilityEngine</div>`;
+      }
+    }
+
+    // ========================================================================
+    // REPORTE DE COMISIONES
+    // ========================================================================
+    async function loadFinanceReport() {
+      const container = document.getElementById('commissions-table-container');
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Cargando reporte de comisiones...</div>';
+
+      try {
+        const res = await fetch('/api/reports/commissions');
+        const data = await res.json();
+
+        let totalGross = 0;
+        let totalCommissions = 0;
+        let totalNet = 0;
+
+        let rowsHtml = data.report.map(r => {
+          totalGross += r.grossRevenue;
+          totalCommissions += r.commissionEarned;
+          totalNet += r.barbershopShare;
+
+          return `
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+              <td style="padding: 14px 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${r.colorTag};"></span>
+                ${r.barberName}
+              </td>
+              <td style="padding: 14px 12px; text-align: center;">${r.totalAppointments}</td>
+              <td style="padding: 14px 12px; text-align: center; color: var(--gold-primary); font-weight: 600;">${r.commissionPercentage}%</td>
+              <td style="padding: 14px 12px; text-align: right; font-weight: 700;">$${r.grossRevenue.toLocaleString('es-CO')}</td>
+              <td style="padding: 14px 12px; text-align: right; color: #60A5FA; font-weight: 700;">$${r.commissionEarned.toLocaleString('es-CO')}</td>
+              <td style="padding: 14px 12px; text-align: right; color: #34D399; font-weight: 700;">$${r.barbershopShare.toLocaleString('es-CO')}</td>
+            </tr>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-muted); text-transform: uppercase; font-size: 11px;">
+                <th style="padding: 12px; text-align: left;">Barbero</th>
+                <th style="padding: 12px; text-align: center;">Citas</th>
+                <th style="padding: 12px; text-align: center;">Comisión %</th>
+                <th style="padding: 12px; text-align: right;">Facturación Bruta</th>
+                <th style="padding: 12px; text-align: right;">Pago al Barbero</th>
+                <th style="padding: 12px; text-align: right;">Margen Salón</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+            <tfoot>
+              <tr style="border-top: 2px solid rgba(255, 255, 255, 0.15); font-weight: 800; font-size: 14px;">
+                <td style="padding: 16px 12px;">TOTAL GENERAL</td>
+                <td style="padding: 16px 12px; text-align: center;">-</td>
+                <td style="padding: 16px 12px; text-align: center;">-</td>
+                <td style="padding: 16px 12px; text-align: right; color: #FFF;">$${totalGross.toLocaleString('es-CO')}</td>
+                <td style="padding: 16px 12px; text-align: right; color: #60A5FA;">$${totalCommissions.toLocaleString('es-CO')}</td>
+                <td style="padding: 16px 12px; text-align: right; color: #34D399;">$${totalNet.toLocaleString('es-CO')}</td>
+              </tr>
+            </tfoot>
+          </table>
+        `;
+      } catch (err) {
+        container.innerHTML = '<div style="color: #F87171;">Error al cargar las finanzas</div>';
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--gold-primary);"></i> <span>${msg}</span>`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 4000);
+    }
+
+    // Inicialización automática
+    window.onload = () => {
+      updateDateLabel(new Date());
+      loadDashboard();
+      resetWhatsAppChat();
+    };
+  </script>
+</body>
+</html>
