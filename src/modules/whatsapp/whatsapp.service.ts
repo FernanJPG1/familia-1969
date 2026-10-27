@@ -3,7 +3,7 @@ import { AvailabilityEngine } from '../availability/availability.engine';
 import { WhatsAppBookingContext, WhatsAppStep, Appointment } from '../../core/types';
 
 export interface WhatsAppIncomingMessage {
-  from: string; // WhatsApp Phone (e.g. "573001234567")
+  from: string;
   type: 'text' | 'interactive_button' | 'interactive_list';
   text?: string;
   buttonId?: string;
@@ -30,9 +30,6 @@ export class WhatsAppService {
     this.availabilityEngine = new AvailabilityEngine({ slotBufferMinutes: 10 });
   }
 
-  /**
-   * Obtiene o crea la sesión conversacional de un usuario con TTL de 30 minutos
-   */
   private getOrCreateSession(tenantId: string, phone: string) {
     let session = store.sessions.find(
       (s) => s.tenantId === tenantId && s.whatsappPhone === phone
@@ -40,7 +37,6 @@ export class WhatsAppService {
 
     const now = new Date();
     if (!session || new Date(session.expiresAt) < now) {
-      // Sesión expirada o nueva
       session = {
         id: `sess-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         tenantId,
@@ -48,15 +44,13 @@ export class WhatsAppService {
         currentStep: 'IDLE',
         contextData: {},
         lastInteractionAt: now,
-        expiresAt: new Date(now.getTime() + 30 * 60 * 1000), // 30 min TTL
+        expiresAt: new Date(now.getTime() + 30 * 60 * 1000),
       };
-      // Reemplazar o insertar
       store.sessions = store.sessions.filter(
         (s) => !(s.tenantId === tenantId && s.whatsappPhone === phone)
       );
       store.sessions.push(session);
     } else {
-      // Renovar TTL
       session.lastInteractionAt = now;
       session.expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
     }
@@ -64,19 +58,17 @@ export class WhatsAppService {
     return session;
   }
 
-  /**
-   * Procesa el mensaje entrante según la Máquina de Estados Finita (FSM)
-   */
   public async handleIncomingMessage(
     tenantId: string,
     msg: WhatsAppIncomingMessage
   ): Promise<WhatsAppOutgoingMessage> {
     const session = this.getOrCreateSession(tenantId, msg.from);
-    const tenant = store.tenants.find((t) => t.id === tenantId) || store.tenants[0];
+    const tenant = store.tenants[0];
+    const barber = store.barbers[0]; // 1 Solo Barbero
     const incomingText = (msg.text || '').trim().toLowerCase();
     const actionId = msg.buttonId || msg.listId || '';
 
-    // Manejo especial de respuestas a Recordatorio Anti-No-Show (T-2h)
+    // Manejo de confirmación o cancelación de recordatorio Anti-No-Show (T-2h)
     if (actionId.startsWith('CONFIRM_COMING_')) {
       const appId = actionId.replace('CONFIRM_COMING_', '');
       const app = store.appointments.find((a) => a.id === appId);
@@ -86,7 +78,7 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: `💈 ¡Excelente! Tu barbero ya tiene tu turno confirmado y el sillón listo. Te esperamos puntualmente.`,
+          body: `💈 ¡Excelente! ${barber.name} ya tiene tu sillón listo y reservado. Te esperamos puntualmente.`,
         };
       }
     }
@@ -100,32 +92,32 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: `✅ Tu cita ha sido cancelada con éxito y el turno fue liberado. Agradecemos mucho tu aviso anticipado. ¡Esperamos verte pronto!`,
+          body: `✅ Tu cita ha sido cancelada con éxito y el turno fue liberado. Agradecemos mucho tu aviso anticipado. ¡Esperamos verte pronto con ${barber.name}!`,
         };
       }
     }
 
-    // Si el usuario escribe "reiniciar", "menu" o "hola" en cualquier momento, reseteamos a IDLE
+    // Reinicio
     if (incomingText === 'reiniciar' || incomingText === 'menu' || (session.currentStep === 'IDLE' && actionId === '')) {
       session.currentStep = 'IDLE';
       session.contextData = {};
     }
 
     switch (session.currentStep) {
-      // PASO 1: Bienvenida y Selección de Servicio
+      // PASO 1: Bienvenida y Selección de Tipo de Corte (Catálogo Dinámico)
       case 'IDLE': {
         session.currentStep = 'AWAITING_SERVICE';
-        const activeServices = store.services.filter((s) => s.isActive && s.tenantId === tenantId);
+        const activeServices = store.services.filter((s) => s.isActive);
 
         return {
           to: msg.from,
           type: 'interactive_list',
           header: `💈 ${tenant.name}`,
-          body: `¡Hola! Bienvenido a nuestro sistema de reservas 24/7. ¿Qué servicio deseas agendar hoy?`,
-          footer: 'Selecciona una opción de la lista',
+          body: `¡Hola! Bienvenido al canal de reservas de *${barber.name}*. ¿Qué tipo de corte o servicio deseas agendar hoy?`,
+          footer: 'Selecciona una opción del catálogo',
           sections: [
             {
-              title: 'Catálogo de Servicios',
+              title: 'Cortes & Servicios Disponibles',
               rows: activeServices.map((s) => ({
                 id: `SERVICE_${s.id}`,
                 title: s.name,
@@ -136,13 +128,13 @@ export class WhatsAppService {
         };
       }
 
-      // PASO 2: Procesar Selección de Servicio -> Preguntar Barbero
+      // PASO 2: Procesar Selección de Corte -> Pasar Directo a Fecha (Al ser 1 solo barbero)
       case 'AWAITING_SERVICE': {
         if (!actionId.startsWith('SERVICE_')) {
           return {
             to: msg.from,
             type: 'text',
-            body: '⚠️ Por favor selecciona uno de los servicios disponibles en la lista interactiva.',
+            body: '⚠️ Por favor selecciona uno de los tipos de corte de la lista interactiva.',
           };
         }
 
@@ -150,65 +142,20 @@ export class WhatsAppService {
         const service = store.services.find((s) => s.id === serviceId);
         if (!service) {
           session.currentStep = 'IDLE';
-          return { to: msg.from, type: 'text', body: 'Servicio no encontrado. Escribe "Hola" para reiniciar.' };
+          return { to: msg.from, type: 'text', body: 'Corte no encontrado. Escribe "Hola" para reiniciar.' };
         }
 
         session.contextData.serviceId = service.id;
         session.contextData.serviceName = service.name;
         session.contextData.serviceDuration = service.durationMinutes;
         session.contextData.servicePrice = service.price;
-        session.currentStep = 'AWAITING_BARBER';
-
-        const activeBarbers = store.barbers.filter((b) => b.isActive && b.tenantId === tenantId);
-
-        return {
-          to: msg.from,
-          type: 'interactive_list',
-          header: 'Selecciona tu Barbero',
-          body: `Has elegido: *${service.name}* ($${service.price.toLocaleString('es-CO')}).\n\n¿Con quién te gustaría atenderte?`,
-          footer: 'Selecciona un barbero',
-          sections: [
-            {
-              title: 'Equipo de Barberos',
-              rows: [
-                { id: 'BARBER_ANY', title: '⚡ Cualquier Barbero (Más Rápido)', description: 'Primer horario disponible' },
-                ...activeBarbers.map((b) => ({
-                  id: `BARBER_${b.id}`,
-                  title: b.name,
-                  description: 'Especialista en cortes y rituales',
-                })),
-              ],
-            },
-          ],
-        };
-      }
-
-      // PASO 3: Procesar Selección de Barbero -> Preguntar Fecha
-      case 'AWAITING_BARBER': {
-        if (!actionId.startsWith('BARBER_')) {
-          return {
-            to: msg.from,
-            type: 'text',
-            body: '⚠️ Por favor selecciona un barbero de la lista.',
-          };
-        }
-
-        const barberSelection = actionId.replace('BARBER_', '');
-        if (barberSelection === 'ANY') {
-          session.contextData.barberId = store.barbers[0].id;
-          session.contextData.barberName = 'Primer Barbero Disponible';
-        } else {
-          const barber = store.barbers.find((b) => b.id === barberSelection);
-          if (!barber) {
-            return { to: msg.from, type: 'text', body: 'Barbero no válido. Por favor selecciona de la lista.' };
-          }
-          session.contextData.barberId = barber.id;
-          session.contextData.barberName = barber.name;
-        }
+        // Asignación directa al único barbero
+        session.contextData.barberId = barber.id;
+        session.contextData.barberName = barber.name;
 
         session.currentStep = 'AWAITING_DATE';
 
-        // Generar botones para Hoy, Mañana y Pasado Mañana
+        // Fechas rápidas: Hoy, Mañana, Pasado Mañana
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
@@ -224,7 +171,7 @@ export class WhatsAppService {
           to: msg.from,
           type: 'interactive_buttons',
           header: 'Elige el Día',
-          body: `Barbero asignado: *${session.contextData.barberName}*.\n\n¿Para qué día deseas tu cita?`,
+          body: `Has elegido: *${service.name}* ($${service.price.toLocaleString('es-CO')}).\n\n¿Para qué día deseas tu cita con *${barber.name}*?`,
           buttons: [
             { id: `DATE_${today.toISOString().split('T')[0]}`, title: `Hoy (${formatDateBtn(today)})` },
             { id: `DATE_${tomorrow.toISOString().split('T')[0]}`, title: `Mañana (${formatDateBtn(tomorrow)})` },
@@ -233,7 +180,7 @@ export class WhatsAppService {
         };
       }
 
-      // PASO 4: Procesar Fecha -> Calcular Slots Libres con AvailabilityEngine
+      // PASO 3: Calcular Horarios Libres con AvailabilityEngine
       case 'AWAITING_DATE': {
         if (!actionId.startsWith('DATE_')) {
           return {
@@ -246,10 +193,9 @@ export class WhatsAppService {
         const selectedDate = actionId.replace('DATE_', '');
         session.contextData.date = selectedDate;
 
-        const barber = store.barbers.find((b) => b.id === session.contextData.barberId) || store.barbers[0];
         const service = store.services.find((s) => s.id === session.contextData.serviceId)!;
 
-        // EJECUTAR EL AVAILABILITY ENGINE
+        // Calcular turnos disponibles para el único barbero
         const slots = this.availabilityEngine.calculateSlotsForBarber({
           barber,
           service,
@@ -260,52 +206,49 @@ export class WhatsAppService {
           slotBufferMinutes: tenant.slotBufferMinutes,
         });
 
-        // Filtrar únicamente los slots libres
         const freeSlots = slots.filter((s) => s.available);
 
         if (freeSlots.length === 0) {
           return {
             to: msg.from,
             type: 'interactive_buttons',
-            header: 'Sin Cupos Disponibles',
-            body: `Lo sentimos, no hay turnos disponibles para *${session.contextData.barberName}* el día ${selectedDate}.\n\n¿Deseas probar otra fecha?`,
+            header: 'Sin Turnos Libres',
+            body: `Lo sentimos, todos los turnos para el día ${selectedDate} están ocupados.\n\n¿Deseas probar otra fecha?`,
             buttons: [
-              { id: 'RETRY_DATE', title: '📅 Elegir otra fecha' },
+              { id: 'RETRY_DATE', title: '📅 Probar otra fecha' },
               { id: 'MENU', title: '🔄 Volver al inicio' },
             ],
           };
         }
 
         session.currentStep = 'AWAITING_SLOT';
-
-        // Mostrar hasta los primeros 10 slots disponibles
         const slotsToShow = freeSlots.slice(0, 10);
 
         return {
           to: msg.from,
           type: 'interactive_list',
           header: 'Horarios Disponibles',
-          body: `📅 *Fecha:* ${selectedDate}\n✂️ *Servicio:* ${service.name} (${service.durationMinutes} min)\n💈 *Barbero:* ${barber.name}\n\nSelecciona la hora que prefieras:`,
-          footer: 'Turnos calculados en tiempo real',
+          body: `📅 *Fecha:* ${selectedDate}\n✂️ *Corte:* ${service.name} (${service.durationMinutes} min)\n💈 *Barbero:* ${barber.name}\n\nSelecciona la hora que prefieras:`,
+          footer: 'Turnos con 10m de buffer entre clientes',
           sections: [
             {
-              title: 'Horarios Libres',
+              title: 'Horarios Disponibles',
               rows: slotsToShow.map((s, idx) => ({
                 id: `SLOT_${idx}_${encodeURIComponent(s.startTime)}_${encodeURIComponent(s.endTime)}`,
                 title: s.formattedTime,
-                description: `Duración: ${service.durationMinutes}m (+10m buffer)`,
+                description: `${service.durationMinutes} min (+10m limpieza)`,
               })),
             },
           ],
         };
       }
 
-      // PASO 5: Procesar Selección de Horario -> Pedir Nombre del Cliente (o confirmar si ya existe)
+      // PASO 4: Selección de Slot -> Pedir Nombre
       case 'AWAITING_SLOT': {
         if (!actionId.startsWith('SLOT_')) {
           if (actionId === 'RETRY_DATE') {
             session.currentStep = 'AWAITING_DATE';
-            return this.handleIncomingMessage(tenantId, { ...msg, buttonId: 'BARBER_' + session.contextData.barberId });
+            return this.handleIncomingMessage(tenantId, { ...msg, buttonId: 'SERVICE_' + session.contextData.serviceId });
           }
           return { to: msg.from, type: 'text', body: '⚠️ Por favor selecciona uno de los horarios libres de la lista.' };
         }
@@ -317,9 +260,9 @@ export class WhatsAppService {
         session.contextData.slotStartTime = startISO;
         session.contextData.slotEndTime = endISO;
 
-        // Comprobar si el cliente ya está registrado en la base de datos por su número de teléfono
+        // Comprobar cliente existente
         const existingClient = store.clients.find(
-          (c) => c.tenantId === tenantId && c.whatsappPhone === msg.from
+          (c) => c.whatsappPhone === msg.from
         );
 
         if (existingClient) {
@@ -332,11 +275,11 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: `🕒 Horario reservado temporalmente.\n\nPara finalizar, por favor *escribe tu Nombre y Apellido*:`,
+          body: `🕒 Horario apartado temporalmente.\n\nPara finalizar tu reserva con ${barber.name}, por favor *escribe tu Nombre y Apellido*:`,
         };
       }
 
-      // PASO 6: Capturar Nombre del Cliente -> Confirmación Atómica
+      // PASO 5: Capturar Nombre -> Confirmación Atómica
       case 'AWAITING_NAME': {
         const name = (msg.text || '').trim();
         if (name.length < 3) {
@@ -347,7 +290,6 @@ export class WhatsAppService {
           };
         }
 
-        // Crear o actualizar cliente
         const newClient = {
           id: `client-${Date.now()}`,
           tenantId,
@@ -370,27 +312,24 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: 'Sesión finalizada. Envía "Hola" para agendar una nueva cita.',
+          body: 'Sesión finalizada. Envía "Hola" para agendar un nuevo corte.',
         };
     }
   }
 
-  /**
-   * Ejecución Atómica de Reserva con Mutex Lock para evitar Double-Booking
-   */
   private async confirmAndBookAppointment(
     tenantId: string,
     session: any,
     phone: string
   ): Promise<WhatsAppOutgoingMessage> {
     const ctx: WhatsAppBookingContext = session.contextData;
+    const barber = store.barbers[0];
 
     return await store.acquireLock(async () => {
-      const barberId = ctx.barberId!;
+      const barberId = barber.id;
       const startTime = new Date(ctx.slotStartTime!);
       const endTime = new Date(ctx.slotEndTime!);
 
-      // Verificación atómica final contra colisiones de último segundo
       const isStillFree = this.availabilityEngine.isSlotFree({
         barberId,
         startTime,
@@ -404,11 +343,10 @@ export class WhatsAppService {
         return {
           to: phone,
           type: 'text',
-          body: `⚠️ Lo sentimos mucho, ese turno acaba de ser reservado por otro cliente mientras confirmabas. Por favor elige otro horario.`,
+          body: `⚠️ Lo sentimos, ese turno acaba de ser tomado por otro cliente. Por favor elige otro horario.`,
         };
       }
 
-      // Crear la cita oficialmente en la base de datos
       const newAppointment: Appointment = {
         id: `app-${Date.now()}`,
         tenantId,
@@ -419,7 +357,7 @@ export class WhatsAppService {
         endTime,
         totalPrice: ctx.servicePrice || 35000,
         status: 'confirmed',
-        notes: `Agendado automáticamente vía WhatsApp Bot por ${ctx.clientName}`,
+        notes: `Agendado automáticamente vía WhatsApp por ${ctx.clientName}`,
         reminderSentAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -427,7 +365,6 @@ export class WhatsAppService {
 
       store.appointments.push(newAppointment);
 
-      // Resetear estado de sesión
       session.currentStep = 'CONFIRMED';
       session.contextData = {};
 
@@ -448,37 +385,33 @@ export class WhatsAppService {
         type: 'text',
         body: `🎉 *¡CITA CONFIRMADA CON ÉXITO!* 💈\n\n` +
           `👤 *Cliente:* ${ctx.clientName}\n` +
-          `✂️ *Servicio:* ${ctx.serviceName}\n` +
-          `💈 *Barbero:* ${ctx.barberName}\n` +
+          `✂️ *Corte:* ${ctx.serviceName}\n` +
+          `💈 *Barbero:* ${barber.name}\n` +
           `📅 *Fecha:* ${dateStr}\n` +
           `⏰ *Horario:* ${timeStr}\n` +
-          `💵 *Total:* $${(ctx.servicePrice || 0).toLocaleString('es-CO')}\n\n` +
-          `📍 *Dirección:* Calle 85 # 14-25, Bogotá\n\n` +
-          `*Recordatorio:* Te enviaremos un mensaje 2 horas antes de tu turno para que confirmes tu camino. ¡Te esperamos!`,
+          `💵 *Precio:* $${(ctx.servicePrice || 0).toLocaleString('es-CO')}\n\n` +
+          `📍 *Ubicación:* Carrera 15 # 85-30, Bogotá\n\n` +
+          `*Recordatorio Anti-Ausentismo:* Te enviaremos un mensaje interactivo 2 horas antes de tu turno para reconfirmar. ¡Te esperamos!`,
       };
     });
   }
 
-  /**
-   * Dispara el Recordatorio Anti-No-Show (T-2h) simulado para una cita
-   */
   public generateReminderMessage(appointmentId: string): WhatsAppOutgoingMessage | null {
     const app = store.appointments.find((a) => a.id === appointmentId);
     if (!app || app.status === 'cancelled') return null;
 
     const client = store.clients.find((c) => c.id === app.clientId);
     const service = store.services.find((s) => s.id === app.serviceId);
-    const barber = store.barbers.find((b) => b.id === app.barberId);
+    const barber = store.barbers[0];
 
     if (!client) return null;
-
     app.reminderSentAt = new Date();
 
     return {
       to: client.whatsappPhone,
       type: 'interactive_buttons',
       header: '⏰ Recordatorio de Cita (En 2 Horas)',
-      body: `Hola *${client.name}*, tu cita para *${service?.name || 'Corte'}* con *${barber?.name || 'tu barbero'}* es en 2 horas.\n\n¿Nos confirmas tu asistencia?`,
+      body: `Hola *${client.name}*, tu cita para *${service?.name || 'Corte'}* con *${barber.name}* es en 2 horas.\n\n¿Confirmas tu asistencia?`,
       footer: 'Si cancelas ahora, liberarás el turno para otro cliente',
       buttons: [
         { id: `CONFIRM_COMING_${app.id}`, title: '✅ Voy en camino' },

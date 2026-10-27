@@ -10,7 +10,7 @@ import {
 } from '../core/types';
 
 /**
- * Almacén en memoria persistente e interactivo con soporte de transacciones y datos seed
+ * Almacén en memoria persistente para aplicación de 1 Solo Barbero
  */
 export class DataStore {
   public tenants: Tenant[] = [];
@@ -22,7 +22,6 @@ export class DataStore {
   public appointments: Appointment[] = [];
   public sessions: WhatsAppSession[] = [];
 
-  // Mutex para exclusión mutua en reservas atómicas (prevención de race conditions)
   private bookingLock: Promise<void> = Promise.resolve();
 
   constructor() {
@@ -47,14 +46,14 @@ export class DataStore {
   public seed() {
     const tenantId = 'tenant-demo-1';
     
-    // 1. Tenant
+    // 1. Tenant Personal
     this.tenants = [
       {
         id: tenantId,
-        name: "The Gentleman's Cut Barbershop",
-        slug: 'gentlemans-cut',
-        phone: '+57 300 987 6543',
-        address: 'Calle 85 # 14-25, Bogotá',
+        name: "Mateo Silva Studio • Barbershop",
+        slug: 'mateo-silva-barber',
+        phone: '+57 311 111 2233',
+        address: 'Carrera 15 # 85-30, Bogotá',
         timezone: 'America/Bogota',
         slotBufferMinutes: 10,
         isActive: true,
@@ -63,56 +62,32 @@ export class DataStore {
       },
     ];
 
-    // 2. Barberos
+    // 2. ÚNICO BARBERO (Propietario / Operador)
     this.barbers = [
       {
         id: 'barber-1',
         tenantId,
         name: 'Mateo Silva (Master Barber)',
         phone: '+57 311 111 2233',
-        colorTag: '#3B82F6', // Azul eléctrico
-        commissionPercentage: 50.0,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 'barber-2',
-        tenantId,
-        name: 'Carlos Mendoza (Fade Specialist)',
-        phone: '+57 322 333 4455',
-        colorTag: '#10B981', // Verde Esmeralda
-        commissionPercentage: 45.0,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 'barber-3',
-        tenantId,
-        name: 'Andrés Vega (Beard & Rituals)',
-        phone: '+57 315 777 8899',
-        colorTag: '#F59E0B', // Ámbar Oro
-        commissionPercentage: 50.0,
+        colorTag: '#F59E0B', // Dorado Luxury
+        commissionPercentage: 100.0, // 100% de ingreso para el barbero independiente
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ];
 
-    // 3. Horarios semanales recurrentes (Lunes a Sábado de 09:00 a 19:00)
+    // 3. Horarios semanales recurrentes del barbero (Lunes a Sábado de 09:00 a 19:00)
     this.schedules = [];
-    for (const barber of this.barbers) {
-      for (let day = 1; day <= 6; day++) {
-        this.schedules.push({
-          id: `sch-${barber.id}-${day}`,
-          barberId: barber.id,
-          dayOfWeek: day,
-          startTime: '09:00',
-          endTime: '19:00',
-          isActive: true,
-        });
-      }
+    for (let day = 1; day <= 6; day++) {
+      this.schedules.push({
+        id: `sch-barber-1-${day}`,
+        barberId: 'barber-1',
+        dayOfWeek: day,
+        startTime: '09:00',
+        endTime: '19:00',
+        isActive: true,
+      });
     }
 
     // 4. Bloqueos de almuerzo (13:00 - 14:00) para hoy y los próximos 7 días
@@ -123,25 +98,23 @@ export class DataStore {
       d.setDate(today.getDate() + i);
       const dateStr = d.toISOString().split('T')[0];
 
-      for (const barber of this.barbers) {
-        this.blocks.push({
-          id: `block-${barber.id}-${dateStr}`,
-          barberId: barber.id,
-          date: dateStr,
-          startTime: '13:00',
-          endTime: '14:00',
-          reason: 'Receso de Almuerzo',
-          createdAt: new Date(),
-        });
-      }
+      this.blocks.push({
+        id: `block-barber-1-${dateStr}`,
+        barberId: 'barber-1',
+        date: dateStr,
+        startTime: '13:00',
+        endTime: '14:00',
+        reason: 'Receso de Almuerzo',
+        createdAt: new Date(),
+      });
     }
 
-    // 5. Catálogo de Servicios
+    // 5. Catálogo Inicial de Cortes y Servicios
     this.services = [
       {
         id: 'srv-1',
         tenantId,
-        name: 'Corte Clásico & Fade Premium',
+        name: 'Corte Clásico & Fade Texturizado',
         durationMinutes: 40,
         price: 35000,
         isActive: true,
@@ -151,7 +124,7 @@ export class DataStore {
       {
         id: 'srv-2',
         tenantId,
-        name: 'Ritual de Barba & Toalla Caliente',
+        name: 'Ritual de Barba con Toalla Caliente',
         durationMinutes: 30,
         price: 25000,
         isActive: true,
@@ -211,7 +184,7 @@ export class DataStore {
       },
     ];
 
-    // 7. Citas para hoy (Timeline)
+    // 7. Citas para hoy asignadas al barbero
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
@@ -227,7 +200,7 @@ export class DataStore {
         endTime: new Date(`${yyyy}-${mm}-${dd}T10:40:00`),
         totalPrice: 35000,
         status: 'confirmed',
-        notes: 'Cliente regular. Prefiere fade medio con tijera texturizada.',
+        notes: 'Cliente regular. Prefiere tijera arriba y fade medio.',
         reminderSentAt: new Date(Date.now() - 3600000),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -235,14 +208,14 @@ export class DataStore {
       {
         id: 'app-demo-2',
         tenantId,
-        barberId: 'barber-2',
+        barberId: 'barber-1',
         clientId: 'client-2',
         serviceId: 'srv-3',
         startTime: new Date(`${yyyy}-${mm}-${dd}T11:00:00`),
         endTime: new Date(`${yyyy}-${mm}-${dd}T12:00:00`),
         totalPrice: 55000,
         status: 'confirmed',
-        notes: 'Combo VIP completo. Confirmó asistencia.',
+        notes: 'Combo VIP completo. Confirmó por WhatsApp.',
         reminderSentAt: new Date(Date.now() - 1800000),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -250,7 +223,7 @@ export class DataStore {
       {
         id: 'app-demo-3',
         tenantId,
-        barberId: 'barber-3',
+        barberId: 'barber-1',
         clientId: 'client-3',
         serviceId: 'srv-2',
         startTime: new Date(`${yyyy}-${mm}-${dd}T15:00:00`),

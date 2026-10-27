@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import { store } from './database/store';
 import { AvailabilityEngine } from './modules/availability/availability.engine';
 import { whatsappService } from './modules/whatsapp/whatsapp.service';
-import { Appointment } from './core/types';
+import { Appointment, Service } from './core/types';
 
 dotenv.config();
 
@@ -29,53 +29,99 @@ app.use(express.static(path.join(__dirname, '../public')));
 // 1. HEALTH & METADATA
 // ============================================================================
 app.get('/api/health', (req: any, res: any) => {
+  const barber = store.barbers[0];
   res.json({
     status: 'online',
     timestamp: new Date().toISOString(),
-    service: 'Barberia SaaS B2B Backend',
-    tenant: store.tenants[0]?.name,
+    service: 'Barberia Solo-Barber Mobile Backend',
+    barber: barber?.name,
     activeAppointments: store.appointments.length,
-    barbersCount: store.barbers.length,
+    servicesCount: store.services.length,
   });
 });
 
 // ============================================================================
-// 2. DASHBOARD DATA API (Soporta filtrado por fecha)
+// 2. GESTIÓN DE CORTES Y SERVICIOS (CRUD por el Barbero)
+// ============================================================================
+app.get('/api/services', (req: any, res: any) => {
+  res.json({ services: store.services.filter((s) => s.isActive) });
+});
+
+app.post('/api/services', (req: any, res: any) => {
+  const { name, durationMinutes, price } = req.body;
+
+  if (!name || !durationMinutes || !price) {
+    return res.status(400).json({ error: 'Nombre, duración (min) y precio son obligatorios' });
+  }
+
+  const newService: Service = {
+    id: `srv-${Date.now()}`,
+    tenantId: 'tenant-demo-1',
+    name: name.trim(),
+    durationMinutes: Number(durationMinutes),
+    price: Number(price),
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  store.services.push(newService);
+
+  io.emit('services:updated', { service: newService });
+  io.emit('dashboard:refresh');
+
+  res.status(201).json({ success: true, service: newService });
+});
+
+app.delete('/api/services/:id', (req: any, res: any) => {
+  const { id } = req.params;
+  const srv = store.services.find((s) => s.id === id);
+
+  if (!srv) {
+    return res.status(404).json({ error: 'Servicio no encontrado' });
+  }
+
+  srv.isActive = false; // Soft delete
+  srv.updatedAt = new Date();
+
+  io.emit('services:updated', { deletedId: id });
+  io.emit('dashboard:refresh');
+
+  res.json({ success: true, message: 'Tipo de corte eliminado' });
+});
+
+// ============================================================================
+// 3. DASHBOARD DATA API (Modo 1 Solo Barbero)
 // ============================================================================
 app.get('/api/dashboard/today', (req: any, res: any) => {
-  const tenantId = (req.query?.tenantId as string) || 'tenant-demo-1';
+  const tenantId = 'tenant-demo-1';
   const queryDate = (req.query?.date as string) || new Date().toISOString().split('T')[0];
 
-  const tenant = store.tenants.find((t) => t.id === tenantId) || store.tenants[0];
-  const barbers = store.barbers.filter((b) => b.tenantId === tenantId && b.isActive);
-  const services = store.services.filter((s) => s.tenantId === tenantId && s.isActive);
+  const tenant = store.tenants[0];
+  const barber = store.barbers[0]; // 1 Solo Barbero
+  const services = store.services.filter((s) => s.isActive);
 
   // Filtrar citas del día especificado
   const appointmentsForDate = store.appointments
     .filter((a) => {
-      if (a.tenantId !== tenantId) return false;
       const aDate = new Date(a.startTime).toISOString().split('T')[0];
       return aDate === queryDate;
     })
     .map((a) => {
-      const barber = store.barbers.find((b) => b.id === a.barberId);
       const client = store.clients.find((c) => c.id === a.clientId);
       const service = store.services.find((s) => s.id === a.serviceId);
-      const commissionAmount = barber 
-        ? Math.round((a.totalPrice * barber.commissionPercentage) / 100)
-        : 0;
 
       return {
         ...a,
-        barberName: barber?.name || 'Desconocido',
-        barberColor: barber?.colorTag || '#3B82F6',
-        barberCommissionPct: barber?.commissionPercentage || 0,
-        commissionAmount,
+        barberName: barber.name,
+        barberColor: barber.colorTag,
+        barberCommissionPct: barber.commissionPercentage,
+        commissionAmount: a.totalPrice, // 100% para el barbero independiente
         clientName: client?.name || 'Cliente Ocasional',
         clientPhone: client?.whatsappPhone || '',
         clientNoShows: client?.totalNoShows || 0,
-        serviceName: service?.name || 'Servicio General',
-        serviceDuration: service?.durationMinutes || 30,
+        serviceName: service?.name || 'Corte Personalizado',
+        serviceDuration: service?.durationMinutes || 35,
       };
     });
 
@@ -87,17 +133,13 @@ app.get('/api/dashboard/today', (req: any, res: any) => {
     .filter((a) => a.status === 'completed' || a.status === 'confirmed')
     .reduce((sum, a) => sum + a.totalPrice, 0);
 
-  const totalCommissions = appointmentsForDate
-    .filter((a) => a.status === 'completed' || a.status === 'confirmed')
-    .reduce((sum, a) => sum + (a.commissionAmount || 0), 0);
-
-  // Bloqueos de agenda para la fecha
   const blocksForDate = store.blocks.filter((b) => b.date === queryDate);
 
   res.json({
     date: queryDate,
     tenant,
-    barbers,
+    barber,
+    barbers: [barber],
     services,
     appointments: appointmentsForDate,
     blocks: blocksForDate,
@@ -106,22 +148,21 @@ app.get('/api/dashboard/today', (req: any, res: any) => {
       completedCount,
       noShowCount,
       totalRevenue,
-      totalCommissions,
-      netBarbershopRevenue: totalRevenue - totalCommissions,
-      occupancyPercentage: Math.min(100, Math.round((activeCount / (barbers.length * 8)) * 100)),
+      myEarnings: totalRevenue,
+      occupancyPercentage: Math.min(100, Math.round((activeCount / 8) * 100)),
     },
   });
 });
 
 // ============================================================================
-// 3. CREACIÓN MANUAL DE CITAS (Para recepción o barberos)
+// 4. AGENDAR CITA MANUAL RÁPIDA (Desde la App Móvil del Barbero)
 // ============================================================================
 app.post('/api/appointments', async (req: any, res: any) => {
   try {
-    const { barberId, serviceId, clientName, clientPhone, startTimeISO, notes } = req.body;
-    const tenantId = 'tenant-demo-1';
+    const { serviceId, clientName, clientPhone, startTimeISO, notes } = req.body;
+    const barber = store.barbers[0];
 
-    if (!barberId || !serviceId || !clientName || !startTimeISO) {
+    if (!serviceId || !clientName || !startTimeISO) {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
@@ -131,10 +172,9 @@ app.post('/api/appointments', async (req: any, res: any) => {
     const startTime = new Date(startTimeISO);
     const endTime = new Date(startTime.getTime() + service.durationMinutes * 60000);
 
-    // Validación atómica
     const isFree = await store.acquireLock(async () => {
       return availabilityEngine.isSlotFree({
-        barberId,
+        barberId: barber.id,
         startTime,
         endTime,
         existingAppointments: store.appointments,
@@ -143,15 +183,14 @@ app.post('/api/appointments', async (req: any, res: any) => {
     });
 
     if (!isFree) {
-      return res.status(409).json({ error: 'El horario seleccionado ya no está disponible (colisión detectada)' });
+      return res.status(409).json({ error: 'Ese horario ya tiene un turno reservado' });
     }
 
-    // Buscar o crear cliente
     let client = store.clients.find((c) => c.whatsappPhone === clientPhone);
     if (!client) {
       client = {
         id: `client-${Date.now()}`,
-        tenantId,
+        tenantId: 'tenant-demo-1',
         name: clientName,
         whatsappPhone: clientPhone || '573000000000',
         totalNoShows: 0,
@@ -163,15 +202,15 @@ app.post('/api/appointments', async (req: any, res: any) => {
 
     const newAppointment: Appointment = {
       id: `app-manual-${Date.now()}`,
-      tenantId,
-      barberId,
+      tenantId: 'tenant-demo-1',
+      barberId: barber.id,
       clientId: client.id,
       serviceId,
       startTime,
       endTime,
       totalPrice: service.price,
       status: 'confirmed',
-      notes: notes || 'Agendado manualmente desde el Dashboard',
+      notes: notes || 'Agendado manualmente desde la App Móvil',
       reminderSentAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -182,13 +221,13 @@ app.post('/api/appointments', async (req: any, res: any) => {
     io.emit('dashboard:refresh');
     res.status(201).json({ success: true, appointment: newAppointment });
   } catch (err: any) {
-    console.error('Error creando cita:', err);
+    console.error('Error creando cita manual:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
 // ============================================================================
-// 4. ACTUALIZACIÓN RÁPIDA DE ESTADO DE CITA
+// 5. ACTUALIZAR ESTADO DE CITA
 // ============================================================================
 app.post('/api/appointments/:id/status', (req: any, res: any) => {
   const { id } = req.params;
@@ -208,7 +247,6 @@ app.post('/api/appointments/:id/status', (req: any, res: any) => {
   if (notes !== undefined) appItem.notes = notes;
   appItem.updatedAt = new Date();
 
-  // Si se marca como no_show, incrementar el contador del cliente
   if (status === 'no_show') {
     const client = store.clients.find((c) => c.id === appItem.clientId);
     if (client) {
@@ -216,7 +254,6 @@ app.post('/api/appointments/:id/status', (req: any, res: any) => {
     }
   }
 
-  // Notificar por WebSocket a todos los dashboards conectados
   io.emit('appointment:updated', { appointment: appItem, status });
   io.emit('dashboard:refresh');
 
@@ -224,17 +261,18 @@ app.post('/api/appointments/:id/status', (req: any, res: any) => {
 });
 
 // ============================================================================
-// 5. MOTOR DE DISPONIBILIDAD (Endpoint de Inspección y Cálculo)
+// 6. MOTOR DE DISPONIBILIDAD
 // ============================================================================
 app.get('/api/availability', (req: any, res: any) => {
-  const { barberId, serviceId, date } = req.query as {
-    barberId?: string;
+  const { serviceId, date } = req.query as {
     serviceId: string;
     date: string;
   };
 
+  const barber = store.barbers[0];
+
   if (!serviceId || !date) {
-    return res.status(400).json({ error: 'serviceId y date son obligatorios (YYYY-MM-DD)' });
+    return res.status(400).json({ error: 'serviceId y date son requeridos' });
   }
 
   const service = store.services.find((s) => s.id === serviceId);
@@ -242,77 +280,24 @@ app.get('/api/availability', (req: any, res: any) => {
     return res.status(404).json({ error: 'Servicio no encontrado' });
   }
 
-  let targetBarbers = store.barbers.filter((b) => b.isActive);
-  if (barberId) {
-    targetBarbers = targetBarbers.filter((b) => b.id === barberId);
-  }
-
-  const results = targetBarbers.map((barber) => {
-    const slots = availabilityEngine.calculateSlotsForBarber({
-      barber,
-      service,
-      date,
-      schedules: store.schedules,
-      blocks: store.blocks,
-      existingAppointments: store.appointments,
-      slotBufferMinutes: 10,
-    });
-
-    return {
-      barber: { 
-        id: barber.id, 
-        name: barber.name, 
-        colorTag: barber.colorTag,
-        commissionPercentage: barber.commissionPercentage 
-      },
-      slots,
-      freeSlotsCount: slots.filter((s) => s.available).length,
-      totalGeneratedSlots: slots.length,
-    };
+  const slots = availabilityEngine.calculateSlotsForBarber({
+    barber,
+    service,
+    date,
+    schedules: store.schedules,
+    blocks: store.blocks,
+    existingAppointments: store.appointments,
+    slotBufferMinutes: 10,
   });
 
   res.json({ 
     date, 
-    service: {
-      id: service.id,
-      name: service.name,
-      durationMinutes: service.durationMinutes,
-      price: service.price,
-      bufferMinutes: 10,
-    }, 
-    results 
+    service,
+    barber: { id: barber.id, name: barber.name, colorTag: barber.colorTag },
+    slots,
+    freeSlotsCount: slots.filter((s) => s.available).length,
+    totalGeneratedSlots: slots.length,
   });
-});
-
-// ============================================================================
-// 6. REPORTES Y COMISIONES POR BARBERO
-// ============================================================================
-app.get('/api/reports/commissions', (req: any, res: any) => {
-  const tenantId = (req.query?.tenantId as string) || 'tenant-demo-1';
-  const barbers = store.barbers.filter((b) => b.tenantId === tenantId);
-
-  const report = barbers.map((barber) => {
-    const apps = store.appointments.filter(
-      (a) => a.barberId === barber.id && (a.status === 'completed' || a.status === 'confirmed')
-    );
-
-    const grossRevenue = apps.reduce((sum, a) => sum + a.totalPrice, 0);
-    const commission = Math.round((grossRevenue * barber.commissionPercentage) / 100);
-    const barbershopShare = grossRevenue - commission;
-
-    return {
-      barberId: barber.id,
-      barberName: barber.name,
-      colorTag: barber.colorTag,
-      commissionPercentage: barber.commissionPercentage,
-      totalAppointments: apps.length,
-      grossRevenue,
-      commissionEarned: commission,
-      barbershopShare,
-    };
-  });
-
-  res.json({ report });
 });
 
 // ============================================================================
@@ -323,7 +308,7 @@ app.post('/api/appointments/:id/trigger-reminder', (req: any, res: any) => {
   const message = whatsappService.generateReminderMessage(id);
 
   if (!message) {
-    return res.status(400).json({ error: 'No se pudo generar recordatorio para esta cita' });
+    return res.status(400).json({ error: 'No se pudo generar recordatorio' });
   }
 
   io.emit('whatsapp:reminder_sent', { appointmentId: id, message });
@@ -413,9 +398,9 @@ app.post('/api/whatsapp/webhook', async (req: any, res: any) => {
 // ============================================================================
 server.listen(PORT, () => {
   console.log(`\n======================================================`);
-  console.log(`💈 BARBERÍA SAAS B2B - SERVIDOR MEJORADO ACTIVO`);
+  console.log(`💈 BARBERÍA APP - 1 SOLO BARBERO`);
+  console.log(`👤 Barbero: Mateo Silva (Master Barber)`);
+  console.log(`✂️ Catálogo de Cortes Dinámico: Activo`);
   console.log(`🚀 URL: http://localhost:${PORT}`);
-  console.log(`📡 WebSocket: Activo y escuchando eventos en tiempo real`);
-  console.log(`🤖 WhatsApp Engine & Simulador: Listo`);
   console.log(`======================================================\n`);
 });

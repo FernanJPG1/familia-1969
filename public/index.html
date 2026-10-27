@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#080C14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BarberPro">
+  <meta name="apple-mobile-web-app-title" content="MateoBarber">
   <link rel="manifest" href="/manifest.json">
   
-  <title>BarberPro Mobile • The Gentleman's Cut</title>
+  <title>Mateo Silva • Barbero Pro App & WhatsApp Bot</title>
   
   <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,7 +62,7 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Desktop Viewport Simulator Frame */
+    /* Marco de Dispositivo Móvil */
     .app-viewport {
       width: 100%;
       max-width: 440px;
@@ -79,9 +79,7 @@
     }
 
     @media (max-width: 600px) {
-      body {
-        align-items: stretch;
-      }
+      body { align-items: stretch; }
       .app-viewport {
         max-width: 100%;
         height: 100vh;
@@ -89,12 +87,9 @@
         border: none;
         border-radius: 0;
       }
-      .desktop-banner {
-        display: none !important;
-      }
+      .desktop-banner { display: none !important; }
     }
 
-    /* Desktop Top Bar (Device Switcher & Demo Helper) */
     .desktop-banner {
       position: fixed;
       top: 14px;
@@ -112,7 +107,7 @@
       font-size: 13px;
     }
 
-    /* iOS Native Notch & Status Bar */
+    /* Barra de Estado iOS */
     .mobile-status-bar {
       height: 44px;
       padding: 10px 24px 0 24px;
@@ -135,7 +130,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
     }
     .dynamic-island-cam {
       width: 8px;
@@ -144,7 +138,7 @@
       background: #0B132B;
     }
 
-    /* Mobile Header */
+    /* Header del Barbero Único */
     .mobile-header {
       padding: 10px 18px 12px 18px;
       display: flex;
@@ -155,41 +149,33 @@
       z-index: 40;
     }
 
-    .barber-selector-btn {
+    .barber-profile-pill {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      padding: 6px 14px 6px 6px;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.2s;
     }
-    .barber-selector-btn:active { transform: scale(0.97); }
 
     .header-barber-avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
+      background: var(--gold-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 12px;
-      color: #000;
+      font-size: 14px;
+      color: #080C14;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
     }
 
-    .header-barber-info {
-      text-align: left;
-    }
     .header-barber-name {
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 800;
       color: #FFF;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
     .header-barber-status {
       font-size: 10px;
@@ -199,10 +185,16 @@
       gap: 4px;
     }
 
-    .header-actions-mobile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
     }
 
     .icon-circle-btn {
@@ -218,22 +210,10 @@
       cursor: pointer;
       font-size: 14px;
       transition: all 0.2s;
-      position: relative;
     }
     .icon-circle-btn:active { transform: scale(0.94); background: rgba(255, 255, 255, 0.12); }
-    
-    .badge-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--gold-primary);
-      border-radius: 50%;
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      box-shadow: 0 0 6px var(--gold-primary);
-    }
 
-    /* Scrollable Mobile Body Content */
+    /* Contenedor Scrollable */
     .mobile-scroll-container {
       flex: 1;
       overflow-y: auto;
@@ -245,12 +225,12 @@
     }
     .mobile-scroll-container::-webkit-scrollbar { display: none; }
 
-    /* Day Carousel Strip */
+    /* Carrusel de Días */
     .day-carousel {
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
       scrollbar-width: none;
     }
     .day-carousel::-webkit-scrollbar { display: none; }
@@ -277,27 +257,11 @@
       border-color: transparent;
       box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
     }
+    .day-chip-name { font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .day-chip-number { font-size: 17px; font-weight: 800; }
+    .day-chip-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; margin: 0 auto; }
 
-    .day-chip-name {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      opacity: 0.8;
-    }
-    .day-chip-number {
-      font-size: 17px;
-      font-weight: 800;
-    }
-    .day-chip-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: currentColor;
-      margin: 0 auto;
-      opacity: 0.6;
-    }
-
-    /* Hero Next Up Card */
+    /* Hero Next Up */
     .next-up-card {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(14, 21, 36, 0.9) 100%);
       border: 1px solid rgba(245, 158, 11, 0.3);
@@ -306,14 +270,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      position: relative;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .next-up-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
     .next-up-tag {
       font-size: 11px;
@@ -333,25 +290,8 @@
       padding: 3px 8px;
       border-radius: 20px;
     }
-
-    .next-up-client {
-      font-size: 18px;
-      font-weight: 800;
-      color: #FFF;
-    }
-    .next-up-service {
-      font-size: 13px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .next-up-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
+    .next-up-client { font-size: 18px; font-weight: 800; color: #FFF; }
+    .next-up-service { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
 
     .mobile-btn {
       flex: 1;
@@ -368,29 +308,16 @@
       transition: all 0.2s;
     }
     .mobile-btn:active { transform: scale(0.97); }
+    .mobile-btn-gold { background: var(--gold-gradient); color: #080C14; }
+    .mobile-btn-emerald { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .mobile-btn-surface { background: rgba(255, 255, 255, 0.06); color: #FFF; border: 1px solid var(--border-subtle); }
 
-    .mobile-btn-gold {
-      background: var(--gold-gradient);
-      color: #080C14;
-    }
-    .mobile-btn-emerald {
-      background: rgba(16, 185, 129, 0.2);
-      color: #34D399;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    .mobile-btn-surface {
-      background: rgba(255, 255, 255, 0.06);
-      color: #FFF;
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* Metric Cards Carousel (Touch Horizontal) */
+    /* Métricas 3 Pills */
     .metrics-carousel {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
-
     .metric-mobile-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
@@ -398,20 +325,9 @@
       padding: 12px 10px;
       text-align: center;
     }
-    .metric-mobile-val {
-      font-size: 16px;
-      font-weight: 800;
-      color: #FFF;
-      margin-bottom: 2px;
-    }
-    .metric-mobile-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
+    .metric-mobile-val { font-size: 16px; font-weight: 800; color: #FFF; margin-bottom: 2px; }
+    .metric-mobile-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
 
-    /* Section Header */
     .mobile-section-title {
       font-size: 15px;
       font-weight: 700;
@@ -419,14 +335,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 4px;
     }
 
-    /* Timeline Appointment Card (Mobile) */
+    /* Tarjetas de Cita */
     .mobile-app-card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-left: 4px solid var(--accent-blue);
+      border-left: 4px solid var(--gold-primary);
       border-radius: 16px;
       padding: 14px;
       display: flex;
@@ -435,66 +350,31 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .mobile-app-card:active {
-      background: var(--bg-card-active);
-      transform: scale(0.985);
-    }
+    .mobile-app-card:active { background: var(--bg-card-active); transform: scale(0.985); }
 
-    .mobile-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .mobile-time-badge {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--gold-primary);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .mobile-card-top { display: flex; justify-content: space-between; align-items: center; }
+    .mobile-time-badge { font-size: 12px; font-weight: 700; color: var(--gold-primary); display: flex; align-items: center; gap: 6px; }
+    .mobile-status-tag { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
 
-    .mobile-status-tag {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 20px;
-      text-transform: uppercase;
-    }
+    .mobile-client-name { font-size: 15px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 6px; }
+    .mobile-service-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); }
+    .mobile-card-actions { display: flex; gap: 6px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
 
-    .mobile-client-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: #FFF;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .mobile-service-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
+    .action-btn-sm {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: var(--text-muted);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    .action-btn-sm:active { background: rgba(255, 255, 255, 0.16); color: #FFF; }
 
-    .mobile-card-actions {
-      display: flex;
-      gap: 6px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    /* Mobile Lunch Strip */
+    /* Almuerzo */
     .mobile-lunch-card {
-      background: repeating-linear-gradient(
-        -45deg,
-        rgba(239, 68, 68, 0.06),
-        rgba(239, 68, 68, 0.06) 8px,
-        rgba(239, 68, 68, 0.12) 8px,
-        rgba(239, 68, 68, 0.12) 16px
-      );
+      background: repeating-linear-gradient(-45deg, rgba(239, 68, 68, 0.06), rgba(239, 68, 68, 0.06) 8px, rgba(239, 68, 68, 0.12) 8px, rgba(239, 68, 68, 0.12) 16px);
       border: 1px dashed rgba(239, 68, 68, 0.3);
       border-radius: 14px;
       padding: 12px;
@@ -508,7 +388,24 @@
       gap: 8px;
     }
 
-    /* Native Bottom Navigation Bar */
+    /* Pestaña: Gestión de Tipos de Corte */
+    .service-item-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .service-item-card:hover { border-color: rgba(245, 158, 11, 0.3); }
+
+    .service-name-text { font-size: 14px; font-weight: 700; color: #FFF; }
+    .service-meta-text { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .service-price-pill { font-size: 14px; font-weight: 800; color: var(--gold-primary); }
+
+    /* Barra de Navegación Inferior */
     .mobile-bottom-nav {
       position: absolute;
       bottom: 0;
@@ -543,7 +440,7 @@
     .nav-item.active { color: var(--gold-primary); }
     .nav-item i { font-size: 18px; }
 
-    /* Floating Action Button (FAB) */
+    /* FAB */
     .mobile-fab {
       position: absolute;
       bottom: 84px;
@@ -565,7 +462,7 @@
     }
     .mobile-fab:active { transform: scale(0.92); }
 
-    /* Native Slide-Up Bottom Sheet */
+    /* Slide-Up Bottom Sheet */
     .bottom-sheet-backdrop {
       position: absolute;
       top: 0;
@@ -594,34 +491,16 @@
       overflow-y: auto;
       animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     @keyframes slideUp {
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
     }
-
     .sheet-handle {
       width: 44px;
       height: 5px;
       background: rgba(255, 255, 255, 0.2);
       border-radius: 10px;
       margin: 0 auto 4px auto;
-    }
-
-    /* WhatsApp Simulator Tab in Mobile */
-    .mobile-wa-view {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background: #0B141A;
-    }
-    .mobile-wa-chat {
-      flex: 1;
-      padding: 14px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
     }
 
     /* Toast */
@@ -642,7 +521,6 @@
       z-index: 95;
       animation: dropDown 0.3s ease;
     }
-
     @keyframes dropDown {
       from { transform: translateY(-50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -651,11 +529,11 @@
 </head>
 <body>
 
-  <!-- Desktop Preview Banner -->
+  <!-- Barra Superior de Previsualización Desktop -->
   <div class="desktop-banner">
-    <span style="color: var(--gold-primary); font-weight: 700;"><i class="fa-solid fa-mobile-screen-button"></i> BarberPro Mobile App</span>
+    <span style="color: var(--gold-primary); font-weight: 700;"><i class="fa-solid fa-scissors"></i> Mateo Silva • App Móvil Personal</span>
     <span style="opacity: 0.5;">|</span>
-    <span>Simulador Nativo de Barbero</span>
+    <span>1 Solo Barbero con Gestión de Cortes</span>
     <button onclick="toggleFullscreen()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); color: #FFF; padding: 4px 10px; border-radius: 14px; font-size: 11px; cursor: pointer;">
       <i class="fa-solid fa-expand"></i> Pantalla Completa
     </button>
@@ -664,7 +542,7 @@
   <!-- Contenedor Principal: App Móvil -->
   <div class="app-viewport" id="mobile-app-root">
 
-    <!-- 1. Barra de Estado iOS (Notch / Dynamic Island) -->
+    <!-- 1. Barra de Estado iOS (Notch) -->
     <div class="mobile-status-bar">
       <span id="mobile-clock">09:41</span>
       <div class="mobile-notch">
@@ -676,82 +554,90 @@
       </div>
     </div>
 
-    <!-- 2. Header Móvil -->
+    <!-- 2. Header Móvil del Barbero Único -->
     <div class="mobile-header">
-      <div class="barber-selector-btn" onclick="openBarberSwitcherSheet()">
-        <div class="header-barber-avatar" id="current-barber-avatar" style="background: #3B82F6;">MS</div>
-        <div class="header-barber-info">
-          <div class="header-barber-name"><span id="current-barber-name">Mateo Silva</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px; opacity: 0.6;"></i></div>
-          <div class="header-barber-status"><span class="pulse-dot" style="width: 6px; height: 6px;"></span> En turno (50% com.)</div>
+      <div class="barber-profile-pill">
+        <div class="header-barber-avatar">MS</div>
+        <div>
+          <div class="header-barber-name">Mateo Silva <i class="fa-solid fa-circle-check" style="color: var(--gold-primary); font-size: 11px;"></i></div>
+          <div class="header-barber-status"><span class="pulse-dot"></span> Disponible • Master Barber</div>
         </div>
       </div>
 
-      <div class="header-actions-mobile">
-        <div class="icon-circle-btn" onclick="triggerNextReminder()" title="Disparar Recordatorio T-2h">
-          <i class="fa-solid fa-bell"></i>
-          <div class="badge-dot"></div>
+      <div style="display: flex; gap: 8px;">
+        <div class="icon-circle-btn" onclick="openNewServiceSheet()" title="Añadir Tipo de Corte">
+          <i class="fa-solid fa-plus" style="color: var(--gold-primary);"></i>
         </div>
-
         <div class="icon-circle-btn" onclick="loadDashboardData()" title="Refrescar">
           <i class="fa-solid fa-arrows-rotate"></i>
         </div>
       </div>
     </div>
 
-    <!-- 3. Contenedor con Scroll para la Pestaña Activa -->
+    <!-- 3. PESTAÑAS MÓVILES -->
 
-    <!-- VISTA A: AGENDA / TIMELINE (Pestaña Principal) -->
+    <!-- VISTA 1: AGENDA DEL DÍA -->
     <div class="mobile-scroll-container" id="tab-agenda-view">
       
-      <!-- Carrusel de Días de la Semana -->
-      <div class="day-carousel" id="mobile-day-carousel">
-        <!-- Renderizado dinámicamente con JS -->
-      </div>
+      <!-- Carrusel de Días -->
+      <div class="day-carousel" id="mobile-day-carousel"></div>
 
       <!-- Hero Card: Próximo Cliente Inmediato -->
-      <div class="next-up-card" id="hero-next-up">
-        <!-- Inyectado dinámicamente -->
-      </div>
+      <div class="next-up-card" id="hero-next-up"></div>
 
-      <!-- Métricas del Día en 3 Pills -->
+      <!-- Métricas del Día -->
       <div class="metrics-carousel">
         <div class="metric-mobile-card">
-          <div class="metric-mobile-val" id="mobile-m-revenue">$45,000</div>
-          <div class="metric-mobile-label">Mi Ganancia</div>
+          <div class="metric-mobile-val" id="mobile-m-revenue">$115,000</div>
+          <div class="metric-mobile-label">Caja Hoy</div>
         </div>
         <div class="metric-mobile-card">
           <div class="metric-mobile-val" id="mobile-m-bookings">3</div>
-          <div class="metric-mobile-label">Turnos Hoy</div>
+          <div class="metric-mobile-label">Turnos</div>
         </div>
         <div class="metric-mobile-card">
-          <div class="metric-mobile-val" style="color: #34D399;">T-2h</div>
-          <div class="metric-mobile-label">Anti-NoShow</div>
+          <div class="metric-mobile-val" style="color: #34D399;">Activo</div>
+          <div class="metric-mobile-label">Bot 24/7</div>
         </div>
       </div>
 
-      <!-- Lista de Turnos del Día -->
+      <!-- Turnos del Día -->
       <div class="mobile-section-title">
         <span>Turnos del Día</span>
         <span style="font-size: 12px; color: var(--gold-primary);" id="turnos-count-label">3 citas</span>
       </div>
 
-      <div id="mobile-appointments-feed" style="display: flex; flex-direction: column; gap: 12px;">
-        <!-- Inyectado dinámicamente con JS -->
-      </div>
-
+      <div id="mobile-appointments-feed" style="display: flex; flex-direction: column; gap: 12px;"></div>
     </div>
 
-    <!-- VISTA B: WHATSAPP BOT (Pestaña 2) -->
+    <!-- VISTA 2: MIS CORTES (GESTIÓN DE CATÁLOGO Y PRECIOS) -->
+    <div class="mobile-scroll-container" id="tab-services-view" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800; color: #FFF;">Mis Tipos de Corte</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Los clientes pueden reservar estos cortes vía WhatsApp</p>
+        </div>
+
+        <button class="mobile-btn mobile-btn-gold" style="flex: none; padding: 8px 14px;" onclick="openNewServiceSheet()">
+          <i class="fa-solid fa-plus"></i> Añadir Corte
+        </button>
+      </div>
+
+      <!-- Lista de Servicios/Cortes -->
+      <div id="m-services-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;"></div>
+    </div>
+
+    <!-- VISTA 3: WHATSAPP BOT (CON RESERVAS DIRECTAS A MATEO) -->
     <div class="mobile-scroll-container" id="tab-whatsapp-view" style="display: none; padding: 0 0 80px 0;">
-      <div class="mobile-wa-view">
+      <div style="display: flex; flex-direction: column; height: 100%; background: #0B141A;">
         <div style="background: #202C33; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; color: #000; font-size: 13px;">
               <i class="fa-solid fa-scissors"></i>
             </div>
             <div>
-              <div style="font-size: 14px; font-weight: 700; color: #FFF;">The Gentleman's Cut</div>
-              <div style="font-size: 11px; color: #8696A0;">Bot Oficial Meta Cloud • 24/7</div>
+              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Mateo Silva Studio</div>
+              <div style="font-size: 11px; color: #8696A0;">Bot de Reservas Directas 24/7</div>
             </div>
           </div>
 
@@ -760,7 +646,7 @@
           </button>
         </div>
 
-        <div class="mobile-wa-chat" id="m-wa-chat"></div>
+        <div id="m-wa-chat" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
 
         <div style="background: #202C33; padding: 8px 12px; display: flex; gap: 8px; align-items: center;">
           <input type="text" id="m-wa-input" placeholder="Escribe un mensaje o tu nombre..." style="flex: 1; background: #2A3942; border: none; border-radius: 20px; padding: 8px 14px; color: #FFF; font-size: 13px; outline: none;" onkeypress="handleMobileKeyPress(event)">
@@ -771,31 +657,19 @@
       </div>
     </div>
 
-    <!-- VISTA C: GANANCIAS & FINANZAS (Pestaña 3) -->
+    <!-- VISTA 4: GANANCIAS & CAJA -->
     <div class="mobile-scroll-container" id="tab-earnings-view" style="display: none;">
-      <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(14, 21, 36, 0.8) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 20px; text-align: center;">
-        <div style="font-size: 12px; font-weight: 600; color: var(--gold-primary); text-transform: uppercase;">Liquidación Hoy</div>
-        <div style="font-size: 32px; font-weight: 800; color: #FFF; margin: 6px 0;" id="earnings-total-val">$45,000</div>
-        <div style="font-size: 12px; color: var(--text-muted);">Comisión acumulada en tiempo real</div>
+      <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(14, 21, 36, 0.8) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 22px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--gold-primary); text-transform: uppercase;">Total Proyectado Hoy</div>
+        <div style="font-size: 34px; font-weight: 800; color: #FFF; margin: 6px 0;" id="earnings-total-val">$115,000</div>
+        <div style="font-size: 12px; color: var(--text-muted);">100% de ingreso para Mateo Silva</div>
       </div>
 
       <div class="mobile-section-title">
-        <span>Desglose por Barbero</span>
+        <span>Historial de Servicios de Hoy</span>
       </div>
 
-      <div id="m-earnings-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-    </div>
-
-    <!-- VISTA D: AVAILABILITY ENGINE (Pestaña 4) -->
-    <div class="mobile-scroll-container" id="tab-engine-view" style="display: none;">
-      <div class="mobile-section-title">
-        <span>Inspector de Slots (10m Buffer)</span>
-      </div>
-      <p style="font-size: 12px; color: var(--text-muted);">
-        Auditoría en tiempo real de intervalos libres calculados por el algoritmo:
-      </p>
-
-      <div id="m-engine-slots-container" style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;"></div>
+      <div id="m-earnings-breakdown" style="display: flex; flex-direction: column; gap: 10px;"></div>
     </div>
 
     <!-- Botón Flotante + (FAB) para Nueva Cita Rápida -->
@@ -803,11 +677,16 @@
       <i class="fa-solid fa-plus"></i>
     </button>
 
-    <!-- 4. Barra de Navegación Inferior (Tabs Nativas) -->
+    <!-- 4. Barra de Navegación Inferior (4 Tabs Nativas) -->
     <nav class="mobile-bottom-nav">
       <div class="nav-item active" id="nav-btn-agenda" onclick="switchMobileTab('agenda')">
         <i class="fa-solid fa-calendar-day"></i>
         <span>Agenda</span>
+      </div>
+
+      <div class="nav-item" id="nav-btn-services" onclick="switchMobileTab('services')">
+        <i class="fa-solid fa-scissors"></i>
+        <span>Mis Cortes</span>
       </div>
 
       <div class="nav-item" id="nav-btn-whatsapp" onclick="switchMobileTab('whatsapp')">
@@ -819,33 +698,52 @@
         <i class="fa-solid fa-wallet"></i>
         <span>Ganancias</span>
       </div>
-
-      <div class="nav-item" id="nav-btn-engine" onclick="switchMobileTab('engine')">
-        <i class="fa-solid fa-microchip"></i>
-        <span>Motor</span>
-      </div>
     </nav>
+
+    <!-- ==================================================================== -->
+    <!-- SLIDE-UP BOTTOM SHEET: AÑADIR NUEVO TIPO DE CORTE -->
+    <!-- ==================================================================== -->
+    <div class="bottom-sheet-backdrop" id="sheet-new-service" onclick="closeSheetOnBackdrop(event, 'sheet-new-service')">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 17px; font-weight: 800; color: #FFF;">+ Añadir Tipo de Corte</h3>
+          <span style="font-size: 11px; background: rgba(16, 185, 129, 0.2); color: #34D399; padding: 2px 8px; border-radius: 10px;">Se activa en WhatsApp</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted);">Define el nombre, duración del slot y precio que verán tus clientes:</p>
+
+        <form onsubmit="handleNewServiceSubmit(event)" style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Nombre del Corte o Ritual *</label>
+            <input type="text" id="srv-name-input" required placeholder="Ej: Taper Fade con Diseño o Barba Spa" style="width: 100%; padding: 11px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 12px; color: #FFF; font-size: 14px; margin-top: 4px; outline: none;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Duración (Minutos) *</label>
+              <input type="number" id="srv-duration-input" required min="15" max="180" step="5" value="40" style="width: 100%; padding: 11px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 12px; color: #FFF; font-size: 14px; margin-top: 4px; outline: none;">
+              <span style="font-size: 10px; color: var(--gold-primary); margin-top: 2px; display: block;">+10 min buffer automático</span>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Precio en Pesos ($) *</label>
+              <input type="number" id="srv-price-input" required min="5000" step="1000" value="35000" style="width: 100%; padding: 11px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 12px; color: #FFF; font-size: 14px; margin-top: 4px; outline: none;">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button type="button" class="mobile-btn mobile-btn-surface" onclick="closeSheet('sheet-new-service')">Cancelar</button>
+            <button type="submit" class="mobile-btn mobile-btn-gold">Guardar y Publicar</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- ==================================================================== -->
     <!-- SLIDE-UP BOTTOM SHEET: DETALLE DE CITA -->
     <!-- ==================================================================== -->
     <div class="bottom-sheet-backdrop" id="sheet-app-details" onclick="closeSheetOnBackdrop(event, 'sheet-app-details')">
-      <div class="bottom-sheet" id="sheet-app-content">
-        <!-- Inyectado dinámicamente -->
-      </div>
-    </div>
-
-    <!-- ==================================================================== -->
-    <!-- SLIDE-UP BOTTOM SHEET: CAMBIAR DE BARBERO -->
-    <!-- ==================================================================== -->
-    <div class="bottom-sheet-backdrop" id="sheet-barber-switcher" onclick="closeSheetOnBackdrop(event, 'sheet-barber-switcher')">
-      <div class="bottom-sheet">
-        <div class="sheet-handle"></div>
-        <h3 style="font-size: 17px; font-weight: 700; color: #FFF; margin-bottom: 4px;">Seleccionar Barbero</h3>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Visualiza la agenda y comisiones del barbero seleccionado:</p>
-        
-        <div id="barber-switcher-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
-      </div>
+      <div class="bottom-sheet" id="sheet-app-content"></div>
     </div>
 
     <!-- ==================================================================== -->
@@ -869,7 +767,7 @@
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div>
-              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Servicio</label>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tipo de Corte</label>
               <select id="m-new-service" style="width: 100%; padding: 10px 8px; background: #1E293B; border: 1px solid var(--border-subtle); border-radius: 10px; color: #FFF; font-size: 13px; margin-top: 4px;"></select>
             </div>
 
@@ -890,11 +788,16 @@
   </div>
 
   <script>
-    // Conexión WebSocket
     const socket = io();
     socket.on('dashboard:refresh', () => {
       loadDashboardData();
       showMobileToast('⚡ Turno sincronizado en vivo vía WhatsApp');
+    });
+
+    socket.on('services:updated', () => {
+      loadServices();
+      loadDashboardData();
+      showMobileToast('✂️ Catálogo de cortes actualizado');
     });
 
     socket.on('appointment:updated', (data) => {
@@ -904,41 +807,34 @@
 
     socket.on('whatsapp:reminder_sent', (data) => {
       injectReminderIntoMobileChat(data.message);
-      showMobileToast('🔔 Recordatorio T-2h disparado al WhatsApp');
+      showMobileToast('🔔 Recordatorio T-2h disparado');
     });
 
-    // Estado de la App Móvil
     let dashboardState = null;
-    let selectedBarberId = 'barber-1';
     let selectedDate = new Date().toISOString().split('T')[0];
 
-    // Reloj iOS en vivo
     function updateClock() {
       const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('mobile-clock').innerText = `${h}:${m}`;
+      document.getElementById('mobile-clock').innerText = 
+        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Cambiar Pestañas de la Navegación Inferior
     function switchMobileTab(tabName) {
-      const tabs = ['agenda', 'whatsapp', 'earnings', 'engine'];
+      const tabs = ['agenda', 'services', 'whatsapp', 'earnings'];
       tabs.forEach(t => {
-        document.getElementById(`tab-${t}-view`).style.display = t === tabName ? (t === 'whatsapp' ? 'flex' : 'flex') : 'none';
+        document.getElementById(`tab-${t}-view`).style.display = t === tabName ? 'flex' : 'none';
         document.getElementById(`nav-btn-${t}`).className = 'nav-item' + (t === tabName ? ' active' : '');
       });
 
+      if (tabName === 'services') loadServices();
       if (tabName === 'earnings') renderEarningsView();
-      if (tabName === 'engine') loadEngineSlotsView();
     }
 
-    // Inicializar Carrusel de Días
     function buildDayCarousel() {
       const container = document.getElementById('mobile-day-carousel');
       container.innerHTML = '';
-
       const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
       const today = new Date();
 
@@ -965,7 +861,6 @@
       }
     }
 
-    // Cargar Datos del Servidor
     async function loadDashboardData() {
       try {
         const res = await fetch(`/api/dashboard/today?date=${selectedDate}`);
@@ -973,32 +868,19 @@
         dashboardState = data;
         renderMobileView(data);
       } catch (e) {
-        console.error('Error cargando datos móviles:', e);
+        console.error(e);
       }
     }
 
     function renderMobileView(data) {
-      const currentBarber = data.barbers.find(b => b.id === selectedBarberId) || data.barbers[0];
-      selectedBarberId = currentBarber.id;
+      const apps = data.appointments || [];
+      const activeApps = apps.filter(a => a.status !== 'cancelled');
 
-      // Header Bar
-      document.getElementById('current-barber-avatar').innerText = currentBarber.name.substring(0, 2).toUpperCase();
-      document.getElementById('current-barber-avatar').style.background = currentBarber.colorTag;
-      document.getElementById('current-barber-name').innerText = currentBarber.name.split(' ')[0] + ' ' + (currentBarber.name.split(' ')[1] || '');
-
-      // Citas asignadas a este barbero
-      const barberApps = data.appointments.filter(a => a.barberId === currentBarber.id);
-      const activeApps = barberApps.filter(a => a.status !== 'cancelled');
-
-      // Métricas
-      const grossRevenue = activeApps.reduce((sum, a) => sum + a.totalPrice, 0);
-      const myCommission = Math.round((grossRevenue * currentBarber.commissionPercentage) / 100);
-
-      document.getElementById('mobile-m-revenue').innerText = `$${myCommission.toLocaleString('es-CO')}`;
+      document.getElementById('mobile-m-revenue').innerText = `$${data.metrics.totalRevenue.toLocaleString('es-CO')}`;
       document.getElementById('mobile-m-bookings').innerText = activeApps.length;
       document.getElementById('turnos-count-label').innerText = `${activeApps.length} citas`;
 
-      // Hero: Próximo Cliente Inmediato
+      // Hero: Siguiente Cliente
       const heroContainer = document.getElementById('hero-next-up');
       const nextApp = activeApps.find(a => a.status === 'confirmed' || a.status === 'pending');
 
@@ -1016,7 +898,7 @@
           <div>
             <div class="next-up-client">${nextApp.clientName}</div>
             <div class="next-up-service">
-              <i class="fa-solid fa-scissors" style="color: ${currentBarber.colorTag};"></i>
+              <i class="fa-solid fa-scissors" style="color: var(--gold-primary);"></i>
               ${nextApp.serviceName} (${nextApp.serviceDuration} min) • $${nextApp.totalPrice.toLocaleString('es-CO')}
             </div>
           </div>
@@ -1038,17 +920,17 @@
       const feed = document.getElementById('mobile-appointments-feed');
       feed.innerHTML = '';
 
-      if (barberApps.length === 0) {
+      if (apps.length === 0) {
         feed.innerHTML = `
           <div style="text-align: center; color: var(--text-muted); padding: 30px; background: var(--bg-surface); border-radius: 16px; border: 1px dashed var(--border-subtle);">
             <i class="fa-regular fa-calendar-xmark" style="font-size: 24px; margin-bottom: 8px; opacity: 0.5;"></i>
             <div>Sin citas para este día.</div>
-            <div style="font-size: 11px; margin-top: 4px; color: var(--gold-primary);">Disponibilidad 100% libre para el Bot</div>
+            <div style="font-size: 11px; margin-top: 4px; color: var(--gold-primary);">Disponibilidad 100% libre en WhatsApp</div>
           </div>
         `;
       }
 
-      const sorted = [...barberApps].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+      const sorted = [...apps].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
       sorted.forEach((app, idx) => {
         const start = new Date(app.startTime);
@@ -1058,7 +940,6 @@
 
         const card = document.createElement('div');
         card.className = 'mobile-app-card';
-        card.style.borderLeftColor = currentBarber.colorTag;
         card.onclick = () => openAppointmentDetailsSheet(app);
 
         card.innerHTML = `
@@ -1090,7 +971,6 @@
 
         feed.appendChild(card);
 
-        // Bloque de almuerzo visual
         if (start.getHours() <= 12 && (!sorted[idx + 1] || new Date(sorted[idx + 1].startTime).getHours() >= 14)) {
           const lunch = document.createElement('div');
           lunch.className = 'mobile-lunch-card';
@@ -1099,7 +979,7 @@
         }
       });
 
-      // Llenar selects para modal de reserva
+      // Llenar select de servicios en modal
       const srvSelect = document.getElementById('m-new-service');
       if (srvSelect) {
         srvSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} ($${s.price.toLocaleString('es-CO')})</option>`).join('');
@@ -1114,7 +994,122 @@
       return '#F87171';
     }
 
-    // Bottom Sheets
+    // ========================================================================
+    // GESTIÓN DE CORTES (Añadir y Listar)
+    // ========================================================================
+    async function loadServices() {
+      const container = document.getElementById('m-services-list');
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Cargando catálogo...</div>';
+
+      try {
+        const res = await fetch('/api/services');
+        const data = await res.json();
+        
+        container.innerHTML = '';
+        data.services.forEach(s => {
+          const item = document.createElement('div');
+          item.className = 'service-item-card';
+          item.innerHTML = `
+            <div>
+              <div class="service-name-text">${s.name}</div>
+              <div class="service-meta-text"><i class="fa-regular fa-clock"></i> ${s.durationMinutes} minutos (+10m buffer)</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span class="service-price-pill">$${s.price.toLocaleString('es-CO')}</span>
+              <button onclick="deleteService('${s.id}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #FCA5A5; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">
+                <i class="fa-solid fa-trash" style="font-size: 11px;"></i>
+              </button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      } catch (e) {
+        container.innerHTML = '<div style="color: #F87171;">Error cargando servicios</div>';
+      }
+    }
+
+    function openNewServiceSheet() {
+      document.getElementById('sheet-new-service').classList.add('active');
+    }
+
+    async function handleNewServiceSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('srv-name-input').value;
+      const durationMinutes = document.getElementById('srv-duration-input').value;
+      const price = document.getElementById('srv-price-input').value;
+
+      try {
+        const res = await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, durationMinutes, price })
+        });
+
+        if (res.ok) {
+          closeSheet('sheet-new-service');
+          document.getElementById('srv-name-input').value = '';
+          loadServices();
+          loadDashboardData();
+          showMobileToast('✂️ ¡Nuevo corte añadido y publicado en WhatsApp!');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function deleteService(id) {
+      if (!confirm('¿Deseas eliminar este corte del catálogo?')) return;
+      try {
+        await fetch(`/api/services/${id}`, { method: 'DELETE' });
+        loadServices();
+        loadDashboardData();
+        showMobileToast('Corte eliminado');
+      } catch (e) {}
+    }
+
+    // ========================================================================
+    // GANANCIAS & CAJA
+    // ========================================================================
+    function renderEarningsView() {
+      const container = document.getElementById('m-earnings-breakdown');
+      const apps = dashboardState?.appointments || [];
+      const completed = apps.filter(a => a.status === 'completed' || a.status === 'confirmed');
+
+      const total = completed.reduce((sum, a) => sum + a.totalPrice, 0);
+      document.getElementById('earnings-total-val').innerText = `$${total.toLocaleString('es-CO')}`;
+
+      container.innerHTML = '';
+      if (completed.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Sin ingresos registrados hoy aún</div>';
+        return;
+      }
+
+      completed.forEach(a => {
+        const item = document.createElement('div');
+        item.style = `
+          background: var(--bg-surface);
+          border: 1px solid var(--border-subtle);
+          border-radius: 14px;
+          padding: 12px 14px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        `;
+        item.innerHTML = `
+          <div>
+            <div style="font-size: 14px; font-weight: 700; color: #FFF;">${a.serviceName}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${a.clientName}</div>
+          </div>
+          <div style="font-size: 15px; font-weight: 800; color: #34D399;">+$${a.totalPrice.toLocaleString('es-CO')}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // ========================================================================
+    // DETALLES Y CITAS RÁPIDAS
+    // ========================================================================
     function openAppointmentDetailsSheet(app) {
       const content = document.getElementById('sheet-app-content');
       content.innerHTML = `
@@ -1125,7 +1120,7 @@
         <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-top: 4px;">
           <div style="font-size: 14px; font-weight: 700; color: var(--gold-primary);">${app.serviceName}</div>
           <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Duración: ${app.serviceDuration} min • Precio: $${app.totalPrice.toLocaleString('es-CO')}</div>
-          <div style="font-size: 12px; color: #34D399; margin-top: 2px;">Tu comisión (${app.barberCommissionPct}%): $${(app.commissionAmount || 0).toLocaleString('es-CO')}</div>
+          <div style="font-size: 12px; color: #34D399; margin-top: 2px;">100% de ingreso para ti</div>
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -1146,46 +1141,7 @@
           </button>
         </div>
       `;
-
       document.getElementById('sheet-app-details').classList.add('active');
-    }
-
-    function openBarberSwitcherSheet() {
-      const container = document.getElementById('barber-switcher-list');
-      container.innerHTML = '';
-
-      dashboardState?.barbers?.forEach(b => {
-        const item = document.createElement('div');
-        item.style = `
-          padding: 12px 14px;
-          background: ${b.id === selectedBarberId ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
-          border: 1px solid ${b.id === selectedBarberId ? 'var(--gold-primary)' : 'var(--border-subtle)'};
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          cursor: pointer;
-        `;
-        item.onclick = () => {
-          selectedBarberId = b.id;
-          closeSheet('sheet-barber-switcher');
-          renderMobileView(dashboardState);
-        };
-
-        item.innerHTML = `
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: ${b.colorTag}; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 13px;">
-            ${b.name.substring(0, 2).toUpperCase()}
-          </div>
-          <div style="flex: 1;">
-            <div style="font-size: 14px; font-weight: 700; color: #FFF;">${b.name}</div>
-            <div style="font-size: 11px; color: var(--text-muted);">${b.commissionPercentage}% de comisión asignada</div>
-          </div>
-          ${b.id === selectedBarberId ? '<i class="fa-solid fa-circle-check" style="color: var(--gold-primary);"></i>' : ''}
-        `;
-        container.appendChild(item);
-      });
-
-      document.getElementById('sheet-barber-switcher').classList.add('active');
     }
 
     function openNewBookingSheet() {
@@ -1214,7 +1170,6 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            barberId: selectedBarberId,
             serviceId,
             clientName,
             clientPhone,
@@ -1246,9 +1201,7 @@
           closeSheet('sheet-app-details');
           loadDashboardData();
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
     }
 
     async function triggerReminder(id) {
@@ -1258,14 +1211,8 @@
       } catch (e) {}
     }
 
-    function triggerNextReminder() {
-      const app = dashboardState?.appointments?.find(a => a.status === 'confirmed');
-      if (app) triggerReminder(app.id);
-      else showMobileToast('No hay citas pendientes');
-    }
-
     // ========================================================================
-    // WHATSAPP BOT INTEGRADO EN APP MÓVIL
+    // WHATSAPP BOT DIRECTO PARA 1 BARBERO
     // ========================================================================
     const chatContainer = document.getElementById('m-wa-chat');
 
@@ -1364,7 +1311,7 @@
 
     async function runAutoBookingDemo() {
       chatContainer.innerHTML = '';
-      showMobileToast('🚀 Ejecutando Auto-Reserva en 3s...');
+      showMobileToast('🚀 Auto-Reserva directa con Mateo...');
       
       const res = await fetch('/api/whatsapp/simulate', {
         method: 'POST',
@@ -1375,92 +1322,20 @@
       appendMobileMessage('incoming', r1.body, r1.buttons, r1.sections);
 
       setTimeout(() => {
-        sendMobileListClick('SERVICE_srv-1', 'Corte Clásico & Fade Premium');
+        sendMobileListClick('SERVICE_srv-1', 'Corte Clásico & Fade Texturizado');
         setTimeout(() => {
-          sendMobileListClick('BARBER_barber-1', 'Mateo Silva');
+          const todayStr = new Date().toISOString().split('T')[0];
+          sendMobileButtonClick(`DATE_${todayStr}`, 'Hoy');
           setTimeout(() => {
-            const todayStr = new Date().toISOString().split('T')[0];
-            sendMobileButtonClick(`DATE_${todayStr}`, 'Hoy');
-            setTimeout(() => {
-              const slotBtn = chatContainer.querySelector('button[onclick*="SLOT_"]');
-              if (slotBtn) slotBtn.click();
-              else {
-                document.getElementById('m-wa-input').value = 'Julián Castro (Mobile Demo)';
-                sendMobileTextMessage();
-              }
-            }, 600);
+            const slotBtn = chatContainer.querySelector('button[onclick*="SLOT_"]');
+            if (slotBtn) slotBtn.click();
+            else {
+              document.getElementById('m-wa-input').value = 'Julián Castro (Mobile Demo)';
+              sendMobileTextMessage();
+            }
           }, 600);
         }, 600);
       }, 600);
-    }
-
-    // ========================================================================
-    // PESTAÑAS ADICIONALES (GANANCIAS & MOTOR)
-    // ========================================================================
-    async function renderEarningsView() {
-      const container = document.getElementById('m-earnings-list');
-      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Cargando...</div>';
-
-      const res = await fetch('/api/reports/commissions');
-      const data = await res.json();
-
-      let myCommissionTotal = 0;
-      let html = '';
-
-      data.report.forEach(r => {
-        if (r.barberId === selectedBarberId) myCommissionTotal = r.commissionEarned;
-
-        html += `
-          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 10px; height: 10px; border-radius: 50%; background: ${r.colorTag};"></div>
-              <div>
-                <div style="font-size: 14px; font-weight: 700; color: #FFF;">${r.barberName}</div>
-                <div style="font-size: 11px; color: var(--text-muted);">${r.totalAppointments} citas • ${r.commissionPercentage}% com.</div>
-              </div>
-            </div>
-
-            <div style="text-align: right;">
-              <div style="font-size: 14px; font-weight: 800; color: #60A5FA;">$${r.commissionEarned.toLocaleString('es-CO')}</div>
-              <div style="font-size: 10px; color: var(--text-muted);">Total: $${r.grossRevenue.toLocaleString('es-CO')}</div>
-            </div>
-          </div>
-        `;
-      });
-
-      document.getElementById('earnings-total-val').innerText = `$${myCommissionTotal.toLocaleString('es-CO')}`;
-      container.innerHTML = html;
-    }
-
-    async function loadEngineSlotsView() {
-      const container = document.getElementById('m-engine-slots-container');
-      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Calculando slots...</div>';
-
-      const res = await fetch(`/api/availability?serviceId=srv-1&date=${selectedDate}&barberId=${selectedBarberId}`);
-      const data = await res.json();
-      const slots = data.results[0]?.slots || [];
-
-      let html = '';
-      slots.forEach(s => {
-        html += `
-          <div style="
-            background: ${s.available ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'};
-            border: 1px solid ${s.available ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
-            border-radius: 12px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          ">
-            <span style="font-size: 13px; font-weight: 700; color: #FFF;">${s.formattedTime}</span>
-            <span style="font-size: 11px; font-weight: 700; color: ${s.available ? '#34D399' : '#F87171'};">
-              ${s.available ? '✓ DISPONIBLE' : '✕ OCUPADO'}
-            </span>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
     }
 
     function showMobileToast(msg) {
@@ -1487,12 +1362,11 @@
       }
     }
 
-    // Inicialización al cargar la ventana
     window.onload = () => {
       buildDayCarousel();
       loadDashboardData();
-      
-      // Saludo inicial en el chat móvil
+      loadServices();
+
       fetch('/api/whatsapp/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
