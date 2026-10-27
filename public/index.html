@@ -627,31 +627,66 @@
       <div id="m-services-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;"></div>
     </div>
 
-    <!-- VISTA 3: WHATSAPP BOT (CON RESERVAS DIRECTAS A MATEO) -->
+    <!-- VISTA 3: WHATSAPP BOT (ATENCIÓN PERSONALIZADA DIRECTA CON MATEO SILVA) -->
     <div class="mobile-scroll-container" id="tab-whatsapp-view" style="display: none; padding: 0 0 80px 0;">
       <div style="display: flex; flex-direction: column; height: 100%; background: #0B141A;">
-        <div style="background: #202C33; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; color: #000; font-size: 13px;">
-              <i class="fa-solid fa-scissors"></i>
+        
+        <!-- Cabecera de WhatsApp con Selector de Perfil del Cliente -->
+        <div style="background: #202C33; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; color: #000; font-size: 14px;">
+                <i class="fa-solid fa-scissors"></i>
+              </div>
+              <div>
+                <div style="font-size: 14px; font-weight: 700; color: #FFF;">Mateo Silva Studio</div>
+                <div style="font-size: 10px; color: #34D399;"><i class="fa-solid fa-circle-check"></i> Asistente Personal Activo 24/7</div>
+              </div>
             </div>
-            <div>
-              <div style="font-size: 14px; font-weight: 700; color: #FFF;">Mateo Silva Studio</div>
-              <div style="font-size: 11px; color: #8696A0;">Bot de Reservas Directas 24/7</div>
-            </div>
+
+            <button onclick="runAutoBookingDemo()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 5px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">
+              <i class="fa-solid fa-bolt"></i> Auto Demo
+            </button>
           </div>
 
-          <button onclick="runAutoBookingDemo()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">
-            <i class="fa-solid fa-bolt"></i> Demo 3s
+          <!-- Selector de Modo de Cliente (Para probar la personalización) -->
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.25); padding: 4px 8px; border-radius: 8px;">
+            <i class="fa-solid fa-user-tag" style="color: var(--gold-primary);"></i>
+            <span>Simular como:</span>
+            <select id="sim-client-select" onchange="switchSimulatedClient()" style="background: transparent; border: none; color: #FFF; font-size: 11px; font-weight: 700; outline: none; cursor: pointer;">
+              <option value="573001234567" style="background: #202C33;">David Rincón (Cliente Frecuente)</option>
+              <option value="573199998877" style="background: #202C33;">Nuevo Cliente Ocasional</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div id="m-wa-chat" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
+
+        <!-- Sugerencias Rápidas de Lenguaje Natural (Atención Personalizada) -->
+        <div style="background: #111B21; padding: 6px 10px; overflow-x: auto; display: flex; gap: 6px; border-top: 1px solid rgba(255,255,255,0.04); scrollbar-width: none;">
+          <button onclick="askQuickQuestion('¿Dónde queda la barbería?')" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #E2E8F0; padding: 4px 10px; border-radius: 14px; font-size: 11px; white-space: nowrap; cursor: pointer;">
+            📍 ¿Dónde queda?
+          </button>
+          <button onclick="askQuickQuestion('¿Qué precios tienen?')" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #E2E8F0; padding: 4px 10px; border-radius: 14px; font-size: 11px; white-space: nowrap; cursor: pointer;">
+            ✂️ Precios
+          </button>
+          <button onclick="askQuickQuestion('¿A qué hora atienden?')" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #E2E8F0; padding: 4px 10px; border-radius: 14px; font-size: 11px; white-space: nowrap; cursor: pointer;">
+            🕒 Horarios
+          </button>
+          <button onclick="askQuickQuestion('¿Tienes espacio hoy en la tarde?')" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #E2E8F0; padding: 4px 10px; border-radius: 14px; font-size: 11px; white-space: nowrap; cursor: pointer;">
+            ⚡ Espacio hoy tarde
+          </button>
+          <button onclick="askQuickQuestion('Quiero hablar con Mateo')" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #E2E8F0; padding: 4px 10px; border-radius: 14px; font-size: 11px; white-space: nowrap; cursor: pointer;">
+            💬 Hablar con Mateo
           </button>
         </div>
 
-        <div id="m-wa-chat" style="flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
-
+        <!-- Input Bar -->
         <div style="background: #202C33; padding: 8px 12px; display: flex; gap: 8px; align-items: center;">
-          <input type="text" id="m-wa-input" placeholder="Escribe un mensaje o tu nombre..." style="flex: 1; background: #2A3942; border: none; border-radius: 20px; padding: 8px 14px; color: #FFF; font-size: 13px; outline: none;" onkeypress="handleMobileKeyPress(event)">
-          <button onclick="sendMobileTextMessage()" style="width: 36px; height: 36px; border-radius: 50%; background: #00A884; border: none; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-            <i class="fa-solid fa-paper-plane" style="font-size: 12px;"></i>
+          <input type="text" id="m-wa-input" placeholder="Pregunta algo o escribe tu corte..." style="flex: 1; background: #2A3942; border: none; border-radius: 20px; padding: 9px 14px; color: #FFF; font-size: 13px; outline: none;" onkeypress="handleMobileKeyPress(event)">
+          <button onclick="sendMobileTextMessage()" style="width: 38px; height: 38px; border-radius: 50%; background: #00A884; border: none; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <i class="fa-solid fa-paper-plane" style="font-size: 13px;"></i>
           </button>
         </div>
       </div>
@@ -1257,6 +1292,28 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
+    let currentSimulatorPhone = '573001234567'; // Por defecto: David Rincón (Cliente Recurrente)
+
+    function switchSimulatedClient() {
+      const select = document.getElementById('sim-client-select');
+      currentSimulatorPhone = select.value;
+      chatContainer.innerHTML = '';
+      showMobileToast(`Cambiado a: ${select.options[select.selectedIndex].text}`);
+
+      fetch('/api/whatsapp/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: currentSimulatorPhone, type: 'text', text: 'hola' })
+      }).then(r => r.json()).then(reply => {
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
+      });
+    }
+
+    function askQuickQuestion(questionText) {
+      document.getElementById('m-wa-input').value = questionText;
+      sendMobileTextMessage();
+    }
+
     async function sendMobileTextMessage() {
       const inp = document.getElementById('m-wa-input');
       const text = inp.value.trim();
@@ -1268,7 +1325,7 @@
         const res = await fetch('/api/whatsapp/simulate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'text', text })
+          body: JSON.stringify({ from: currentSimulatorPhone, type: 'text', text })
         });
         const reply = await res.json();
         appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
@@ -1281,7 +1338,7 @@
         const res = await fetch('/api/whatsapp/simulate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'interactive_button', buttonId })
+          body: JSON.stringify({ from: currentSimulatorPhone, type: 'interactive_button', buttonId })
         });
         const reply = await res.json();
         appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
@@ -1294,7 +1351,7 @@
         const res = await fetch('/api/whatsapp/simulate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'interactive_list', listId })
+          body: JSON.stringify({ from: currentSimulatorPhone, type: 'interactive_list', listId })
         });
         const reply = await res.json();
         appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
@@ -1316,7 +1373,7 @@
       const res = await fetch('/api/whatsapp/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'text', text: 'reiniciar' })
+        body: JSON.stringify({ from: currentSimulatorPhone, type: 'text', text: 'reiniciar' })
       });
       const r1 = await res.json();
       appendMobileMessage('incoming', r1.body, r1.buttons, r1.sections);
@@ -1370,7 +1427,7 @@
       fetch('/api/whatsapp/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'text', text: 'hola' })
+        body: JSON.stringify({ from: currentSimulatorPhone, type: 'text', text: 'hola' })
       }).then(r => r.json()).then(reply => {
         appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
       });

@@ -1,6 +1,6 @@
 import { store } from '../../database/store';
 import { AvailabilityEngine } from '../availability/availability.engine';
-import { WhatsAppBookingContext, WhatsAppStep, Appointment } from '../../core/types';
+import { WhatsAppBookingContext, WhatsAppStep, Appointment, Client, Service } from '../../core/types';
 
 export interface WhatsAppIncomingMessage {
   from: string;
@@ -58,17 +58,41 @@ export class WhatsAppService {
     return session;
   }
 
+  /**
+   * Busca si el cliente ya es conocido y cuál fue su último corte
+   */
+  private getClientHistory(phone: string): { client?: Client; lastService?: Service } {
+    const client = store.clients.find((c) => c.whatsappPhone === phone);
+    if (!client) return {};
+
+    const lastApp = store.appointments
+      .filter((a) => a.clientId === client.id && a.status !== 'cancelled')
+      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())[0];
+
+    const lastService = lastApp ? store.services.find((s) => s.id === lastApp.serviceId) : undefined;
+    return { client, lastService };
+  }
+
+  /**
+   * Procesa mensajes con Comprensión de Lenguaje Natural (NLU) y Atención Personalizada
+   */
   public async handleIncomingMessage(
     tenantId: string,
     msg: WhatsAppIncomingMessage
   ): Promise<WhatsAppOutgoingMessage> {
     const session = this.getOrCreateSession(tenantId, msg.from);
     const tenant = store.tenants[0];
-    const barber = store.barbers[0]; // 1 Solo Barbero
-    const incomingText = (msg.text || '').trim().toLowerCase();
+    const barber = store.barbers[0]; // Mateo Silva
+    const rawText = (msg.text || '').trim();
+    const text = rawText.toLowerCase();
     const actionId = msg.buttonId || msg.listId || '';
 
-    // Manejo de confirmación o cancelación de recordatorio Anti-No-Show (T-2h)
+    const { client, lastService } = this.getClientHistory(msg.from);
+    const clientFirstName = client ? client.name.split(' ')[0] : '';
+
+    // ========================================================================
+    // 1. MANEJO DE RECORDATORIOS ANTI-NO-SHOW (T-2h)
+    // ========================================================================
     if (actionId.startsWith('CONFIRM_COMING_')) {
       const appId = actionId.replace('CONFIRM_COMING_', '');
       const app = store.appointments.find((a) => a.id === appId);
@@ -78,7 +102,7 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: `💈 ¡Excelente! ${barber.name} ya tiene tu sillón listo y reservado. Te esperamos puntualmente.`,
+          body: `💈 ¡Excelente${clientFirstName ? ' ' + clientFirstName : ''}! Mateo Silva ya tiene tu sillón preparado. Nos vemos en un rato.`,
         };
       }
     }
@@ -92,33 +116,134 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: `✅ Tu cita ha sido cancelada con éxito y el turno fue liberado. Agradecemos mucho tu aviso anticipado. ¡Esperamos verte pronto con ${barber.name}!`,
+          body: `✅ Turno cancelado con éxito${clientFirstName ? ', ' + clientFirstName : ''}. Liberamos el espacio inmediatamente. ¡Agradecemos mucho tu aviso previo! Escríbeme cuando quieras reagendar.`,
         };
       }
     }
 
-    // Reinicio
-    if (incomingText === 'reiniciar' || incomingText === 'menu' || (session.currentStep === 'IDLE' && actionId === '')) {
-      session.currentStep = 'IDLE';
-      session.contextData = {};
+    // ========================================================================
+    // 2. ATENCIÓN PERSONALIZADA / LENGUAJE NATURAL (FAQ & Consultas)
+    // ========================================================================
+    
+    // A) Pregunta por Ubicación / Dirección
+    if (text.includes('donde') || text.includes('ubicacion') || text.includes('direccion') || text.includes('queda') || text.includes('como llegar')) {
+      return {
+        to: msg.from,
+        type: 'interactive_buttons',
+        header: '📍 Ubicación de Mateo Silva Studio',
+        body: `¡Hola${clientFirstName ? ' ' + clientFirstName : ''}! Estamos ubicados en la *Carrera 15 # 85-30, Zona Rosa, Bogotá* (a pocos pasos del parque).\n\n🚗 Contamos con convenio de parqueadero privado al frente del estudio.\n\n¿Deseas que te aparte un turno?`,
+        buttons: [
+          { id: 'INTENT_BOOK', title: '📅 Agendar Cita' },
+          { id: 'INTENT_PRICES', title: '✂️ Ver Cortes & Precios' },
+        ],
+      };
     }
 
-    switch (session.currentStep) {
-      // PASO 1: Bienvenida y Selección de Tipo de Corte (Catálogo Dinámico)
-      case 'IDLE': {
-        session.currentStep = 'AWAITING_SERVICE';
-        const activeServices = store.services.filter((s) => s.isActive);
+    // B) Pregunta por Precios o Catálogo
+    if (text.includes('precio') || text.includes('cuanto vale') || text.includes('cuanto cuesta') || text.includes('costo') || text.includes('tarifas') || actionId === 'INTENT_PRICES') {
+      const servicesList = store.services
+        .filter((s) => s.isActive)
+        .map((s) => `• *${s.name}*: $${s.price.toLocaleString('es-CO')} (${s.durationMinutes} min)`)
+        .join('\n');
 
+      return {
+        to: msg.from,
+        type: 'interactive_buttons',
+        header: '💈 Catálogo de Cortes & Servicios',
+        body: `Con gusto${clientFirstName ? ' ' + clientFirstName : ''}, estos son los cortes y rituales que realiza Mateo Silva:\n\n${servicesList}\n\n✨ *Recomendación del Barbero:* Nuestro servicio estrella es el *Combo VIP con Toalla Caliente* ($55,000).\n\n¿Cuál te llama la atención?`,
+        buttons: [
+          { id: 'INTENT_BOOK', title: '📅 Ver Horarios Libres' },
+          { id: 'INTENT_TALK_HUMAN', title: '💬 Hablar con Mateo' },
+        ],
+      };
+    }
+
+    // C) Pregunta por Horarios de Atención
+    if (text.includes('horario') || text.includes('a que hora') || text.includes('abren') || text.includes('cierran') || text.includes('atienden')) {
+      return {
+        to: msg.from,
+        type: 'interactive_buttons',
+        header: '🕒 Horarios de Atención',
+        body: `Atendemos de *Lunes a Sábado de 9:00 AM a 7:00 PM*, exclusivamente con cita previa para garantizarte una atención sin esperas y con el tiempo que tu corte merece.\n\n¿Para qué día buscas tu espacio?`,
+        buttons: [
+          { id: 'INTENT_BOOK_TODAY', title: '⚡ Espacio para Hoy' },
+          { id: 'INTENT_BOOK_TOMORROW', title: '📅 Para Mañana' },
+        ],
+      };
+    }
+
+    // D) Solicitud de Hablar con Mateo en Persona / Asistencia Humana
+    if (text.includes('humano') || text.includes('persona') || text.includes('hablar con mateo') || actionId === 'INTENT_TALK_HUMAN') {
+      return {
+        to: msg.from,
+        type: 'text',
+        body: `📲 ¡Listo${clientFirstName ? ' ' + clientFirstName : ''}! Le acabo de notificar a Mateo en su app móvil que deseas consultarle algo personalmente. Te responderá en cuanto termine con el sillón actual.\n\nSi mientras tanto deseas asegurar tu horario antes de que se agote la agenda, solo escribe *"agendar"* o *"menú"*.`,
+      };
+    }
+
+    // E) Selección rápida del "Mismo de siempre" para clientes recurrentes
+    if (actionId === 'REBOOK_SAME' && lastService) {
+      session.contextData.serviceId = lastService.id;
+      session.contextData.serviceName = lastService.name;
+      session.contextData.serviceDuration = lastService.durationMinutes;
+      session.contextData.servicePrice = lastService.price;
+      session.contextData.clientName = client?.name;
+      session.contextData.clientId = client?.id;
+      session.currentStep = 'AWAITING_DATE';
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      return {
+        to: msg.from,
+        type: 'interactive_buttons',
+        header: `💈 ${lastService.name}`,
+        body: `¡Excelente elección! Vamos con tu *${lastService.name}* ($${lastService.price.toLocaleString('es-CO')}).\n\n¿Para cuándo lo agendamos?`,
+        buttons: [
+          { id: `DATE_${today.toISOString().split('T')[0]}`, title: 'Hoy' },
+          { id: `DATE_${tomorrow.toISOString().split('T')[0]}`, title: 'Mañana' },
+          { id: 'INTENT_OTHER_DATE', title: '📅 Otro día' },
+        ],
+      };
+    }
+
+    // ========================================================================
+    // 3. FLUJO CONVERSACIONAL DE RESERVA (FSM GUIADA + RECONOCIMIENTO)
+    // ========================================================================
+    
+    // Reinicio o primer mensaje
+    if (
+      text === 'reiniciar' || 
+      text === 'menu' || 
+      actionId === 'INTENT_BOOK' ||
+      (session.currentStep === 'IDLE' && actionId === '')
+    ) {
+      session.currentStep = 'AWAITING_SERVICE';
+      const activeServices = store.services.filter((s) => s.isActive);
+
+      // Saludo Personalizado si el cliente ya es conocido
+      if (client && lastService) {
         return {
           to: msg.from,
           type: 'interactive_list',
           header: `💈 ${tenant.name}`,
-          body: `¡Hola! Bienvenido al canal de reservas de *${barber.name}*. ¿Qué tipo de corte o servicio deseas agendar hoy?`,
-          footer: 'Selecciona una opción del catálogo',
+          body: `¡Qué tal *${clientFirstName}*, mi hermano! Qué gusto saludarte de nuevo 💈.\n\nTu último corte fue *${lastService.name}*. ¿Agendamos ese mismo o prefieres elegir otro servicio del catálogo?`,
+          footer: 'Toca abajo para elegir tu corte',
           sections: [
             {
-              title: 'Cortes & Servicios Disponibles',
-              rows: activeServices.map((s) => ({
+              title: '⭐ Tu Corte Habitual',
+              rows: [
+                {
+                  id: `SERVICE_${lastService.id}`,
+                  title: `⭐ Mismo de siempre: ${lastService.name}`,
+                  description: `${lastService.durationMinutes} min • $${lastService.price.toLocaleString('es-CO')}`,
+                },
+              ],
+            },
+            {
+              title: 'Catálogo Completo',
+              rows: activeServices.filter(s => s.id !== lastService.id).map((s) => ({
                 id: `SERVICE_${s.id}`,
                 title: s.name,
                 description: `${s.durationMinutes} min • $${s.price.toLocaleString('es-CO')}`,
@@ -128,34 +253,54 @@ export class WhatsAppService {
         };
       }
 
-      // PASO 2: Procesar Selección de Corte -> Pasar Directo a Fecha (Al ser 1 solo barbero)
+      // Saludo para cliente nuevo
+      return {
+        to: msg.from,
+        type: 'interactive_list',
+        header: `💈 ${tenant.name}`,
+        body: `¡Hola! Bienvenido a la atención personalizada de *Mateo Silva (Master Barber)* 💈.\n\nPara brindarte el mejor servicio, ¿qué tipo de corte deseas agendar hoy?`,
+        footer: 'Selecciona una opción del catálogo',
+        sections: [
+          {
+            title: 'Cortes & Servicios Disponibles',
+            rows: activeServices.map((s) => ({
+              id: `SERVICE_${s.id}`,
+              title: s.name,
+              description: `${s.durationMinutes} min • $${s.price.toLocaleString('es-CO')}`,
+            })),
+          },
+        ],
+      };
+    }
+
+    switch (session.currentStep) {
+      // PASO 1: Procesar Selección de Corte
       case 'AWAITING_SERVICE': {
         if (!actionId.startsWith('SERVICE_')) {
-          return {
-            to: msg.from,
-            type: 'text',
-            body: '⚠️ Por favor selecciona uno de los tipos de corte de la lista interactiva.',
-          };
-        }
+          // Si el usuario escribió texto natural en vez de presionar el botón (ej: "quiero corte clasico" o "barba")
+          const matchedService = store.services.find(s => 
+            s.isActive && (text.includes(s.name.toLowerCase()) || text.includes('corte') || text.includes('barba') || text.includes('fade'))
+          ) || store.services[0];
 
-        const serviceId = actionId.replace('SERVICE_', '');
-        const service = store.services.find((s) => s.id === serviceId);
-        if (!service) {
-          session.currentStep = 'IDLE';
-          return { to: msg.from, type: 'text', body: 'Corte no encontrado. Escribe "Hola" para reiniciar.' };
+          session.contextData.serviceId = matchedService.id;
+          session.contextData.serviceName = matchedService.name;
+          session.contextData.serviceDuration = matchedService.durationMinutes;
+          session.contextData.servicePrice = matchedService.price;
+        } else {
+          const serviceId = actionId.replace('SERVICE_', '');
+          const service = store.services.find((s) => s.id === serviceId);
+          if (!service) {
+            session.currentStep = 'IDLE';
+            return { to: msg.from, type: 'text', body: 'Corte no encontrado. Escribe "Hola" para reiniciar.' };
+          }
+          session.contextData.serviceId = service.id;
+          session.contextData.serviceName = service.name;
+          session.contextData.serviceDuration = service.durationMinutes;
+          session.contextData.servicePrice = service.price;
         }
-
-        session.contextData.serviceId = service.id;
-        session.contextData.serviceName = service.name;
-        session.contextData.serviceDuration = service.durationMinutes;
-        session.contextData.servicePrice = service.price;
-        // Asignación directa al único barbero
-        session.contextData.barberId = barber.id;
-        session.contextData.barberName = barber.name;
 
         session.currentStep = 'AWAITING_DATE';
 
-        // Fechas rápidas: Hoy, Mañana, Pasado Mañana
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
@@ -171,7 +316,7 @@ export class WhatsAppService {
           to: msg.from,
           type: 'interactive_buttons',
           header: 'Elige el Día',
-          body: `Has elegido: *${service.name}* ($${service.price.toLocaleString('es-CO')}).\n\n¿Para qué día deseas tu cita con *${barber.name}*?`,
+          body: `Perfecto${clientFirstName ? ' ' + clientFirstName : ''}, agendaremos: *${session.contextData.serviceName}* ($${session.contextData.servicePrice?.toLocaleString('es-CO')}).\n\n¿Para qué día deseas tu cita con *${barber.name}*?`,
           buttons: [
             { id: `DATE_${today.toISOString().split('T')[0]}`, title: `Hoy (${formatDateBtn(today)})` },
             { id: `DATE_${tomorrow.toISOString().split('T')[0]}`, title: `Mañana (${formatDateBtn(tomorrow)})` },
@@ -180,22 +325,26 @@ export class WhatsAppService {
         };
       }
 
-      // PASO 3: Calcular Horarios Libres con AvailabilityEngine
+      // PASO 2: Procesar Fecha -> Calcular Slots Disponibles con AvailabilityEngine
       case 'AWAITING_DATE': {
-        if (!actionId.startsWith('DATE_')) {
-          return {
-            to: msg.from,
-            type: 'text',
-            body: '⚠️ Por favor pulsa uno de los botones con la fecha deseada.',
-          };
+        let selectedDate = '';
+        if (actionId.startsWith('DATE_')) {
+          selectedDate = actionId.replace('DATE_', '');
+        } else {
+          // Búsqueda inteligente por texto ("hoy", "mañana")
+          const today = new Date();
+          if (text.includes('mañana')) {
+            today.setDate(today.getDate() + 1);
+            selectedDate = today.toISOString().split('T')[0];
+          } else {
+            selectedDate = today.toISOString().split('T')[0];
+          }
         }
 
-        const selectedDate = actionId.replace('DATE_', '');
         session.contextData.date = selectedDate;
+        const service = store.services.find((s) => s.id === session.contextData.serviceId) || store.services[0];
 
-        const service = store.services.find((s) => s.id === session.contextData.serviceId)!;
-
-        // Calcular turnos disponibles para el único barbero
+        // Ejecutar AvailabilityEngine para Mateo Silva
         const slots = this.availabilityEngine.calculateSlotsForBarber({
           barber,
           service,
@@ -212,11 +361,11 @@ export class WhatsAppService {
           return {
             to: msg.from,
             type: 'interactive_buttons',
-            header: 'Sin Turnos Libres',
-            body: `Lo sentimos, todos los turnos para el día ${selectedDate} están ocupados.\n\n¿Deseas probar otra fecha?`,
+            header: 'Sin Cupos Libres',
+            body: `Lo sentimos${clientFirstName ? ' ' + clientFirstName : ''}, todos los turnos para el ${selectedDate} están ocupados.\n\n¿Deseas probar otra fecha?`,
             buttons: [
-              { id: 'RETRY_DATE', title: '📅 Probar otra fecha' },
-              { id: 'MENU', title: '🔄 Volver al inicio' },
+              { id: 'INTENT_BOOK', title: '📅 Probar otra fecha' },
+              { id: 'INTENT_TALK_HUMAN', title: '💬 Hablar con Mateo' },
             ],
           };
         }
@@ -228,29 +377,25 @@ export class WhatsAppService {
           to: msg.from,
           type: 'interactive_list',
           header: 'Horarios Disponibles',
-          body: `📅 *Fecha:* ${selectedDate}\n✂️ *Corte:* ${service.name} (${service.durationMinutes} min)\n💈 *Barbero:* ${barber.name}\n\nSelecciona la hora que prefieras:`,
-          footer: 'Turnos con 10m de buffer entre clientes',
+          body: `📅 *Fecha:* ${selectedDate}\n✂️ *Corte:* ${service.name} (${service.durationMinutes} min)\n💈 *Barbero:* ${barber.name}\n\nSelecciona el horario que más te convenga:`,
+          footer: 'Turnos calculados en tiempo real',
           sections: [
             {
-              title: 'Horarios Disponibles',
+              title: 'Horarios Libres de Mateo',
               rows: slotsToShow.map((s, idx) => ({
                 id: `SLOT_${idx}_${encodeURIComponent(s.startTime)}_${encodeURIComponent(s.endTime)}`,
                 title: s.formattedTime,
-                description: `${service.durationMinutes} min (+10m limpieza)`,
+                description: `${service.durationMinutes} min (+10m preparación)`,
               })),
             },
           ],
         };
       }
 
-      // PASO 4: Selección de Slot -> Pedir Nombre
+      // PASO 3: Selección de Slot -> Reconocimiento de Nombre
       case 'AWAITING_SLOT': {
         if (!actionId.startsWith('SLOT_')) {
-          if (actionId === 'RETRY_DATE') {
-            session.currentStep = 'AWAITING_DATE';
-            return this.handleIncomingMessage(tenantId, { ...msg, buttonId: 'SERVICE_' + session.contextData.serviceId });
-          }
-          return { to: msg.from, type: 'text', body: '⚠️ Por favor selecciona uno de los horarios libres de la lista.' };
+          return { to: msg.from, type: 'text', body: '⚠️ Por favor selecciona uno de los horarios libres de la lista tocando el botón.' };
         }
 
         const parts = actionId.split('_');
@@ -260,14 +405,10 @@ export class WhatsAppService {
         session.contextData.slotStartTime = startISO;
         session.contextData.slotEndTime = endISO;
 
-        // Comprobar cliente existente
-        const existingClient = store.clients.find(
-          (c) => c.whatsappPhone === msg.from
-        );
-
-        if (existingClient) {
-          session.contextData.clientName = existingClient.name;
-          session.contextData.clientId = existingClient.id;
+        // Si ya conocemos al cliente por su número, confirmamos directamente
+        if (client) {
+          session.contextData.clientName = client.name;
+          session.contextData.clientId = client.id;
           return await this.confirmAndBookAppointment(tenantId, session, msg.from);
         }
 
@@ -275,22 +416,22 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: `🕒 Horario apartado temporalmente.\n\nPara finalizar tu reserva con ${barber.name}, por favor *escribe tu Nombre y Apellido*:`,
+          body: `🕒 Horario apartado temporalmente.\n\nPara personalizar tu cita con Mateo Silva, por favor *escribe tu Nombre y Apellido*:`,
         };
       }
 
-      // PASO 5: Capturar Nombre -> Confirmación Atómica
+      // PASO 4: Capturar Nombre del Cliente Nuevo
       case 'AWAITING_NAME': {
-        const name = (msg.text || '').trim();
+        const name = rawText;
         if (name.length < 3) {
           return {
             to: msg.from,
             type: 'text',
-            body: '⚠️ Por favor ingresa un nombre válido (mínimo 3 caracteres):',
+            body: '⚠️ Por favor ingresa tu nombre completo para anotarte en la agenda de Mateo:',
           };
         }
 
-        const newClient = {
+        const newClient: Client = {
           id: `client-${Date.now()}`,
           tenantId,
           name,
@@ -312,11 +453,14 @@ export class WhatsAppService {
         return {
           to: msg.from,
           type: 'text',
-          body: 'Sesión finalizada. Envía "Hola" para agendar un nuevo corte.',
+          body: 'Sesión finalizada. Envía "Hola" para consultar horarios o agendar un nuevo corte con Mateo.',
         };
     }
   }
 
+  /**
+   * Reserva Atómica con Mutex y Mensaje de Confirmación Cálido
+   */
   private async confirmAndBookAppointment(
     tenantId: string,
     session: any,
@@ -343,7 +487,7 @@ export class WhatsAppService {
         return {
           to: phone,
           type: 'text',
-          body: `⚠️ Lo sentimos, ese turno acaba de ser tomado por otro cliente. Por favor elige otro horario.`,
+          body: `⚠️ Lo sentimos, ese turno acaba de ser tomado por otro cliente. Por favor elige otro horario disponible.`,
         };
       }
 
@@ -357,7 +501,7 @@ export class WhatsAppService {
         endTime,
         totalPrice: ctx.servicePrice || 35000,
         status: 'confirmed',
-        notes: `Agendado automáticamente vía WhatsApp por ${ctx.clientName}`,
+        notes: `Agendado con atención personalizada para ${ctx.clientName}`,
         reminderSentAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -383,15 +527,15 @@ export class WhatsAppService {
       return {
         to: phone,
         type: 'text',
-        body: `🎉 *¡CITA CONFIRMADA CON ÉXITO!* 💈\n\n` +
+        body: `🎉 *¡CITA AGENDADA CON ÉXITO!* 💈\n\n` +
           `👤 *Cliente:* ${ctx.clientName}\n` +
           `✂️ *Corte:* ${ctx.serviceName}\n` +
           `💈 *Barbero:* ${barber.name}\n` +
           `📅 *Fecha:* ${dateStr}\n` +
           `⏰ *Horario:* ${timeStr}\n` +
-          `💵 *Precio:* $${(ctx.servicePrice || 0).toLocaleString('es-CO')}\n\n` +
-          `📍 *Ubicación:* Carrera 15 # 85-30, Bogotá\n\n` +
-          `*Recordatorio Anti-Ausentismo:* Te enviaremos un mensaje interactivo 2 horas antes de tu turno para reconfirmar. ¡Te esperamos!`,
+          `💵 *Valor:* $${(ctx.servicePrice || 0).toLocaleString('es-CO')}\n\n` +
+          `📍 *Ubicación:* Carrera 15 # 85-30, Zona Rosa, Bogotá\n\n` +
+          `*Atención Personalizada:* Mateo Silva ya tiene tu espacio reservado. Te enviaremos un recordatorio interactivo 2 horas antes de tu turno. ¡Te esperamos para brindarte la mejor experiencia!`,
       };
     });
   }
@@ -407,11 +551,13 @@ export class WhatsAppService {
     if (!client) return null;
     app.reminderSentAt = new Date();
 
+    const clientFirstName = client.name.split(' ')[0];
+
     return {
       to: client.whatsappPhone,
       type: 'interactive_buttons',
       header: '⏰ Recordatorio de Cita (En 2 Horas)',
-      body: `Hola *${client.name}*, tu cita para *${service?.name || 'Corte'}* con *${barber.name}* es en 2 horas.\n\n¿Confirmas tu asistencia?`,
+      body: `¡Hola *${clientFirstName}*! Tu cita para *${service?.name || 'Corte'}* con *${barber.name}* es en 2 horas.\n\n¿Nos confirmas que vienes en camino?`,
       footer: 'Si cancelas ahora, liberarás el turno para otro cliente',
       buttons: [
         { id: `CONFIRM_COMING_${app.id}`, title: '✅ Voy en camino' },
