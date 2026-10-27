@@ -2,13 +2,19 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Gentleman's Cut • SaaS B2B Barbershop & WhatsApp Engine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080C14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BarberPro">
+  <link rel="manifest" href="/manifest.json">
+  
+  <title>BarberPro Mobile • The Gentleman's Cut</title>
   
   <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,22 +24,19 @@
 
   <style>
     :root {
-      --bg-dark: #080C14;
-      --bg-surface: #0E1422;
-      --bg-card: rgba(18, 26, 44, 0.7);
-      --bg-card-hover: rgba(26, 37, 62, 0.85);
-      --border-glass: rgba(255, 255, 255, 0.08);
-      --border-gold: rgba(245, 158, 11, 0.35);
+      --bg-mobile: #080C14;
+      --bg-surface: #0E1524;
+      --bg-card: rgba(19, 27, 45, 0.85);
+      --bg-card-active: #192338;
+      --border-subtle: rgba(255, 255, 255, 0.08);
       --gold-primary: #F59E0B;
-      --gold-hover: #D97706;
-      --gold-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%);
-      --text-main: #F3F4F6;
+      --gold-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      --text-main: #F8FAFC;
       --text-muted: #94A3B8;
-      --accent-blue: #3B82F6;
       --accent-emerald: #10B981;
-      --accent-amber: #F59E0B;
+      --accent-blue: #3B82F6;
       --accent-rose: #EF4444;
-      --accent-purple: #8B5CF6;
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
     }
 
     * {
@@ -41,17 +44,17 @@
       margin: 0;
       padding: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
-      background-color: var(--bg-dark);
+      background-color: #03060B;
       color: var(--text-main);
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.05) 0%, transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.05) 0%, transparent 45%);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       overflow-x: hidden;
     }
 
@@ -59,1450 +62,1177 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Glassmorphism */
-    .glass-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Desktop Viewport Simulator Frame */
+    .app-viewport {
+      width: 100%;
+      max-width: 440px;
+      height: 100vh;
+      max-height: 920px;
+      background: var(--bg-mobile);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.85);
+      border: 8px solid #1E293B;
+      border-radius: 44px;
     }
 
-    .glass-card:hover {
-      border-color: rgba(255, 255, 255, 0.16);
+    @media (max-width: 600px) {
+      body {
+        align-items: stretch;
+      }
+      .app-viewport {
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100%;
+        border: none;
+        border-radius: 0;
+      }
+      .desktop-banner {
+        display: none !important;
+      }
     }
 
-    /* Header Bar */
-    header {
-      background: rgba(10, 15, 26, 0.88);
-      backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--border-glass);
-      padding: 12px 28px;
+    /* Desktop Top Bar (Device Switcher & Demo Helper) */
+    .desktop-banner {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 30px;
+      padding: 6px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 100;
+      font-size: 13px;
+    }
+
+    /* iOS Native Notch & Status Bar */
+    .mobile-status-bar {
+      height: 44px;
+      padding: 10px 24px 0 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 60;
+      font-size: 13px;
+      font-weight: 700;
+      color: #E2E8F0;
+      z-index: 50;
+      background: var(--bg-mobile);
     }
 
-    .brand-container {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo-badge {
-      width: 44px;
-      height: 44px;
-      background: var(--gold-gradient);
-      border-radius: 12px;
+    .mobile-notch {
+      width: 120px;
+      height: 22px;
+      background: #000;
+      border-radius: 20px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      color: #080C14;
-      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
-      animation: gentleFloat 4s ease-in-out infinite alternate;
+      gap: 6px;
+    }
+    .dynamic-island-cam {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0B132B;
     }
 
-    @keyframes gentleFloat {
-      0% { transform: translateY(0px); }
-      100% { transform: translateY(-3px); }
+    /* Mobile Header */
+    .mobile-header {
+      padding: 10px 18px 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-mobile);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 40;
     }
 
-    .brand-text h1 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
+    .barber-selector-btn {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px 6px 6px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    .barber-selector-btn:active { transform: scale(0.97); }
 
-    .brand-text span {
-      font-size: 11px;
-      color: var(--gold-primary);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-weight: 700;
-    }
-
-    /* Navigation Tabs */
-    .nav-tabs {
+    .header-barber-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       display: flex;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--border-glass);
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      color: #000;
+    }
+
+    .header-barber-info {
+      text-align: left;
+    }
+    .header-barber-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .header-barber-status {
+      font-size: 10px;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
       gap: 4px;
     }
 
-    .nav-tab-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      border: none;
-      background: transparent;
+    .header-actions-mobile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-circle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--text-muted);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 14px;
       transition: all 0.2s;
+      position: relative;
     }
-
-    .nav-tab-btn.active {
-      background: rgba(255, 255, 255, 0.1);
-      color: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-
-    .nav-tab-btn:hover:not(.active) {
-      color: #FFFFFF;
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--accent-emerald);
-    }
-
-    .pulse-dot {
+    .icon-circle-btn:active { transform: scale(0.94); background: rgba(255, 255, 255, 0.12); }
+    
+    .badge-dot {
       width: 8px;
       height: 8px;
-      background: var(--accent-emerald);
+      background: var(--gold-primary);
       border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent-emerald);
-      animation: pulse 2s infinite;
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      box-shadow: 0 0 6px var(--gold-primary);
     }
 
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.4); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.8; }
-    }
-
-    .btn {
-      padding: 9px 18px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 13px;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-gold {
-      background: var(--gold-gradient);
-      color: #080C14;
-      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
-    }
-    .btn-gold:hover {
-      filter: brightness(1.12);
-      transform: translateY(-1px);
-    }
-
-    .btn-outline {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-main);
-      border: 1px solid var(--border-glass);
-    }
-    .btn-outline:hover {
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    /* Main Container */
-    .dashboard-container {
-      max-width: 1780px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 28px;
+    /* Scrollable Mobile Body Content */
+    .mobile-scroll-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px 90px 16px;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 16px;
+      scrollbar-width: none;
     }
+    .mobile-scroll-container::-webkit-scrollbar { display: none; }
 
-    /* Date Controller Bar */
-    .date-control-bar {
+    /* Day Carousel Strip */
+    .day-carousel {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 20px;
-      background: rgba(18, 26, 44, 0.6);
-      border-radius: 14px;
-      border: 1px solid var(--border-glass);
-    }
-
-    .date-nav {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .date-indicator {
-      font-size: 16px;
-      font-weight: 700;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
       gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .day-carousel::-webkit-scrollbar { display: none; }
+
+    .day-chip {
+      flex: 0 0 auto;
+      width: 58px;
+      padding: 10px 4px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .day-chip:active { transform: scale(0.95); }
+
+    .day-chip.active {
+      background: var(--gold-gradient);
+      color: #080C14;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
     }
 
-    /* KPI Grid */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
+    .day-chip-name {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .day-chip-number {
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .day-chip-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+      margin: 0 auto;
+      opacity: 0.6;
     }
 
-    .kpi-card {
-      padding: 20px;
+    /* Hero Next Up Card */
+    .next-up-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(14, 21, 36, 0.9) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .next-up-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      position: relative;
-      overflow: hidden;
+      align-items: center;
     }
-
-    .kpi-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 90px;
-      height: 90px;
-      background: radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 70%);
-      border-radius: 0 0 0 90px;
-    }
-
-    .kpi-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-bottom: 8px;
-    }
-
-    .kpi-value {
-      font-size: 28px;
+    .next-up-tag {
+      font-size: 11px;
       font-weight: 800;
-      color: #FFFFFF;
-      letter-spacing: -0.5px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .countdown-pill {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+      padding: 3px 8px;
+      border-radius: 20px;
     }
 
-    .kpi-sub {
-      font-size: 12px;
-      margin-top: 6px;
+    .next-up-client {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFF;
+    }
+    .next-up-service {
+      font-size: 13px;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .kpi-icon {
-      width: 48px;
-      height: 48px;
+    .next-up-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .mobile-btn {
+      flex: 1;
+      padding: 10px;
       border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .mobile-btn:active { transform: scale(0.97); }
+
+    .mobile-btn-gold {
+      background: var(--gold-gradient);
+      color: #080C14;
+    }
+    .mobile-btn-emerald {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .mobile-btn-surface {
+      background: rgba(255, 255, 255, 0.06);
+      color: #FFF;
+      border: 1px solid var(--border-subtle);
     }
 
-    /* Layout Split: Timeline & WhatsApp Simulator */
-    .layout-split {
-      display: grid;
-      grid-template-columns: 1fr 430px;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width: 1380px) {
-      .layout-split {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Timeline Section */
-    .timeline-wrapper {
-      padding: 24px;
-    }
-
-    .timeline-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border-glass);
-    }
-
-    .timeline-header h2 {
-      font-size: 22px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .barbers-columns-grid {
+    /* Metric Cards Carousel (Touch Horizontal) */
+    .metrics-carousel {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    @media (max-width: 900px) {
-      .barbers-columns-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .barber-column {
-      background: rgba(12, 17, 30, 0.7);
-      border: 1px solid var(--border-glass);
-      border-radius: 14px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .barber-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .barber-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .barber-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #000;
-      font-size: 13px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-
-    .barber-name {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .barber-badge {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    /* Appointment Cards in Timeline */
-    .appointment-card {
-      background: rgba(22, 32, 54, 0.85);
-      border: 1px solid var(--border-glass);
-      border-left: 4px solid var(--accent-blue);
-      border-radius: 12px;
-      padding: 14px;
-      position: relative;
-      transition: all 0.22s ease;
-      display: flex;
-      flex-direction: column;
       gap: 8px;
+    }
+
+    .metric-mobile-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .metric-mobile-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 2px;
+    }
+    .metric-mobile-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Section Header */
+    .mobile-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    /* Timeline Appointment Card (Mobile) */
+    .mobile-app-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mobile-app-card:active {
+      background: var(--bg-card-active);
+      transform: scale(0.985);
     }
 
-    .appointment-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .app-time-row {
+    .mobile-card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
-    .app-time {
+    .mobile-time-badge {
       font-size: 12px;
       font-weight: 700;
       color: var(--gold-primary);
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
-    .status-pill {
+    .mobile-status-tag {
       font-size: 10px;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 20px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
-    .status-confirmed {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34D399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .status-pending {
-      background: rgba(245, 158, 11, 0.15);
-      color: #FBBF24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .status-completed {
-      background: rgba(59, 130, 246, 0.15);
-      color: #60A5FA;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-    }
-
-    .status-cancelled {
-      background: rgba(107, 114, 128, 0.2);
-      color: #9CA3AF;
-      border: 1px solid rgba(107, 114, 128, 0.3);
-      text-decoration: line-through;
-    }
-
-    .status-no_show {
-      background: rgba(239, 68, 68, 0.15);
-      color: #F87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .app-client {
-      font-size: 14px;
+    .mobile-client-name {
+      font-size: 15px;
       font-weight: 700;
-      color: #FFFFFF;
+      color: #FFF;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .app-service {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .app-footer {
+    .mobile-service-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .mobile-card-actions {
+      display: flex;
+      gap: 6px;
       padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .app-price {
-      font-size: 13px;
-      font-weight: 700;
-      color: #E2E8F0;
-    }
-
-    .app-actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .action-btn-sm {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--text-muted);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .action-btn-sm:hover {
-      background: rgba(255, 255, 255, 0.16);
-      color: #FFF;
-    }
-
-    /* Lunch Block in Timeline */
-    .schedule-block-card {
+    /* Mobile Lunch Strip */
+    .mobile-lunch-card {
       background: repeating-linear-gradient(
         -45deg,
         rgba(239, 68, 68, 0.06),
-        rgba(239, 68, 68, 0.06) 10px,
-        rgba(239, 68, 68, 0.12) 10px,
-        rgba(239, 68, 68, 0.12) 20px
+        rgba(239, 68, 68, 0.06) 8px,
+        rgba(239, 68, 68, 0.12) 8px,
+        rgba(239, 68, 68, 0.12) 16px
       );
       border: 1px dashed rgba(239, 68, 68, 0.3);
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 12px;
       text-align: center;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       color: #FCA5A5;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    /* Quick Booking Slot Placeholder */
-    .empty-slot-placeholder {
-      border: 1px dashed rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .empty-slot-placeholder:hover {
-      background: rgba(245, 158, 11, 0.08);
-      border-color: var(--border-gold);
-      color: var(--gold-primary);
+    /* Native Bottom Navigation Bar */
+    .mobile-bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 72px;
+      padding-bottom: var(--safe-bottom);
+      background: rgba(14, 21, 36, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
     }
 
-    /* WhatsApp Phone Mockup */
-    .phone-container {
-      background: #111B21;
-      border-radius: 36px;
-      border: 8px solid #2A3942;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
+    .nav-item {
       display: flex;
       flex-direction: column;
-      height: 720px;
-      position: sticky;
-      top: 86px;
-    }
-
-    .phone-notch {
-      background: #2A3942;
-      height: 20px;
-      width: 140px;
-      margin: 0 auto;
-      border-radius: 0 0 14px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .notch-camera {
-      width: 8px;
-      height: 8px;
-      background: #080C14;
-      border-radius: 50%;
-    }
-
-    .wa-header {
-      background: #202C33;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .wa-user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .wa-avatar {
-      width: 36px;
-      height: 36px;
-      background: var(--gold-gradient);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: #080C14;
-    }
-
-    .wa-user-text h4 {
-      font-size: 14px;
-      font-weight: 600;
-      color: #E9EDEF;
-    }
-
-    .wa-user-text p {
-      font-size: 11px;
-      color: #8696A0;
-    }
-
-    .wa-chat-body {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background-color: #0B141A;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 16px 16px;
-    }
-
-    .wa-msg {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      line-height: 1.45;
-      position: relative;
-      animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .wa-incoming {
-      background: #202C33;
-      color: #E9EDEF;
-      align-self: flex-start;
-      border-top-left-radius: 0;
-    }
-
-    .wa-outgoing {
-      background: #005C4B;
-      color: #E9EDEF;
-      align-self: flex-end;
-      border-top-right-radius: 0;
-    }
-
-    .wa-time {
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.5);
-      text-align: right;
-      margin-top: 4px;
-    }
-
-    .wa-btn-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .wa-interactive-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #53BDEB;
-      font-weight: 600;
-      font-size: 12px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .wa-interactive-btn:hover {
-      background: rgba(83, 189, 235, 0.18);
-    }
-
-    .wa-input-bar {
-      background: #202C33;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .wa-input {
-      flex: 1;
-      background: #2A3942;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 20px;
-      color: #FFF;
-      font-size: 13px;
-      outline: none;
-    }
-
-    .wa-send-btn {
-      width: 36px;
-      height: 36px;
-      background: #00A884;
-      border: none;
-      border-radius: 50%;
-      color: #FFF;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s;
-    }
-    .wa-send-btn:hover {
-      transform: scale(1.08);
-    }
-
-    .typing-indicator {
-      display: flex;
       align-items: center;
       gap: 4px;
-      padding: 6px 12px;
-      background: #202C33;
-      border-radius: 12px;
-      width: fit-content;
-      color: #8696A0;
-      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      flex: 1;
     }
-    .typing-dot {
-      width: 5px;
-      height: 5px;
-      background: #8696A0;
+    .nav-item:active { transform: scale(0.92); }
+    .nav-item.active { color: var(--gold-primary); }
+    .nav-item i { font-size: 18px; }
+
+    /* Floating Action Button (FAB) */
+    .mobile-fab {
+      position: absolute;
+      bottom: 84px;
+      right: 18px;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
-      animation: typingBounce 1.2s infinite;
+      background: var(--gold-gradient);
+      color: #080C14;
+      border: none;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.45);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 45;
+      transition: all 0.2s;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    .mobile-fab:active { transform: scale(0.92); }
 
-    @keyframes typingBounce {
-      0%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-4px); }
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-      position: fixed;
+    /* Native Slide-Up Bottom Sheet */
+    .bottom-sheet-backdrop {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(8px);
       display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+      align-items: flex-end;
+      z-index: 80;
     }
+    .bottom-sheet-backdrop.active { display: flex; }
 
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-card {
-      background: #111827;
-      border: 1px solid var(--border-glass);
-      border-radius: 20px;
-      width: 90%;
-      max-width: 520px;
-      padding: 24px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    .bottom-sheet {
+      width: 100%;
+      background: #111A2E;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 16px 20px 32px 20px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 16px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes modalPop {
-      from { transform: scale(0.92); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 14px;
+    .sheet-handle {
+      width: 44px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      margin: 0 auto 4px auto;
     }
 
-    .modal-close-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .modal-close-btn:hover { color: #FFF; }
-
-    .form-group {
+    /* WhatsApp Simulator Tab in Mobile */
+    .mobile-wa-view {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      height: 100%;
+      background: #0B141A;
     }
-    .form-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .form-control {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-glass);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: #FFF;
-      font-size: 13px;
-      outline: none;
-    }
-    .form-control:focus {
-      border-color: var(--gold-primary);
+    .mobile-wa-chat {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
+    .mobile-toast {
+      position: absolute;
+      top: 54px;
+      left: 16px;
+      right: 16px;
       background: #1E293B;
       border-left: 4px solid var(--gold-primary);
-      padding: 14px 20px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
-      gap: 12px;
-      z-index: 120;
-      animation: slideIn 0.3s ease;
+      gap: 10px;
+      font-size: 13px;
+      z-index: 95;
+      animation: dropDown 0.3s ease;
     }
 
-    @keyframes slideIn {
-      from { transform: translateX(100%); }
-      to { transform: translateX(0); }
+    @keyframes dropDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. Header Superior -->
-  <header>
-    <div class="brand-container">
-      <div class="logo-badge">
-        <i class="fa-solid fa-scissors"></i>
+  <!-- Desktop Preview Banner -->
+  <div class="desktop-banner">
+    <span style="color: var(--gold-primary); font-weight: 700;"><i class="fa-solid fa-mobile-screen-button"></i> BarberPro Mobile App</span>
+    <span style="opacity: 0.5;">|</span>
+    <span>Simulador Nativo de Barbero</span>
+    <button onclick="toggleFullscreen()" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); color: #FFF; padding: 4px 10px; border-radius: 14px; font-size: 11px; cursor: pointer;">
+      <i class="fa-solid fa-expand"></i> Pantalla Completa
+    </button>
+  </div>
+
+  <!-- Contenedor Principal: App Móvil -->
+  <div class="app-viewport" id="mobile-app-root">
+
+    <!-- 1. Barra de Estado iOS (Notch / Dynamic Island) -->
+    <div class="mobile-status-bar">
+      <span id="mobile-clock">09:41</span>
+      <div class="mobile-notch">
+        <div class="dynamic-island-cam"></div>
       </div>
-      <div class="brand-text">
-        <h1 id="shop-name">The Gentleman's Cut <span style="font-size: 11px; color: var(--gold-primary);"><i class="fa-solid fa-circle-check"></i> B2B Enterprise</span></h1>
-        <span>Sincronización en Vivo con WhatsApp Meta Cloud API</span>
-      </div>
-    </div>
-
-    <!-- Navegación por Vistas / Pestañas -->
-    <nav class="nav-tabs">
-      <button class="nav-tab-btn active" id="tab-timeline-btn" onclick="switchView('timeline')">
-        <i class="fa-solid fa-calendar-week"></i> Timeline Diario
-      </button>
-      <button class="nav-tab-btn" id="tab-engine-btn" onclick="switchView('engine')">
-        <i class="fa-solid fa-microchip"></i> Availability Engine
-      </button>
-      <button class="nav-tab-btn" id="tab-finance-btn" onclick="switchView('finance')">
-        <i class="fa-solid fa-chart-pie"></i> Comisiones & Caja
-      </button>
-    </nav>
-
-    <div class="header-actions">
-      <div class="status-badge">
-        <div class="pulse-dot"></div>
-        <span id="socket-status">WebSocket Conectado</span>
-      </div>
-
-      <button class="btn btn-outline" onclick="openNewAppointmentModal()">
-        <i class="fa-solid fa-plus"></i> Nueva Cita Manual
-      </button>
-
-      <button class="btn btn-gold" onclick="resetWhatsAppChat()">
-        <i class="fa-brands fa-whatsapp"></i> Reiniciar Demo Bot
-      </button>
-    </div>
-  </header>
-
-  <!-- 2. Contenedor Principal del Dashboard -->
-  <main class="dashboard-container">
-
-    <!-- Barra de Control de Fecha y Filtro -->
-    <div class="date-control-bar">
-      <div class="date-nav">
-        <button class="action-btn-sm" onclick="changeDate(-1)"><i class="fa-solid fa-chevron-left"></i> Día Anterior</button>
-        <div class="date-indicator">
-          <i class="fa-regular fa-calendar" style="color: var(--gold-primary);"></i>
-          <span id="current-date-label">Hoy (Lunes, 26 de Octubre)</span>
-        </div>
-        <button class="action-btn-sm" onclick="changeDate(1)">Día Siguiente <i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 12px; color: var(--text-muted);">Acciones Rápidas del Bot:</span>
-        <button class="action-btn-sm" onclick="runAutoBookingDemo()" style="color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.4);">
-          <i class="fa-solid fa-bolt"></i> Auto-Reserva en 3s
-        </button>
-        <button class="action-btn-sm" onclick="triggerNextReminder()" style="color: var(--gold-primary); border-color: var(--border-gold);">
-          <i class="fa-solid fa-bell"></i> Simular Recordatorio T-2h
-        </button>
+      <div style="display: flex; gap: 6px; align-items: center; font-size: 11px;">
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full" style="color: #34D399;"></i>
       </div>
     </div>
 
-    <!-- KPI Row -->
-    <section class="kpi-grid">
-      <!-- Citas del Día -->
-      <div class="glass-card kpi-card">
-        <div>
-          <div class="kpi-title">Turnos Agendados Hoy</div>
-          <div class="kpi-value" id="kpi-total-bookings">3</div>
-          <div class="kpi-sub" style="color: var(--accent-emerald);">
-            <i class="fa-solid fa-calendar-check"></i> <span id="kpi-completed-text">0 completadas</span>
-          </div>
-        </div>
-        <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA;">
-          <i class="fa-solid fa-calendar-day"></i>
+    <!-- 2. Header Móvil -->
+    <div class="mobile-header">
+      <div class="barber-selector-btn" onclick="openBarberSwitcherSheet()">
+        <div class="header-barber-avatar" id="current-barber-avatar" style="background: #3B82F6;">MS</div>
+        <div class="header-barber-info">
+          <div class="header-barber-name"><span id="current-barber-name">Mateo Silva</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px; opacity: 0.6;"></i></div>
+          <div class="header-barber-status"><span class="pulse-dot" style="width: 6px; height: 6px;"></span> En turno (50% com.)</div>
         </div>
       </div>
 
-      <!-- Facturación Bruta y Neta -->
-      <div class="glass-card kpi-card">
-        <div>
-          <div class="kpi-title">Facturación Bruta Proyectada</div>
-          <div class="kpi-value" id="kpi-revenue">$90,000</div>
-          <div class="kpi-sub" style="color: var(--gold-primary);" id="kpi-net-revenue">
-            <i class="fa-solid fa-sack-dollar"></i> $46,250 neto barbería
-          </div>
-        </div>
-        <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24;">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
-      </div>
-
-      <!-- Tasa de Ocupación con Barra -->
-      <div class="glass-card kpi-card">
-        <div>
-          <div class="kpi-title">Ocupación de Sillones</div>
-          <div class="kpi-value" id="kpi-occupancy">38%</div>
-          <div class="kpi-sub" style="color: var(--text-muted);">
-            Intervalos calculados con 10m buffer
-          </div>
-        </div>
-        <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">
-          <i class="fa-solid fa-chair"></i>
-        </div>
-      </div>
-
-      <!-- Sistema Anti-No-Show -->
-      <div class="glass-card kpi-card">
-        <div>
-          <div class="kpi-title">Protección Anti-Ausentismo</div>
-          <div class="kpi-value" style="color: #34D399;">Activa (T-2h)</div>
-          <div class="kpi-sub" style="color: var(--text-muted);" id="kpi-noshow-sub">
-            <i class="fa-solid fa-shield-halved"></i> 0 turnos perdidos hoy
-          </div>
-        </div>
-        <div class="kpi-icon" style="background: rgba(139, 92, 246, 0.15); color: #A78BFA;">
-          <i class="fa-solid fa-user-shield"></i>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====================================================================== -->
-    <!-- VISTA 1: TIMELINE DIARIO OPERATIVO (PRINCIPAL) -->
-    <!-- ====================================================================== -->
-    <div id="view-timeline" class="layout-split">
-
-      <!-- COLUMNA IZQUIERDA: Timeline Diario Operativo -->
-      <div class="glass-card timeline-wrapper">
-        <div class="timeline-header">
-          <div>
-            <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--gold-primary);"></i> Timeline Diario de Barberos</h2>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
-              Jornada laboral de 09:00 a 19:00 • Bloques de servicio + 10 min buffer de limpieza/preparación
-            </p>
-          </div>
-
-          <div style="display: flex; gap: 12px; align-items: center;">
-            <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #34D399; display: inline-block;"></span> Confirmada
-            </span>
-            <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #60A5FA; display: inline-block;"></span> Completada
-            </span>
-            <span style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-              <span style="width: 10px; height: 10px; border-radius: 50%; background: #F87171; display: inline-block;"></span> No-Show
-            </span>
-          </div>
+      <div class="header-actions-mobile">
+        <div class="icon-circle-btn" onclick="triggerNextReminder()" title="Disparar Recordatorio T-2h">
+          <i class="fa-solid fa-bell"></i>
+          <div class="badge-dot"></div>
         </div>
 
-        <!-- Columnas de Barberos -->
-        <div class="barbers-columns-grid" id="barbers-timeline-container">
-          <!-- Renderizado dinámicamente con JavaScript -->
+        <div class="icon-circle-btn" onclick="loadDashboardData()" title="Refrescar">
+          <i class="fa-solid fa-arrows-rotate"></i>
         </div>
-      </div>
-
-      <!-- COLUMNA DERECHA: Mockup de Teléfono con Simulador de WhatsApp -->
-      <div>
-        <div class="phone-container">
-          <div class="phone-notch">
-            <div class="notch-camera"></div>
-          </div>
-
-          <!-- Cabecera de WhatsApp -->
-          <div class="wa-header">
-            <div class="wa-user-info">
-              <div class="wa-avatar">
-                <i class="fa-solid fa-scissors"></i>
-              </div>
-              <div class="wa-user-text">
-                <h4>The Gentleman's Cut</h4>
-                <p>Bot de Reservas 24/7 • En línea</p>
-              </div>
-            </div>
-            <div style="color: #8696A0; font-size: 16px; display: flex; gap: 12px; align-items: center;">
-              <i class="fa-solid fa-volume-high" id="sound-toggle" onclick="toggleSound()" style="cursor: pointer;" title="Activar/Silenciar sonido de chat"></i>
-              <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
-          </div>
-
-          <!-- Cuerpo de Conversación -->
-          <div class="wa-chat-body" id="wa-chat-body">
-            <!-- Mensajes inyectados dinámicamente -->
-          </div>
-
-          <div id="wa-typing" style="display: none; padding: 4px 16px;">
-            <div class="typing-indicator">
-              <span>Escribiendo</span>
-              <div class="typing-dot"></div>
-              <div class="typing-dot"></div>
-              <div class="typing-dot"></div>
-            </div>
-          </div>
-
-          <!-- Barra de Input -->
-          <div class="wa-input-bar">
-            <input type="text" class="wa-input" id="wa-text-input" placeholder="Escribe un mensaje o tu nombre..." onkeypress="handleKeyPress(event)">
-            <button class="wa-send-btn" onclick="sendTextMessage()">
-              <i class="fa-solid fa-paper-plane" style="font-size: 13px;"></i>
-            </button>
-          </div>
-        </div>
-
-        <div style="margin-top: 14px; text-align: center;">
-          <p style="font-size: 12px; color: var(--text-muted);">
-            💡 <strong>Algoritmo Atómico:</strong> Cada slot elegido pasa por verificación con Mutex Lock para prevenir doble-reserva en alta concurrencia.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ====================================================================== -->
-    <!-- VISTA 2: INSPECTOR DEL AVAILABILITY ENGINE -->
-    <!-- ====================================================================== -->
-    <div id="view-engine" class="glass-card" style="display: none; padding: 28px;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-        <div>
-          <h2><i class="fa-solid fa-microchip" style="color: var(--gold-primary);"></i> Inspector del Motor de Disponibilidad (AvailabilityEngine)</h2>
-          <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
-            Auditoría matemática de cálculo de intervalos: <code>Duración del Servicio + Buffer de 10 minutos</code>.
-          </p>
-        </div>
-
-        <button class="btn btn-outline" onclick="loadEngineInspection()">
-          <i class="fa-solid fa-arrows-rotate"></i> Recalcular Slots
-        </button>
-      </div>
-
-      <!-- Controles de Prueba -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="form-group">
-          <label class="form-label">Servicio a Evaluar</label>
-          <select id="engine-service-select" class="form-control" onchange="loadEngineInspection()">
-            <!-- Opciones cargadas con JS -->
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Barbero</label>
-          <select id="engine-barber-select" class="form-control" onchange="loadEngineInspection()">
-            <option value="">Todos los Barberos Activos</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Fecha de Cálculo</label>
-          <input type="date" id="engine-date-input" class="form-control" onchange="loadEngineInspection()">
-        </div>
-      </div>
-
-      <!-- Resultados del Algoritmo -->
-      <div id="engine-results-container" style="display: flex; flex-direction: column; gap: 20px;">
-        <!-- Se inyecta la cuadrícula de intervalos -->
       </div>
     </div>
 
-    <!-- ====================================================================== -->
-    <!-- VISTA 3: COMISIONES & FINANZAS -->
-    <!-- ====================================================================== -->
-    <div id="view-finance" class="glass-card" style="display: none; padding: 28px;">
-      <div style="margin-bottom: 24px;">
-        <h2><i class="fa-solid fa-chart-pie" style="color: var(--gold-primary);"></i> Reporte de Comisiones y Rendimiento</h2>
-        <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">
-          Desglose financiero por barbero según su porcentaje de comisión contractual.
-        </p>
-      </div>
+    <!-- 3. Contenedor con Scroll para la Pestaña Activa -->
 
-      <div id="commissions-table-container">
+    <!-- VISTA A: AGENDA / TIMELINE (Pestaña Principal) -->
+    <div class="mobile-scroll-container" id="tab-agenda-view">
+      
+      <!-- Carrusel de Días de la Semana -->
+      <div class="day-carousel" id="mobile-day-carousel">
         <!-- Renderizado dinámicamente con JS -->
       </div>
-    </div>
 
-  </main>
-
-  <!-- ====================================================================== -->
-  <!-- MODAL: DETALLES DE CITA -->
-  <!-- ====================================================================== -->
-  <div class="modal-overlay" id="appointment-modal" onclick="closeModalOnOverlay(event, 'appointment-modal')">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modal-app-title"><i class="fa-regular fa-calendar-check" style="color: var(--gold-primary);"></i> Detalle de Turno</h3>
-        <button class="modal-close-btn" onclick="closeModal('appointment-modal')"><i class="fa-solid fa-xmark"></i></button>
+      <!-- Hero Card: Próximo Cliente Inmediato -->
+      <div class="next-up-card" id="hero-next-up">
+        <!-- Inyectado dinámicamente -->
       </div>
 
-      <div id="modal-app-content" style="display: flex; flex-direction: column; gap: 14px;">
+      <!-- Métricas del Día en 3 Pills -->
+      <div class="metrics-carousel">
+        <div class="metric-mobile-card">
+          <div class="metric-mobile-val" id="mobile-m-revenue">$45,000</div>
+          <div class="metric-mobile-label">Mi Ganancia</div>
+        </div>
+        <div class="metric-mobile-card">
+          <div class="metric-mobile-val" id="mobile-m-bookings">3</div>
+          <div class="metric-mobile-label">Turnos Hoy</div>
+        </div>
+        <div class="metric-mobile-card">
+          <div class="metric-mobile-val" style="color: #34D399;">T-2h</div>
+          <div class="metric-mobile-label">Anti-NoShow</div>
+        </div>
+      </div>
+
+      <!-- Lista de Turnos del Día -->
+      <div class="mobile-section-title">
+        <span>Turnos del Día</span>
+        <span style="font-size: 12px; color: var(--gold-primary);" id="turnos-count-label">3 citas</span>
+      </div>
+
+      <div id="mobile-appointments-feed" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Inyectado dinámicamente con JS -->
+      </div>
+
+    </div>
+
+    <!-- VISTA B: WHATSAPP BOT (Pestaña 2) -->
+    <div class="mobile-scroll-container" id="tab-whatsapp-view" style="display: none; padding: 0 0 80px 0;">
+      <div class="mobile-wa-view">
+        <div style="background: #202C33; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; color: #000; font-size: 13px;">
+              <i class="fa-solid fa-scissors"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: #FFF;">The Gentleman's Cut</div>
+              <div style="font-size: 11px; color: #8696A0;">Bot Oficial Meta Cloud • 24/7</div>
+            </div>
+          </div>
+
+          <button onclick="runAutoBookingDemo()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">
+            <i class="fa-solid fa-bolt"></i> Demo 3s
+          </button>
+        </div>
+
+        <div class="mobile-wa-chat" id="m-wa-chat"></div>
+
+        <div style="background: #202C33; padding: 8px 12px; display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="m-wa-input" placeholder="Escribe un mensaje o tu nombre..." style="flex: 1; background: #2A3942; border: none; border-radius: 20px; padding: 8px 14px; color: #FFF; font-size: 13px; outline: none;" onkeypress="handleMobileKeyPress(event)">
+          <button onclick="sendMobileTextMessage()" style="width: 36px; height: 36px; border-radius: 50%; background: #00A884; border: none; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <i class="fa-solid fa-paper-plane" style="font-size: 12px;"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA C: GANANCIAS & FINANZAS (Pestaña 3) -->
+    <div class="mobile-scroll-container" id="tab-earnings-view" style="display: none;">
+      <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(14, 21, 36, 0.8) 100%); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 20px; text-align: center;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--gold-primary); text-transform: uppercase;">Liquidación Hoy</div>
+        <div style="font-size: 32px; font-weight: 800; color: #FFF; margin: 6px 0;" id="earnings-total-val">$45,000</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Comisión acumulada en tiempo real</div>
+      </div>
+
+      <div class="mobile-section-title">
+        <span>Desglose por Barbero</span>
+      </div>
+
+      <div id="m-earnings-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    </div>
+
+    <!-- VISTA D: AVAILABILITY ENGINE (Pestaña 4) -->
+    <div class="mobile-scroll-container" id="tab-engine-view" style="display: none;">
+      <div class="mobile-section-title">
+        <span>Inspector de Slots (10m Buffer)</span>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted);">
+        Auditoría en tiempo real de intervalos libres calculados por el algoritmo:
+      </p>
+
+      <div id="m-engine-slots-container" style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;"></div>
+    </div>
+
+    <!-- Botón Flotante + (FAB) para Nueva Cita Rápida -->
+    <button class="mobile-fab" onclick="openNewBookingSheet()" title="Nueva Cita Rápida">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- 4. Barra de Navegación Inferior (Tabs Nativas) -->
+    <nav class="mobile-bottom-nav">
+      <div class="nav-item active" id="nav-btn-agenda" onclick="switchMobileTab('agenda')">
+        <i class="fa-solid fa-calendar-day"></i>
+        <span>Agenda</span>
+      </div>
+
+      <div class="nav-item" id="nav-btn-whatsapp" onclick="switchMobileTab('whatsapp')">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>Bot 24/7</span>
+      </div>
+
+      <div class="nav-item" id="nav-btn-earnings" onclick="switchMobileTab('earnings')">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Ganancias</span>
+      </div>
+
+      <div class="nav-item" id="nav-btn-engine" onclick="switchMobileTab('engine')">
+        <i class="fa-solid fa-microchip"></i>
+        <span>Motor</span>
+      </div>
+    </nav>
+
+    <!-- ==================================================================== -->
+    <!-- SLIDE-UP BOTTOM SHEET: DETALLE DE CITA -->
+    <!-- ==================================================================== -->
+    <div class="bottom-sheet-backdrop" id="sheet-app-details" onclick="closeSheetOnBackdrop(event, 'sheet-app-details')">
+      <div class="bottom-sheet" id="sheet-app-content">
         <!-- Inyectado dinámicamente -->
       </div>
     </div>
-  </div>
 
-  <!-- ====================================================================== -->
-  <!-- MODAL: AGENDAR CITA MANUAL -->
-  <!-- ====================================================================== -->
-  <div class="modal-overlay" id="new-appointment-modal" onclick="closeModalOnOverlay(event, 'new-appointment-modal')">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-plus-circle" style="color: var(--gold-primary);"></i> Agendar Nueva Cita Manual</h3>
-        <button class="modal-close-btn" onclick="closeModal('new-appointment-modal')"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ==================================================================== -->
+    <!-- SLIDE-UP BOTTOM SHEET: CAMBIAR DE BARBERO -->
+    <!-- ==================================================================== -->
+    <div class="bottom-sheet-backdrop" id="sheet-barber-switcher" onclick="closeSheetOnBackdrop(event, 'sheet-barber-switcher')">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <h3 style="font-size: 17px; font-weight: 700; color: #FFF; margin-bottom: 4px;">Seleccionar Barbero</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Visualiza la agenda y comisiones del barbero seleccionado:</p>
+        
+        <div id="barber-switcher-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
-
-      <form id="new-app-form" onsubmit="handleManualBookingSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
-        <div class="form-group">
-          <label class="form-label">Nombre del Cliente *</label>
-          <input type="text" id="manual-client-name" class="form-control" required placeholder="Ej: Santiago Restrepo">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">WhatsApp Teléfono *</label>
-          <input type="text" id="manual-client-phone" class="form-control" required placeholder="Ej: 573001234567">
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div class="form-group">
-            <label class="form-label">Barbero *</label>
-            <select id="manual-barber-select" class="form-control" required></select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Servicio *</label>
-            <select id="manual-service-select" class="form-control" required></select>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div class="form-group">
-            <label class="form-label">Fecha *</label>
-            <input type="date" id="manual-date" class="form-control" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Hora de Inicio *</label>
-            <input type="time" id="manual-time" class="form-control" required value="10:00">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Notas Adicionales</label>
-          <input type="text" id="manual-notes" class="form-control" placeholder="Ej: Reserva telefónica para evento">
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-          <button type="button" class="btn btn-outline" onclick="closeModal('new-appointment-modal')">Cancelar</button>
-          <button type="submit" class="btn btn-gold"><i class="fa-solid fa-check"></i> Confirmar Cita</button>
-        </div>
-      </form>
     </div>
+
+    <!-- ==================================================================== -->
+    <!-- SLIDE-UP BOTTOM SHEET: AGENDAR CITA MANUAL RÁPIDA -->
+    <!-- ==================================================================== -->
+    <div class="bottom-sheet-backdrop" id="sheet-new-booking" onclick="closeSheetOnBackdrop(event, 'sheet-new-booking')">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <h3 style="font-size: 17px; font-weight: 700; color: #FFF;">+ Agendar Cita Rápida</h3>
+
+        <form onsubmit="handleMobileBookingSubmit(event)" style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Nombre del Cliente</label>
+            <input type="text" id="m-new-name" required placeholder="Ej: Santiago Restrepo" style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 10px; color: #FFF; font-size: 14px; margin-top: 4px; outline: none;">
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">WhatsApp Teléfono</label>
+            <input type="text" id="m-new-phone" required placeholder="Ej: 573001234567" style="width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 10px; color: #FFF; font-size: 14px; margin-top: 4px; outline: none;">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Servicio</label>
+              <select id="m-new-service" style="width: 100%; padding: 10px 8px; background: #1E293B; border: 1px solid var(--border-subtle); border-radius: 10px; color: #FFF; font-size: 13px; margin-top: 4px;"></select>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Hora Inicio</label>
+              <input type="time" id="m-new-time" required value="10:00" style="width: 100%; padding: 9px 8px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 10px; color: #FFF; font-size: 13px; margin-top: 4px;">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button type="button" class="mobile-btn mobile-btn-surface" onclick="closeSheet('sheet-new-booking')">Cancelar</button>
+            <button type="submit" class="mobile-btn mobile-btn-gold">Confirmar Turno</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // Inicializar conexión WebSocket
+    // Conexión WebSocket
     const socket = io();
-
-    socket.on('connect', () => {
-      document.getElementById('socket-status').innerText = 'WebSocket Conectado (En Vivo)';
-    });
-
-    socket.on('disconnect', () => {
-      document.getElementById('socket-status').innerText = 'Reconectando...';
-    });
-
     socket.on('dashboard:refresh', () => {
-      loadDashboard();
-      playChime(600, 0.1);
-      showToast('⚡ Timeline sincronizado en tiempo real');
+      loadDashboardData();
+      showMobileToast('⚡ Turno sincronizado en vivo vía WhatsApp');
     });
 
     socket.on('appointment:updated', (data) => {
-      loadDashboard();
-      playChime(750, 0.1);
-      showToast(`Estado de cita actualizado: ${data.status}`);
+      loadDashboardData();
+      showMobileToast(`Estado actualizado: ${data.status}`);
     });
 
     socket.on('whatsapp:reminder_sent', (data) => {
-      injectReminderIntoWhatsApp(data.message);
-      playChime(850, 0.15);
-      showToast('🔔 Recordatorio T-2h disparado al cliente en WhatsApp');
+      injectReminderIntoMobileChat(data.message);
+      showMobileToast('🔔 Recordatorio T-2h disparado al WhatsApp');
     });
 
-    // Estado Global de la App
-    let currentDashboardData = null;
+    // Estado de la App Móvil
+    let dashboardState = null;
+    let selectedBarberId = 'barber-1';
     let selectedDate = new Date().toISOString().split('T')[0];
-    let soundEnabled = true;
 
-    // Web Audio API para micro-chimes sin archivos externos
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playChime(freq = 600, duration = 0.1) {
-      if (!soundEnabled) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
+    // Reloj iOS en vivo
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('mobile-clock').innerText = `${h}:${m}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Cambiar Pestañas de la Navegación Inferior
+    function switchMobileTab(tabName) {
+      const tabs = ['agenda', 'whatsapp', 'earnings', 'engine'];
+      tabs.forEach(t => {
+        document.getElementById(`tab-${t}-view`).style.display = t === tabName ? (t === 'whatsapp' ? 'flex' : 'flex') : 'none';
+        document.getElementById(`nav-btn-${t}`).className = 'nav-item' + (t === tabName ? ' active' : '');
+      });
+
+      if (tabName === 'earnings') renderEarningsView();
+      if (tabName === 'engine') loadEngineSlotsView();
     }
 
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      const el = document.getElementById('sound-toggle');
-      if (soundEnabled) {
-        el.className = 'fa-solid fa-volume-high';
-        el.title = 'Sonido Activado';
-        playChime(700, 0.1);
-      } else {
-        el.className = 'fa-solid fa-volume-xmark';
-        el.title = 'Sonido Silenciado';
+    // Inicializar Carrusel de Días
+    function buildDayCarousel() {
+      const container = document.getElementById('mobile-day-carousel');
+      container.innerHTML = '';
+
+      const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      const today = new Date();
+
+      for (let i = -1; i <= 5; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const dateStr = d.toISOString().split('T')[0];
+        const isActive = dateStr === selectedDate;
+
+        const chip = document.createElement('div');
+        chip.className = 'day-chip' + (isActive ? ' active' : '');
+        chip.onclick = () => {
+          selectedDate = dateStr;
+          buildDayCarousel();
+          loadDashboardData();
+        };
+
+        chip.innerHTML = `
+          <span class="day-chip-name">${days[d.getDay()]}</span>
+          <span class="day-chip-number">${d.getDate()}</span>
+          <div class="day-chip-dot"></div>
+        `;
+        container.appendChild(chip);
       }
     }
 
-    // Navegación de Vistas
-    function switchView(viewName) {
-      document.getElementById('view-timeline').style.display = viewName === 'timeline' ? 'grid' : 'none';
-      document.getElementById('view-engine').style.display = viewName === 'engine' ? 'block' : 'none';
-      document.getElementById('view-finance').style.display = viewName === 'finance' ? 'block' : 'none';
-
-      document.getElementById('tab-timeline-btn').className = 'nav-tab-btn' + (viewName === 'timeline' ? ' active' : '');
-      document.getElementById('tab-engine-btn').className = 'nav-tab-btn' + (viewName === 'engine' ? ' active' : '');
-      document.getElementById('tab-finance-btn').className = 'nav-tab-btn' + (viewName === 'finance' ? ' active' : '');
-
-      if (viewName === 'engine') loadEngineInspection();
-      if (viewName === 'finance') loadFinanceReport();
-    }
-
-    function changeDate(daysOffset) {
-      const parts = selectedDate.split('-').map(Number);
-      const d = new Date(parts[0], parts[1] - 1, parts[2]);
-      d.setDate(d.getDate() + daysOffset);
-
-      selectedDate = d.toISOString().split('T')[0];
-      updateDateLabel(d);
-      loadDashboard();
-    }
-
-    function updateDateLabel(d) {
-      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-      const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      const todayStr = new Date().toISOString().split('T')[0];
-      const prefix = selectedDate === todayStr ? 'Hoy' : '';
-      document.getElementById('current-date-label').innerText = 
-        `${prefix ? prefix + ' • ' : ''}${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]}`;
-    }
-
-    // ========================================================================
-    // CARGAR Y RENDERIZAR DASHBOARD
-    // ========================================================================
-    async function loadDashboard() {
+    // Cargar Datos del Servidor
+    async function loadDashboardData() {
       try {
         const res = await fetch(`/api/dashboard/today?date=${selectedDate}`);
         const data = await res.json();
-        currentDashboardData = data;
-        renderDashboard(data);
-        populateModalSelects(data);
-      } catch (err) {
-        console.error('Error cargando dashboard:', err);
+        dashboardState = data;
+        renderMobileView(data);
+      } catch (e) {
+        console.error('Error cargando datos móviles:', e);
       }
     }
 
-    function renderDashboard(data) {
-      // 1. KPIs
-      document.getElementById('kpi-total-bookings').innerText = data.metrics.totalBookings;
-      document.getElementById('kpi-completed-text').innerText = `${data.metrics.completedCount} completadas`;
-      document.getElementById('kpi-revenue').innerText = `$${data.metrics.totalRevenue.toLocaleString('es-CO')}`;
-      document.getElementById('kpi-net-revenue').innerHTML = `<i class="fa-solid fa-sack-dollar"></i> $${data.metrics.netBarbershopRevenue.toLocaleString('es-CO')} neto barbería`;
-      document.getElementById('kpi-occupancy').innerText = `${data.metrics.occupancyPercentage}%`;
-      document.getElementById('kpi-noshow-sub').innerText = `${data.metrics.noShowCount} ausencias registradas`;
+    function renderMobileView(data) {
+      const currentBarber = data.barbers.find(b => b.id === selectedBarberId) || data.barbers[0];
+      selectedBarberId = currentBarber.id;
 
-      // 2. Columnas de Barberos
-      const container = document.getElementById('barbers-timeline-container');
-      container.innerHTML = '';
+      // Header Bar
+      document.getElementById('current-barber-avatar').innerText = currentBarber.name.substring(0, 2).toUpperCase();
+      document.getElementById('current-barber-avatar').style.background = currentBarber.colorTag;
+      document.getElementById('current-barber-name').innerText = currentBarber.name.split(' ')[0] + ' ' + (currentBarber.name.split(' ')[1] || '');
 
-      data.barbers.forEach((barber) => {
-        const barberCol = document.createElement('div');
-        barberCol.className = 'barber-column';
+      // Citas asignadas a este barbero
+      const barberApps = data.appointments.filter(a => a.barberId === currentBarber.id);
+      const activeApps = barberApps.filter(a => a.status !== 'cancelled');
 
-        // Filtrar citas de este barbero
-        const barberAppointments = data.appointments.filter(a => a.barberId === barber.id);
-        const barberBlocks = (data.blocks || []).filter(b => b.barberId === barber.id);
+      // Métricas
+      const grossRevenue = activeApps.reduce((sum, a) => sum + a.totalPrice, 0);
+      const myCommission = Math.round((grossRevenue * currentBarber.commissionPercentage) / 100);
 
-        barberCol.innerHTML = `
-          <div class="barber-card-header">
-            <div class="barber-info">
-              <div class="barber-avatar" style="background: ${barber.colorTag};">
-                ${barber.name.substring(0, 2).toUpperCase()}
-              </div>
-              <div>
-                <div class="barber-name">${barber.name}</div>
-                <div class="barber-badge">${barber.phone} • ${barber.commissionPercentage}% comisión</div>
-              </div>
-            </div>
-            <div style="font-size: 12px; font-weight: 700; color: ${barber.colorTag};">
-              ${barberAppointments.filter(a => a.status !== 'cancelled').length} turnos
+      document.getElementById('mobile-m-revenue').innerText = `$${myCommission.toLocaleString('es-CO')}`;
+      document.getElementById('mobile-m-bookings').innerText = activeApps.length;
+      document.getElementById('turnos-count-label').innerText = `${activeApps.length} citas`;
+
+      // Hero: Próximo Cliente Inmediato
+      const heroContainer = document.getElementById('hero-next-up');
+      const nextApp = activeApps.find(a => a.status === 'confirmed' || a.status === 'pending');
+
+      if (nextApp) {
+        const start = new Date(nextApp.startTime);
+        const timeStr = `${start.getHours()}:${String(start.getMinutes()).padStart(2, '0')}`;
+
+        heroContainer.style.display = 'flex';
+        heroContainer.innerHTML = `
+          <div class="next-up-header">
+            <span class="next-up-tag"><i class="fa-solid fa-bell"></i> Siguiente en Espera</span>
+            <span class="countdown-pill">${timeStr}</span>
+          </div>
+
+          <div>
+            <div class="next-up-client">${nextApp.clientName}</div>
+            <div class="next-up-service">
+              <i class="fa-solid fa-scissors" style="color: ${currentBarber.colorTag};"></i>
+              ${nextApp.serviceName} (${nextApp.serviceDuration} min) • $${nextApp.totalPrice.toLocaleString('es-CO')}
             </div>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            ${renderBarberAppointments(barberAppointments, barber, barberBlocks)}
-            
-            <div class="empty-slot-placeholder" onclick="openNewAppointmentModal('${barber.id}')">
-              <i class="fa-solid fa-plus-circle"></i> + Asignar turno rápido
-            </div>
+          <div class="next-up-actions">
+            <button class="mobile-btn mobile-btn-emerald" onclick="updateAppointmentStatus('${nextApp.id}', 'completed')">
+              <i class="fa-solid fa-check"></i> En Sillón / Listo
+            </button>
+            <a href="https://wa.me/${nextApp.clientPhone}" target="_blank" class="mobile-btn mobile-btn-surface" style="text-decoration: none;">
+              <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp
+            </a>
           </div>
         `;
+      } else {
+        heroContainer.style.display = 'none';
+      }
 
-        container.appendChild(barberCol);
-      });
-    }
+      // Lista de Turnos
+      const feed = document.getElementById('mobile-appointments-feed');
+      feed.innerHTML = '';
 
-    function renderBarberAppointments(appointments, barber, blocks) {
-      let html = '';
-      const sorted = [...appointments].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+      if (barberApps.length === 0) {
+        feed.innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 30px; background: var(--bg-surface); border-radius: 16px; border: 1px dashed var(--border-subtle);">
+            <i class="fa-regular fa-calendar-xmark" style="font-size: 24px; margin-bottom: 8px; opacity: 0.5;"></i>
+            <div>Sin citas para este día.</div>
+            <div style="font-size: 11px; margin-top: 4px; color: var(--gold-primary);">Disponibilidad 100% libre para el Bot</div>
+          </div>
+        `;
+      }
 
-      // Bloque de almuerzo
-      const hasLunch = blocks && blocks.some(b => b.reason.toLowerCase().includes('almuerzo'));
+      const sorted = [...barberApps].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
       sorted.forEach((app, idx) => {
         const start = new Date(app.startTime);
         const end = new Date(app.endTime);
-        const formatTime = (d) => {
-          let h = d.getHours();
-          const m = String(d.getMinutes()).padStart(2, '0');
-          const p = h >= 12 ? 'PM' : 'AM';
-          if (h > 12) h -= 12;
-          if (h === 0) h = 12;
-          return `${h}:${m} ${p}`;
-        };
+        const formatTime = (d) => `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+        const timeRange = `${formatTime(start)} - ${formatTime(end)}`;
 
-        const timeStr = `${formatTime(start)} - ${formatTime(end)}`;
+        const card = document.createElement('div');
+        card.className = 'mobile-app-card';
+        card.style.borderLeftColor = currentBarber.colorTag;
+        card.onclick = () => openAppointmentDetailsSheet(app);
 
-        html += `
-          <div class="appointment-card" style="border-left-color: ${barber.colorTag};" onclick="openAppointmentDetails('${app.id}')">
-            <div class="app-time-row">
-              <span class="app-time"><i class="fa-regular fa-clock"></i> ${timeStr}</span>
-              <span class="status-pill status-${app.status}">${app.status}</span>
-            </div>
+        card.innerHTML = `
+          <div class="mobile-card-top">
+            <span class="mobile-time-badge"><i class="fa-regular fa-clock"></i> ${timeRange}</span>
+            <span class="mobile-status-tag" style="background: rgba(255,255,255,0.08); color: ${getStatusColor(app.status)};">
+              ${app.status}
+            </span>
+          </div>
 
-            <div class="app-client">
-              <i class="fa-regular fa-user" style="opacity: 0.7;"></i> ${app.clientName}
-              ${app.clientNoShows > 0 ? `<span style="font-size: 10px; background: rgba(239, 68, 68, 0.2); color: #F87171; padding: 1px 6px; border-radius: 4px;" title="Cliente con inasistencias previas">⚠️ No-show previo (${app.clientNoShows})</span>` : ''}
-            </div>
-            
-            <div class="app-service">
-              <i class="fa-solid fa-scissors" style="color: ${barber.colorTag};"></i>
-              ${app.serviceName} (${app.serviceDuration} min)
-            </div>
+          <div class="mobile-client-name">
+            <i class="fa-regular fa-user" style="opacity: 0.7; font-size: 13px;"></i> ${app.clientName}
+            ${app.clientNoShows > 0 ? `<span style="font-size: 9px; background: rgba(239,68,68,0.2); color: #F87171; padding: 2px 6px; border-radius: 4px;">⚠️ ${app.clientNoShows} No-Show</span>` : ''}
+          </div>
 
-            <div class="app-footer">
-              <span class="app-price">$${app.totalPrice.toLocaleString('es-CO')}</span>
-              
-              <div class="app-actions" onclick="event.stopPropagation()">
-                ${app.status !== 'completed' && app.status !== 'cancelled' ? `
-                  <button class="action-btn-sm" title="Marcar como Completada" onclick="updateAppointmentStatus('${app.id}', 'completed')">
-                    <i class="fa-solid fa-check" style="color: #34D399;"></i>
-                  </button>
-                  <button class="action-btn-sm" title="Simular Recordatorio T-2h" onclick="triggerReminder('${app.id}')">
-                    <i class="fa-solid fa-bell" style="color: #FBBF24;"></i>
-                  </button>
-                  <button class="action-btn-sm" title="Registrar Ausencia (No-Show)" onclick="updateAppointmentStatus('${app.id}', 'no_show')">
-                    <i class="fa-solid fa-user-xmark" style="color: #F87171;"></i>
-                  </button>
-                  <button class="action-btn-sm" title="Cancelar Turno" onclick="updateAppointmentStatus('${app.id}', 'cancelled')">
-                    <i class="fa-solid fa-trash" style="color: #9CA3AF;"></i>
-                  </button>
-                ` : `
-                  <span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Cerrado</span>
-                `}
-              </div>
-            </div>
+          <div class="mobile-service-row">
+            <span>${app.serviceName} (${app.serviceDuration}m)</span>
+            <strong style="color: #FFF;">$${app.totalPrice.toLocaleString('es-CO')}</strong>
+          </div>
+
+          <div class="mobile-card-actions" onclick="event.stopPropagation()">
+            ${app.status !== 'completed' && app.status !== 'cancelled' ? `
+              <button class="action-btn-sm" onclick="updateAppointmentStatus('${app.id}', 'completed')"><i class="fa-solid fa-check" style="color: #34D399;"></i> Completar</button>
+              <button class="action-btn-sm" onclick="triggerReminder('${app.id}')"><i class="fa-solid fa-bell" style="color: #FBBF24;"></i> T-2h</button>
+              <button class="action-btn-sm" onclick="updateAppointmentStatus('${app.id}', 'no_show')"><i class="fa-solid fa-user-xmark" style="color: #F87171;"></i> Ausente</button>
+            ` : `<span style="font-size: 11px; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Cerrado</span>`}
           </div>
         `;
 
-        // Intercalar bloque de almuerzo visual
-        if (hasLunch && start.getHours() <= 12 && (!sorted[idx + 1] || new Date(sorted[idx + 1].startTime).getHours() >= 14)) {
-          html += `
-            <div class="schedule-block-card">
-              <i class="fa-solid fa-utensils"></i> 13:00 - 14:00 Receso de Almuerzo (Bloqueado)
-            </div>
-          `;
+        feed.appendChild(card);
+
+        // Bloque de almuerzo visual
+        if (start.getHours() <= 12 && (!sorted[idx + 1] || new Date(sorted[idx + 1].startTime).getHours() >= 14)) {
+          const lunch = document.createElement('div');
+          lunch.className = 'mobile-lunch-card';
+          lunch.innerHTML = `<i class="fa-solid fa-utensils"></i> 13:00 - 14:00 Receso de Almuerzo (Bloqueado)`;
+          feed.appendChild(lunch);
         }
       });
 
-      if (sorted.length === 0) {
-        if (hasLunch) {
-          html += `
-            <div class="schedule-block-card">
-              <i class="fa-solid fa-utensils"></i> 13:00 - 14:00 Receso de Almuerzo (Bloqueado)
-            </div>
-          `;
-        }
+      // Llenar selects para modal de reserva
+      const srvSelect = document.getElementById('m-new-service');
+      if (srvSelect) {
+        srvSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} ($${s.price.toLocaleString('es-CO')})</option>`).join('');
       }
+    }
 
-      return html;
+    function getStatusColor(status) {
+      if (status === 'confirmed') return '#34D399';
+      if (status === 'pending') return '#FBBF24';
+      if (status === 'completed') return '#60A5FA';
+      if (status === 'cancelled') return '#9CA3AF';
+      return '#F87171';
+    }
+
+    // Bottom Sheets
+    function openAppointmentDetailsSheet(app) {
+      const content = document.getElementById('sheet-app-content');
+      content.innerHTML = `
+        <div class="sheet-handle"></div>
+        <div style="font-size: 18px; font-weight: 800; color: #FFF;">${app.clientName}</div>
+        <div style="font-size: 13px; color: var(--text-muted);">${app.clientPhone}</div>
+
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-top: 4px;">
+          <div style="font-size: 14px; font-weight: 700; color: var(--gold-primary);">${app.serviceName}</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Duración: ${app.serviceDuration} min • Precio: $${app.totalPrice.toLocaleString('es-CO')}</div>
+          <div style="font-size: 12px; color: #34D399; margin-top: 2px;">Tu comisión (${app.barberCommissionPct}%): $${(app.commissionAmount || 0).toLocaleString('es-CO')}</div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <a href="https://wa.me/${app.clientPhone}" target="_blank" class="mobile-btn mobile-btn-surface" style="text-decoration: none; flex: 1;">
+            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp
+          </a>
+          <button class="mobile-btn mobile-btn-surface" onclick="triggerReminder('${app.id}')" style="flex: 1;">
+            <i class="fa-solid fa-bell" style="color: #FBBF24;"></i> Enviar T-2h
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 4px;">
+          <button class="mobile-btn mobile-btn-emerald" onclick="updateAppointmentStatus('${app.id}', 'completed')">
+            <i class="fa-solid fa-check"></i> Marcar Completada
+          </button>
+          <button class="mobile-btn" style="background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4);" onclick="updateAppointmentStatus('${app.id}', 'no_show')">
+            No-Show
+          </button>
+        </div>
+      `;
+
+      document.getElementById('sheet-app-details').classList.add('active');
+    }
+
+    function openBarberSwitcherSheet() {
+      const container = document.getElementById('barber-switcher-list');
+      container.innerHTML = '';
+
+      dashboardState?.barbers?.forEach(b => {
+        const item = document.createElement('div');
+        item.style = `
+          padding: 12px 14px;
+          background: ${b.id === selectedBarberId ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+          border: 1px solid ${b.id === selectedBarberId ? 'var(--gold-primary)' : 'var(--border-subtle)'};
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+        `;
+        item.onclick = () => {
+          selectedBarberId = b.id;
+          closeSheet('sheet-barber-switcher');
+          renderMobileView(dashboardState);
+        };
+
+        item.innerHTML = `
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: ${b.colorTag}; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 13px;">
+            ${b.name.substring(0, 2).toUpperCase()}
+          </div>
+          <div style="flex: 1;">
+            <div style="font-size: 14px; font-weight: 700; color: #FFF;">${b.name}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${b.commissionPercentage}% de comisión asignada</div>
+          </div>
+          ${b.id === selectedBarberId ? '<i class="fa-solid fa-circle-check" style="color: var(--gold-primary);"></i>' : ''}
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById('sheet-barber-switcher').classList.add('active');
+    }
+
+    function openNewBookingSheet() {
+      document.getElementById('sheet-new-booking').classList.add('active');
+    }
+
+    function closeSheet(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function closeSheetOnBackdrop(e, id) {
+      if (e.target.id === id) closeSheet(id);
+    }
+
+    async function handleMobileBookingSubmit(e) {
+      e.preventDefault();
+      const clientName = document.getElementById('m-new-name').value;
+      const clientPhone = document.getElementById('m-new-phone').value;
+      const serviceId = document.getElementById('m-new-service').value;
+      const time = document.getElementById('m-new-time').value;
+
+      const startTimeISO = new Date(`${selectedDate}T${time}:00`).toISOString();
+
+      try {
+        const res = await fetch('/api/appointments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            barberId: selectedBarberId,
+            serviceId,
+            clientName,
+            clientPhone,
+            startTimeISO,
+          }),
+        });
+
+        if (res.ok) {
+          closeSheet('sheet-new-booking');
+          loadDashboardData();
+          showMobileToast('✓ Cita agendada con éxito');
+        } else {
+          const err = await res.json();
+          alert(err.error || 'Horario ocupado');
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function updateAppointmentStatus(id, status) {
@@ -1512,10 +1242,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status })
         });
-        const data = await res.json();
-        if (data.success) {
-          loadDashboard();
-          closeModal('appointment-modal');
+        if (res.ok) {
+          closeSheet('sheet-app-details');
+          loadDashboardData();
         }
       } catch (e) {
         console.error(e);
@@ -1524,225 +1253,69 @@
 
     async function triggerReminder(id) {
       try {
-        const res = await fetch(`/api/appointments/${id}/trigger-reminder`, { method: 'POST' });
-        const data = await res.json();
-        if (data.success) {
-          showToast('🔔 Recordatorio T-2h enviado al cliente');
-        }
-      } catch (e) {
-        console.error(e);
-      }
+        await fetch(`/api/appointments/${id}/trigger-reminder`, { method: 'POST' });
+        showMobileToast('🔔 Recordatorio T-2h enviado');
+      } catch (e) {}
+    }
+
+    function triggerNextReminder() {
+      const app = dashboardState?.appointments?.find(a => a.status === 'confirmed');
+      if (app) triggerReminder(app.id);
+      else showMobileToast('No hay citas pendientes');
     }
 
     // ========================================================================
-    // MODALES Y GESTIÓN DE CITAS
+    // WHATSAPP BOT INTEGRADO EN APP MÓVIL
     // ========================================================================
-    function openAppointmentDetails(appId) {
-      const app = currentDashboardData?.appointments?.find(a => a.id === appId);
-      if (!app) return;
+    const chatContainer = document.getElementById('m-wa-chat');
 
-      const content = document.getElementById('modal-app-content');
-      const start = new Date(app.startTime);
-      const end = new Date(app.endTime);
-
-      content.innerHTML = `
-        <div style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid var(--border-glass);">
-          <div style="font-size: 16px; font-weight: 700; color: #FFF; margin-bottom: 4px;">${app.clientName}</div>
-          <div style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> ${app.clientPhone}
-            <a href="https://wa.me/${app.clientPhone}" target="_blank" style="color: #53BDEB; text-decoration: none; font-size: 12px; margin-left: 6px;">Abrir WhatsApp</a>
-          </div>
-
-          ${app.clientNoShows > 0 ? `
-            <div style="margin-top: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #FCA5A5;">
-              <i class="fa-solid fa-triangle-exclamation"></i> <strong>Riesgo de Ausentismo:</strong> Este cliente tiene ${app.clientNoShows} no-show registrado previamente.
-            </div>
-          ` : ''}
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px;">
-            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Barbero</div>
-            <div style="font-size: 14px; font-weight: 700; margin-top: 2px;">${app.barberName}</div>
-            <div style="font-size: 11px; color: var(--gold-primary); margin-top: 2px;">Comisión: ${app.barberCommissionPct}% ($${(app.commissionAmount || 0).toLocaleString('es-CO')})</div>
-          </div>
-
-          <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px;">
-            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Servicio</div>
-            <div style="font-size: 14px; font-weight: 700; margin-top: 2px;">${app.serviceName}</div>
-            <div style="font-size: 11px; color: #E2E8F0; margin-top: 2px;">$${app.totalPrice.toLocaleString('es-CO')} • ${app.serviceDuration}m</div>
-          </div>
-        </div>
-
-        <div style="font-size: 13px; color: var(--text-muted);">
-          <strong>Notas:</strong> ${app.notes || 'Sin notas adicionales'}
-        </div>
-
-        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Cambiar Estado del Turno:</div>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-outline" style="font-size: 12px; color: #34D399;" onclick="updateAppointmentStatus('${app.id}', 'completed')">
-              <i class="fa-solid fa-check"></i> Completar
-            </button>
-            <button class="btn btn-outline" style="font-size: 12px; color: #FBBF24;" onclick="triggerReminder('${app.id}')">
-              <i class="fa-solid fa-bell"></i> Enviar Recordatorio T-2h
-            </button>
-            <button class="btn btn-outline" style="font-size: 12px; color: #F87171;" onclick="updateAppointmentStatus('${app.id}', 'no_show')">
-              <i class="fa-solid fa-user-xmark"></i> Marcar No-Show
-            </button>
-            <button class="btn btn-outline" style="font-size: 12px; color: #9CA3AF;" onclick="updateAppointmentStatus('${app.id}', 'cancelled')">
-              <i class="fa-solid fa-trash"></i> Cancelar
-            </button>
-          </div>
-        </div>
+    function appendMobileMessage(sender, text, buttons = [], sections = []) {
+      const msg = document.createElement('div');
+      msg.style = `
+        max-width: 86%;
+        padding: 9px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        align-self: ${sender === 'outgoing' ? 'flex-end' : 'flex-start'};
+        background: ${sender === 'outgoing' ? '#005C4B' : '#202C33'};
+        color: #FFF;
       `;
 
-      document.getElementById('appointment-modal').classList.add('active');
-    }
+      let html = `<div style="white-space: pre-line;">${text}</div>`;
 
-    function openNewAppointmentModal(barberId) {
-      document.getElementById('manual-date').value = selectedDate;
-      if (barberId) {
-        document.getElementById('manual-barber-select').value = barberId;
-      }
-      document.getElementById('new-appointment-modal').classList.add('active');
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
-
-    function closeModalOnOverlay(e, modalId) {
-      if (e.target.id === modalId) {
-        closeModal(modalId);
-      }
-    }
-
-    function populateModalSelects(data) {
-      const barberSelect = document.getElementById('manual-barber-select');
-      const serviceSelect = document.getElementById('manual-service-select');
-      const engineServiceSelect = document.getElementById('engine-service-select');
-      const engineBarberSelect = document.getElementById('engine-barber-select');
-
-      if (barberSelect) {
-        barberSelect.innerHTML = data.barbers.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-      }
-
-      if (serviceSelect) {
-        serviceSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} (${s.durationMinutes}m - $${s.price.toLocaleString('es-CO')})</option>`).join('');
-      }
-
-      if (engineServiceSelect && engineServiceSelect.options.length === 0) {
-        engineServiceSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} (${s.durationMinutes}m)</option>`).join('');
-      }
-
-      if (engineBarberSelect && engineBarberSelect.options.length <= 1) {
-        engineBarberSelect.innerHTML = `<option value="">Todos los Barberos Activos</option>` + 
-          data.barbers.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-      }
-    }
-
-    async function handleManualBookingSubmit(e) {
-      e.preventDefault();
-      const barberId = document.getElementById('manual-barber-select').value;
-      const serviceId = document.getElementById('manual-service-select').value;
-      const clientName = document.getElementById('manual-client-name').value;
-      const clientPhone = document.getElementById('manual-client-phone').value;
-      const date = document.getElementById('manual-date').value;
-      const time = document.getElementById('manual-time').value;
-      const notes = document.getElementById('manual-notes').value;
-
-      const startTimeISO = new Date(`${date}T${time}:00`).toISOString();
-
-      try {
-        const res = await fetch('/api/appointments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            barberId,
-            serviceId,
-            clientName,
-            clientPhone,
-            startTimeISO,
-            notes,
-          }),
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          closeModal('new-appointment-modal');
-          loadDashboard();
-          showToast('✅ Cita agendada con éxito en el Timeline');
-        } else {
-          alert(data.error || 'No se pudo agendar la cita');
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    // ========================================================================
-    // MOTOR DE WHATSAPP SIMULADO (INTERACTIVO)
-    // ========================================================================
-    const chatBody = document.getElementById('wa-chat-body');
-
-    function appendMessage(sender, text, buttons = [], sections = []) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `wa-msg wa-${sender}`;
-
-      const now = new Date();
-      const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      let content = `<div style="white-space: pre-line;">${text}</div>`;
-
-      // Botones interactivos
       if (buttons && buttons.length > 0) {
-        content += `<div class="wa-btn-container">`;
-        buttons.forEach(btn => {
-          content += `<button class="wa-interactive-btn" onclick="sendButtonClick('${btn.id}', '${btn.title.replace(/'/g, "\\'")}')">${btn.title}</button>`;
+        html += `<div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">`;
+        buttons.forEach(b => {
+          html += `<button onclick="sendMobileButtonClick('${b.id}', '${b.title.replace(/'/g, "\\'")}')" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #53BDEB; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer;">${b.title}</button>`;
         });
-        content += `</div>`;
+        html += `</div>`;
       }
 
-      // Secciones de Lista interactiva
       if (sections && sections.length > 0) {
-        content += `<div class="wa-btn-container">`;
-        sections.forEach(sec => {
-          sec.rows.forEach(row => {
-            content += `
-              <button class="wa-interactive-btn" style="text-align: left;" onclick="sendListClick('${row.id}', '${row.title.replace(/'/g, "\\'")}')">
-                <div style="font-weight: 700;">${row.title}</div>
-                ${row.description ? `<div style="font-size: 10px; opacity: 0.8;">${row.description}</div>` : ''}
-              </button>
-            `;
+        html += `<div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">`;
+        sections.forEach(s => {
+          s.rows.forEach(r => {
+            html += `<button onclick="sendMobileListClick('${r.id}', '${r.title.replace(/'/g, "\\'")}')" style="text-align: left; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #53BDEB; padding: 8px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;">
+              <div style="font-weight: 700;">${r.title}</div>
+              ${r.description ? `<div style="font-size: 10px; opacity: 0.8; color: #FFF;">${r.description}</div>` : ''}
+            </button>`;
           });
         });
-        content += `</div>`;
+        html += `</div>`;
       }
 
-      content += `<div class="wa-time">${timeStr} <i class="fa-solid fa-check-double" style="color: #53BDEB;"></i></div>`;
-      msgDiv.innerHTML = content;
-      chatBody.appendChild(msgDiv);
-      chatBody.scrollTop = chatBody.scrollHeight;
-      playChime(sender === 'outgoing' ? 500 : 700, 0.08);
+      msg.innerHTML = html;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    function showTyping() {
-      document.getElementById('wa-typing').style.display = 'block';
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }
-    function hideTyping() {
-      document.getElementById('wa-typing').style.display = 'none';
-    }
-
-    async function sendTextMessage() {
-      const input = document.getElementById('wa-text-input');
-      const text = input.value.trim();
+    async function sendMobileTextMessage() {
+      const inp = document.getElementById('m-wa-input');
+      const text = inp.value.trim();
       if (!text) return;
-
-      appendMessage('outgoing', text);
-      input.value = '';
-      showTyping();
+      appendMobileMessage('outgoing', text);
+      inp.value = '';
 
       try {
         const res = await fetch('/api/whatsapp/simulate', {
@@ -1751,20 +1324,12 @@
           body: JSON.stringify({ type: 'text', text })
         });
         const reply = await res.json();
-        setTimeout(() => {
-          hideTyping();
-          appendMessage('incoming', reply.body, reply.buttons, reply.sections);
-        }, 400);
-      } catch (err) {
-        hideTyping();
-        console.error(err);
-      }
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
+      } catch (e) {}
     }
 
-    async function sendButtonClick(buttonId, title) {
-      appendMessage('outgoing', title);
-      showTyping();
-
+    async function sendMobileButtonClick(buttonId, title) {
+      appendMobileMessage('outgoing', title);
       try {
         const res = await fetch('/api/whatsapp/simulate', {
           method: 'POST',
@@ -1772,20 +1337,12 @@
           body: JSON.stringify({ type: 'interactive_button', buttonId })
         });
         const reply = await res.json();
-        setTimeout(() => {
-          hideTyping();
-          appendMessage('incoming', reply.body, reply.buttons, reply.sections);
-        }, 350);
-      } catch (err) {
-        hideTyping();
-        console.error(err);
-      }
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
+      } catch (e) {}
     }
 
-    async function sendListClick(listId, title) {
-      appendMessage('outgoing', title);
-      showTyping();
-
+    async function sendMobileListClick(listId, title) {
+      appendMobileMessage('outgoing', title);
       try {
         const res = await fetch('/api/whatsapp/simulate', {
           method: 'POST',
@@ -1793,68 +1350,43 @@
           body: JSON.stringify({ type: 'interactive_list', listId })
         });
         const reply = await res.json();
-        setTimeout(() => {
-          hideTyping();
-          appendMessage('incoming', reply.body, reply.buttons, reply.sections);
-        }, 350);
-      } catch (err) {
-        hideTyping();
-        console.error(err);
-      }
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
+      } catch (e) {}
     }
 
-    function injectReminderIntoWhatsApp(reminderMessage) {
-      appendMessage('incoming', reminderMessage.body, reminderMessage.buttons, reminderMessage.sections);
+    function injectReminderIntoMobileChat(msg) {
+      appendMobileMessage('incoming', msg.body, msg.buttons, msg.sections);
     }
 
-    function handleKeyPress(e) {
-      if (e.key === 'Enter') {
-        sendTextMessage();
-      }
+    function handleMobileKeyPress(e) {
+      if (e.key === 'Enter') sendMobileTextMessage();
     }
 
-    async function resetWhatsAppChat() {
-      chatBody.innerHTML = '';
-      try {
-        const res = await fetch('/api/whatsapp/simulate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'text', text: 'reiniciar' })
-        });
-        const reply = await res.json();
-        appendMessage('incoming', reply.body, reply.buttons, reply.sections);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // DEMO AUTOMÁTICA EN 3 SEGUNDOS
     async function runAutoBookingDemo() {
-      showToast('🚀 Ejecutando demo de reserva rápida...');
-      await resetWhatsAppChat();
+      chatContainer.innerHTML = '';
+      showMobileToast('🚀 Ejecutando Auto-Reserva en 3s...');
+      
+      const res = await fetch('/api/whatsapp/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'text', text: 'reiniciar' })
+      });
+      const r1 = await res.json();
+      appendMobileMessage('incoming', r1.body, r1.buttons, r1.sections);
 
-      setTimeout(async () => {
-        // Seleccionar Servicio 1
-        await sendListClick('SERVICE_srv-1', 'Corte Clásico & Fade Premium');
-
-        setTimeout(async () => {
-          // Seleccionar Barbero 1 (Mateo Silva)
-          await sendListClick('BARBER_barber-1', 'Mateo Silva (Master Barber)');
-
-          setTimeout(async () => {
-            // Seleccionar Fecha Hoy
+      setTimeout(() => {
+        sendMobileListClick('SERVICE_srv-1', 'Corte Clásico & Fade Premium');
+        setTimeout(() => {
+          sendMobileListClick('BARBER_barber-1', 'Mateo Silva');
+          setTimeout(() => {
             const todayStr = new Date().toISOString().split('T')[0];
-            await sendButtonClick(`DATE_${todayStr}`, 'Hoy');
-
-            setTimeout(async () => {
-              // Buscar primer slot disponible
-              const firstSlotBtn = document.querySelector('.wa-interactive-btn[onclick*="SLOT_"]');
-              if (firstSlotBtn) {
-                firstSlotBtn.click();
-              } else {
-                // Enviar nombre
-                document.getElementById('wa-text-input').value = 'Julián Castro (Demo)';
-                sendTextMessage();
+            sendMobileButtonClick(`DATE_${todayStr}`, 'Hoy');
+            setTimeout(() => {
+              const slotBtn = chatContainer.querySelector('button[onclick*="SLOT_"]');
+              if (slotBtn) slotBtn.click();
+              else {
+                document.getElementById('m-wa-input').value = 'Julián Castro (Mobile Demo)';
+                sendMobileTextMessage();
               }
             }, 600);
           }, 600);
@@ -1862,160 +1394,112 @@
       }, 600);
     }
 
-    function triggerNextReminder() {
-      const activeApp = currentDashboardData?.appointments?.find(a => a.status === 'confirmed');
-      if (activeApp) {
-        triggerReminder(activeApp.id);
-      } else {
-        showToast('No hay citas confirmadas pendientes para disparar recordatorio');
-      }
-    }
-
     // ========================================================================
-    // INSPECTOR DEL AVAILABILITY ENGINE
+    // PESTAÑAS ADICIONALES (GANANCIAS & MOTOR)
     // ========================================================================
-    async function loadEngineInspection() {
-      const serviceId = document.getElementById('engine-service-select').value || 'srv-1';
-      const barberId = document.getElementById('engine-barber-select').value;
-      const date = document.getElementById('engine-date-input').value || selectedDate;
-      document.getElementById('engine-date-input').value = date;
+    async function renderEarningsView() {
+      const container = document.getElementById('m-earnings-list');
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Cargando...</div>';
 
-      const container = document.getElementById('engine-results-container');
-      container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">Calculando intervalos...</div>`;
+      const res = await fetch('/api/reports/commissions');
+      const data = await res.json();
 
-      try {
-        const url = `/api/availability?serviceId=${serviceId}&date=${date}${barberId ? '&barberId=' + barberId : ''}`;
-        const res = await fetch(url);
-        const data = await res.json();
+      let myCommissionTotal = 0;
+      let html = '';
 
-        let html = '';
-        data.results.forEach(resItem => {
-          html += `
-            <div style="background: rgba(14, 20, 36, 0.7); border: 1px solid var(--border-glass); border-radius: 14px; padding: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="width: 12px; height: 12px; border-radius: 50%; background: ${resItem.barber.colorTag};"></div>
-                  <h3 style="font-size: 16px; font-weight: 700;">${resItem.barber.name}</h3>
-                </div>
+      data.report.forEach(r => {
+        if (r.barberId === selectedBarberId) myCommissionTotal = r.commissionEarned;
 
-                <div style="display: flex; gap: 10px;">
-                  <span style="font-size: 12px; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 4px 10px; border-radius: 20px;">
-                    ${resItem.freeSlotsCount} de ${resItem.totalGeneratedSlots} slots libres
-                  </span>
-                  <span style="font-size: 12px; background: rgba(245, 158, 11, 0.15); color: #FBBF24; padding: 4px 10px; border-radius: 20px;">
-                    Buffer: 10 min
-                  </span>
-                </div>
-              </div>
-
-              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px;">
-                ${resItem.slots.map(slot => `
-                  <div style="
-                    background: ${slot.available ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'};
-                    border: 1px solid ${slot.available ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
-                    padding: 10px;
-                    border-radius: 8px;
-                    text-align: center;
-                  ">
-                    <div style="font-size: 13px; font-weight: 700; color: ${slot.available ? '#34D399' : '#FCA5A5'};">
-                      ${slot.formattedTime}
-                    </div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
-                      ${slot.available ? '✓ DISPONIBLE' : '✕ OCUPADO / BLOQUE'}
-                    </div>
-                  </div>
-                `).join('')}
+        html += `
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 10px; height: 10px; border-radius: 50%; background: ${r.colorTag};"></div>
+              <div>
+                <div style="font-size: 14px; font-weight: 700; color: #FFF;">${r.barberName}</div>
+                <div style="font-size: 11px; color: var(--text-muted);">${r.totalAppointments} citas • ${r.commissionPercentage}% com.</div>
               </div>
             </div>
-          `;
-        });
 
-        container.innerHTML = html;
-      } catch (err) {
-        container.innerHTML = `<div style="color: #F87171;">Error al consultar el AvailabilityEngine</div>`;
-      }
-    }
-
-    // ========================================================================
-    // REPORTE DE COMISIONES
-    // ========================================================================
-    async function loadFinanceReport() {
-      const container = document.getElementById('commissions-table-container');
-      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Cargando reporte de comisiones...</div>';
-
-      try {
-        const res = await fetch('/api/reports/commissions');
-        const data = await res.json();
-
-        let totalGross = 0;
-        let totalCommissions = 0;
-        let totalNet = 0;
-
-        let rowsHtml = data.report.map(r => {
-          totalGross += r.grossRevenue;
-          totalCommissions += r.commissionEarned;
-          totalNet += r.barbershopShare;
-
-          return `
-            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-              <td style="padding: 14px 12px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                <span style="width: 10px; height: 10px; border-radius: 50%; background: ${r.colorTag};"></span>
-                ${r.barberName}
-              </td>
-              <td style="padding: 14px 12px; text-align: center;">${r.totalAppointments}</td>
-              <td style="padding: 14px 12px; text-align: center; color: var(--gold-primary); font-weight: 600;">${r.commissionPercentage}%</td>
-              <td style="padding: 14px 12px; text-align: right; font-weight: 700;">$${r.grossRevenue.toLocaleString('es-CO')}</td>
-              <td style="padding: 14px 12px; text-align: right; color: #60A5FA; font-weight: 700;">$${r.commissionEarned.toLocaleString('es-CO')}</td>
-              <td style="padding: 14px 12px; text-align: right; color: #34D399; font-weight: 700;">$${r.barbershopShare.toLocaleString('es-CO')}</td>
-            </tr>
-          `;
-        }).join('');
-
-        container.innerHTML = `
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-            <thead>
-              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-muted); text-transform: uppercase; font-size: 11px;">
-                <th style="padding: 12px; text-align: left;">Barbero</th>
-                <th style="padding: 12px; text-align: center;">Citas</th>
-                <th style="padding: 12px; text-align: center;">Comisión %</th>
-                <th style="padding: 12px; text-align: right;">Facturación Bruta</th>
-                <th style="padding: 12px; text-align: right;">Pago al Barbero</th>
-                <th style="padding: 12px; text-align: right;">Margen Salón</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-            <tfoot>
-              <tr style="border-top: 2px solid rgba(255, 255, 255, 0.15); font-weight: 800; font-size: 14px;">
-                <td style="padding: 16px 12px;">TOTAL GENERAL</td>
-                <td style="padding: 16px 12px; text-align: center;">-</td>
-                <td style="padding: 16px 12px; text-align: center;">-</td>
-                <td style="padding: 16px 12px; text-align: right; color: #FFF;">$${totalGross.toLocaleString('es-CO')}</td>
-                <td style="padding: 16px 12px; text-align: right; color: #60A5FA;">$${totalCommissions.toLocaleString('es-CO')}</td>
-                <td style="padding: 16px 12px; text-align: right; color: #34D399;">$${totalNet.toLocaleString('es-CO')}</td>
-              </tr>
-            </tfoot>
-          </table>
+            <div style="text-align: right;">
+              <div style="font-size: 14px; font-weight: 800; color: #60A5FA;">$${r.commissionEarned.toLocaleString('es-CO')}</div>
+              <div style="font-size: 10px; color: var(--text-muted);">Total: $${r.grossRevenue.toLocaleString('es-CO')}</div>
+            </div>
+          </div>
         `;
-      } catch (err) {
-        container.innerHTML = '<div style="color: #F87171;">Error al cargar las finanzas</div>';
+      });
+
+      document.getElementById('earnings-total-val').innerText = `$${myCommissionTotal.toLocaleString('es-CO')}`;
+      container.innerHTML = html;
+    }
+
+    async function loadEngineSlotsView() {
+      const container = document.getElementById('m-engine-slots-container');
+      container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">Calculando slots...</div>';
+
+      const res = await fetch(`/api/availability?serviceId=srv-1&date=${selectedDate}&barberId=${selectedBarberId}`);
+      const data = await res.json();
+      const slots = data.results[0]?.slots || [];
+
+      let html = '';
+      slots.forEach(s => {
+        html += `
+          <div style="
+            background: ${s.available ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'};
+            border: 1px solid ${s.available ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          ">
+            <span style="font-size: 13px; font-weight: 700; color: #FFF;">${s.formattedTime}</span>
+            <span style="font-size: 11px; font-weight: 700; color: ${s.available ? '#34D399' : '#F87171'};">
+              ${s.available ? '✓ DISPONIBLE' : '✕ OCUPADO'}
+            </span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function showMobileToast(msg) {
+      const existing = document.querySelector('.mobile-toast');
+      if (existing) existing.remove();
+
+      const t = document.createElement('div');
+      t.className = 'mobile-toast';
+      t.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--gold-primary);"></i> <span>${msg}</span>`;
+      document.getElementById('mobile-app-root').appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    function toggleFullscreen() {
+      const root = document.getElementById('mobile-app-root');
+      if (root.style.maxWidth === '100%') {
+        root.style.maxWidth = '440px';
+        root.style.borderRadius = '44px';
+        root.style.border = '8px solid #1E293B';
+      } else {
+        root.style.maxWidth = '100%';
+        root.style.borderRadius = '0';
+        root.style.border = 'none';
       }
     }
 
-    function showToast(msg) {
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.innerHTML = `<i class="fa-solid fa-bell" style="color: var(--gold-primary);"></i> <span>${msg}</span>`;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 4000);
-    }
-
-    // Inicialización automática
+    // Inicialización al cargar la ventana
     window.onload = () => {
-      updateDateLabel(new Date());
-      loadDashboard();
-      resetWhatsAppChat();
+      buildDayCarousel();
+      loadDashboardData();
+      
+      // Saludo inicial en el chat móvil
+      fetch('/api/whatsapp/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'text', text: 'hola' })
+      }).then(r => r.json()).then(reply => {
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections);
+      });
     };
   </script>
 </body>
