@@ -440,6 +440,182 @@
     .nav-item.active { color: var(--gold-primary); }
     .nav-item i { font-size: 18px; }
 
+    /* Ajustes & Configuración Total */
+    .settings-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .settings-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .settings-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #FFF;
+    }
+    .settings-card-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .settings-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .settings-input {
+      width: 100%;
+      padding: 11px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .settings-input:focus {
+      border-color: var(--gold-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .settings-textarea {
+      width: 100%;
+      min-height: 74px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.4;
+      transition: all 0.2s;
+    }
+    .settings-textarea:focus {
+      border-color: var(--gold-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Switch Moderno */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+      background: var(--gold-gradient);
+    }
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Selector de Días */
+    .day-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    .day-btn {
+      padding: 8px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .day-btn:active { transform: scale(0.95); }
+    .day-btn.selected {
+      background: var(--gold-gradient);
+      color: #080C14;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+    }
+
+    /* Selector de Buffer */
+    .buffer-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .buffer-btn {
+      padding: 9px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .buffer-btn:active { transform: scale(0.95); }
+    .buffer-btn.selected {
+      background: var(--gold-gradient);
+      color: #080C14;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+    }
+
     /* FAB */
     .mobile-fab {
       position: absolute;
@@ -557,16 +733,19 @@
     <!-- 2. Header Móvil del Barbero Único -->
     <div class="mobile-header">
       <div class="barber-profile-pill">
-        <div class="header-barber-avatar">MS</div>
+        <div class="header-barber-avatar" id="header-avatar">MS</div>
         <div>
-          <div class="header-barber-name">Mateo Silva <i class="fa-solid fa-circle-check" style="color: var(--gold-primary); font-size: 11px;"></i></div>
-          <div class="header-barber-status"><span class="pulse-dot"></span> Disponible • Master Barber</div>
+          <div class="header-barber-name" id="header-barber-name">Mateo Silva <i class="fa-solid fa-circle-check" style="color: var(--gold-primary); font-size: 11px;"></i></div>
+          <div class="header-barber-status" id="header-shop-name"><span class="pulse-dot"></span> Disponible • Master Barber</div>
         </div>
       </div>
 
       <div style="display: flex; gap: 8px;">
         <div class="icon-circle-btn" onclick="openNewServiceSheet()" title="Añadir Tipo de Corte">
           <i class="fa-solid fa-plus" style="color: var(--gold-primary);"></i>
+        </div>
+        <div class="icon-circle-btn" onclick="switchMobileTab('settings')" title="Configurar Todo">
+          <i class="fa-solid fa-gear" style="color: var(--gold-primary);"></i>
         </div>
         <div class="icon-circle-btn" onclick="loadDashboardData()" title="Refrescar">
           <i class="fa-solid fa-arrows-rotate"></i>
@@ -707,12 +886,176 @@
       <div id="m-earnings-breakdown" style="display: flex; flex-direction: column; gap: 10px;"></div>
     </div>
 
+    <!-- VISTA 5: AJUSTES Y CONFIGURACIÓN TOTAL -->
+    <div class="mobile-scroll-container" id="tab-settings-view" style="display: none; gap: 14px; padding-bottom: 90px;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800; color: #FFF;">Configuración Total</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Controla todos los aspectos de tu negocio y bot</p>
+        </div>
+
+        <button class="mobile-btn mobile-btn-gold" style="flex: none; padding: 8px 14px;" onclick="saveAllSettings()">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar
+        </button>
+      </div>
+
+      <!-- 1. Perfil del Barbero y Estudio -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><i class="fa-solid fa-store"></i></div>
+          <div>
+            <div class="settings-card-title">Mi Negocio & Perfil</div>
+            <div class="settings-card-desc">Información visible para los clientes</div>
+          </div>
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">Nombre del Estudio / Barbería</label>
+          <input type="text" id="cfg-shop-name" class="settings-input" placeholder="Ej: Mateo Silva Studio • Barbershop">
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">Nombre del Barbero (Propietario)</label>
+          <input type="text" id="cfg-barber-name" class="settings-input" placeholder="Ej: Mateo Silva (Master Barber)">
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">Teléfono / WhatsApp de Contacto</label>
+          <input type="text" id="cfg-phone" class="settings-input" placeholder="Ej: +57 311 111 2233">
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">Dirección Física</label>
+          <input type="text" id="cfg-address" class="settings-input" placeholder="Ej: Carrera 15 # 85-30, Zona Rosa, Bogotá">
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">Convenio o Info de Parqueadero</label>
+          <input type="text" id="cfg-parking" class="settings-input" placeholder="Ej: Convenio privado frente al estudio">
+        </div>
+      </div>
+
+      <!-- 2. Jornada Laboral y Horarios de Atención -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><i class="fa-solid fa-clock"></i></div>
+          <div>
+            <div class="settings-card-title">Jornada & Horarios</div>
+            <div class="settings-card-desc">Horario en que el bot agenda tus citas</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="settings-field">
+            <label class="settings-label">Hora Apertura</label>
+            <input type="time" id="cfg-work-start" class="settings-input" value="09:00">
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Hora Cierre</label>
+            <input type="time" id="cfg-work-end" class="settings-input" value="19:00">
+          </div>
+        </div>
+
+        <div class="settings-field" style="margin-top: 4px;">
+          <label class="settings-label">Días de Atención Activos</label>
+          <div class="day-selector-grid" id="cfg-days-grid">
+            <div class="day-btn selected" data-day="1" onclick="toggleDaySelection(1)">Lun</div>
+            <div class="day-btn selected" data-day="2" onclick="toggleDaySelection(2)">Mar</div>
+            <div class="day-btn selected" data-day="3" onclick="toggleDaySelection(3)">Mié</div>
+            <div class="day-btn selected" data-day="4" onclick="toggleDaySelection(4)">Jue</div>
+            <div class="day-btn selected" data-day="5" onclick="toggleDaySelection(5)">Vie</div>
+            <div class="day-btn selected" data-day="6" onclick="toggleDaySelection(6)">Sáb</div>
+            <div class="day-btn" data-day="7" onclick="toggleDaySelection(7)">Dom</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Receso de Almuerzo -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><i class="fa-solid fa-utensils"></i></div>
+          <div style="flex: 1;">
+            <div class="settings-card-title">Receso de Almuerzo</div>
+            <div class="settings-card-desc">Bloquea turnos automáticamente a mediodía</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-lunch-enabled" onchange="toggleLunchInputs(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div id="cfg-lunch-time-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;">
+          <div class="settings-field">
+            <label class="settings-label">Inicio Almuerzo</label>
+            <input type="time" id="cfg-lunch-start" class="settings-input" value="13:00">
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Fin Almuerzo</label>
+            <input type="time" id="cfg-lunch-end" class="settings-input" value="14:00">
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Motor de Turnos: Buffer de Preparación -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+          <div>
+            <div class="settings-card-title">Buffer entre Cortes</div>
+            <div class="settings-card-desc">Minutos de descanso o desinfección entre cada cliente</div>
+          </div>
+        </div>
+
+        <div class="settings-field">
+          <label class="settings-label">Intervalo de Buffer Seleccionado</label>
+          <div class="buffer-selector-grid" id="cfg-buffer-grid">
+            <div class="buffer-btn" data-buffer="0" onclick="selectBuffer(0)">0 m</div>
+            <div class="buffer-btn" data-buffer="5" onclick="selectBuffer(5)">5 m</div>
+            <div class="buffer-btn selected" data-buffer="10" onclick="selectBuffer(10)">10 m</div>
+            <div class="buffer-btn" data-buffer="15" onclick="selectBuffer(15)">15 m</div>
+            <div class="buffer-btn" data-buffer="20" onclick="selectBuffer(20)">20 m</div>
+          </div>
+          <span style="font-size: 11px; color: var(--gold-primary); margin-top: 4px;" id="buffer-description-text">
+            ⚡ Recomendado: 10 minutos de preparación entre turnos.
+          </span>
+        </div>
+      </div>
+
+      <!-- 5. WhatsApp Bot & Saludo Personalizado -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <div class="settings-card-icon"><i class="fa-brands fa-whatsapp"></i></div>
+          <div style="flex: 1;">
+            <div class="settings-card-title">Bot Automático de WhatsApp</div>
+            <div class="settings-card-desc">Modo 24/7 de atención y reservas</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-autobot-enabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-field" style="margin-top: 4px;">
+          <label class="settings-label">Mensaje de Saludo para Nuevos Clientes</label>
+          <textarea id="cfg-custom-greeting" class="settings-textarea" placeholder="Escribe tu mensaje de bienvenida personalizado..."></textarea>
+          <span style="font-size: 10px; color: var(--text-muted);">Este saludo lo recibirán los clientes cuando te escriban por primera vez al WhatsApp.</span>
+        </div>
+      </div>
+
+      <!-- Botón de Guardar al final -->
+      <button class="mobile-btn mobile-btn-gold" style="padding: 14px; font-size: 14px; margin-top: 6px;" onclick="saveAllSettings()">
+        <i class="fa-solid fa-check"></i> Guardar Toda la Configuración
+      </button>
+
+    </div>
+
     <!-- Botón Flotante + (FAB) para Nueva Cita Rápida -->
     <button class="mobile-fab" onclick="openNewBookingSheet()" title="Nueva Cita Rápida">
       <i class="fa-solid fa-plus"></i>
     </button>
 
-    <!-- 4. Barra de Navegación Inferior (4 Tabs Nativas) -->
+    <!-- 4. Barra de Navegación Inferior (5 Tabs Nativas) -->
     <nav class="mobile-bottom-nav">
       <div class="nav-item active" id="nav-btn-agenda" onclick="switchMobileTab('agenda')">
         <i class="fa-solid fa-calendar-day"></i>
@@ -732,6 +1075,11 @@
       <div class="nav-item" id="nav-btn-earnings" onclick="switchMobileTab('earnings')">
         <i class="fa-solid fa-wallet"></i>
         <span>Ganancias</span>
+      </div>
+
+      <div class="nav-item" id="nav-btn-settings" onclick="switchMobileTab('settings')">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Ajustes</span>
       </div>
     </nav>
 
@@ -835,6 +1183,15 @@
       showMobileToast('✂️ Catálogo de cortes actualizado');
     });
 
+    socket.on('settings:updated', (data) => {
+      if (data.settings) {
+        currentSettings = data.settings;
+        populateSettingsForm(data.settings);
+        updateUIWithSettings(data.settings);
+      }
+      showMobileToast('⚙️ Ajustes del estudio actualizados en vivo');
+    });
+
     socket.on('appointment:updated', (data) => {
       loadDashboardData();
       showMobileToast(`Estado actualizado: ${data.status}`);
@@ -847,6 +1204,9 @@
 
     let dashboardState = null;
     let selectedDate = new Date().toISOString().split('T')[0];
+    let currentSettings = null;
+    let selectedActiveDays = [1, 2, 3, 4, 5, 6];
+    let selectedBufferMinutes = 10;
 
     function updateClock() {
       const now = new Date();
@@ -857,14 +1217,16 @@
     updateClock();
 
     function switchMobileTab(tabName) {
-      const tabs = ['agenda', 'services', 'whatsapp', 'earnings'];
+      const tabs = ['agenda', 'services', 'whatsapp', 'earnings', 'settings'];
       tabs.forEach(t => {
         document.getElementById(`tab-${t}-view`).style.display = t === tabName ? 'flex' : 'none';
-        document.getElementById(`nav-btn-${t}`).className = 'nav-item' + (t === tabName ? ' active' : '');
+        const btn = document.getElementById(`nav-btn-${t}`);
+        if (btn) btn.className = 'nav-item' + (t === tabName ? ' active' : '');
       });
 
       if (tabName === 'services') loadServices();
       if (tabName === 'earnings') renderEarningsView();
+      if (tabName === 'settings') loadSettings();
     }
 
     function buildDayCarousel() {
@@ -901,6 +1263,10 @@
         const res = await fetch(`/api/dashboard/today?date=${selectedDate}`);
         const data = await res.json();
         dashboardState = data;
+        if (data.settings) {
+          currentSettings = data.settings;
+          updateUIWithSettings(data.settings);
+        }
         renderMobileView(data);
       } catch (e) {
         console.error(e);
@@ -1006,11 +1372,15 @@
 
         feed.appendChild(card);
 
-        if (start.getHours() <= 12 && (!sorted[idx + 1] || new Date(sorted[idx + 1].startTime).getHours() >= 14)) {
-          const lunch = document.createElement('div');
-          lunch.className = 'mobile-lunch-card';
-          lunch.innerHTML = `<i class="fa-solid fa-utensils"></i> 13:00 - 14:00 Receso de Almuerzo (Bloqueado)`;
-          feed.appendChild(lunch);
+        const cfg = data.settings || currentSettings;
+        if (cfg && cfg.lunchEnabled) {
+          const lStartH = Number(cfg.lunchStartTime.split(':')[0]);
+          if (start.getHours() <= lStartH && (!sorted[idx + 1] || new Date(sorted[idx + 1].startTime).getHours() > lStartH)) {
+            const lunch = document.createElement('div');
+            lunch.className = 'mobile-lunch-card';
+            lunch.innerHTML = `<i class="fa-solid fa-utensils"></i> ${cfg.lunchStartTime} - ${cfg.lunchEndTime} Receso de Almuerzo (Bloqueado)`;
+            feed.appendChild(lunch);
+          }
         }
       });
 
@@ -1140,6 +1510,180 @@
         `;
         container.appendChild(item);
       });
+    }
+
+    // ========================================================================
+    // CONFIGURACIÓN TOTAL DEL NEGOCIO & BOT
+    // ========================================================================
+    function toggleDaySelection(day) {
+      const idx = selectedActiveDays.indexOf(day);
+      if (idx > -1) {
+        if (selectedActiveDays.length === 1) {
+          showMobileToast('⚠️ Debes mantener al menos 1 día activo');
+          return;
+        }
+        selectedActiveDays.splice(idx, 1);
+      } else {
+        selectedActiveDays.push(day);
+      }
+      renderDaySelectionPills();
+    }
+
+    function renderDaySelectionPills() {
+      const container = document.getElementById('cfg-days-grid');
+      if (!container) return;
+      const buttons = container.querySelectorAll('.day-btn');
+      buttons.forEach(btn => {
+        const d = Number(btn.getAttribute('data-day'));
+        if (selectedActiveDays.includes(d)) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
+
+    function selectBuffer(minutes) {
+      selectedBufferMinutes = Number(minutes);
+      const container = document.getElementById('cfg-buffer-grid');
+      if (container) {
+        const buttons = container.querySelectorAll('.buffer-btn');
+        buttons.forEach(btn => {
+          const m = Number(btn.getAttribute('data-buffer'));
+          if (m === selectedBufferMinutes) btn.classList.add('selected');
+          else btn.classList.remove('selected');
+        });
+      }
+      const descEl = document.getElementById('buffer-description-text');
+      if (descEl) {
+        if (selectedBufferMinutes === 0) descEl.innerText = '⚡ Sin buffer: Turnos continuos sin descanso intermedio.';
+        else if (selectedBufferMinutes === 5) descEl.innerText = '⚡ Buffer rápido de 5 min para limpieza veloz.';
+        else if (selectedBufferMinutes === 10) descEl.innerText = '⚡ Recomendado: 10 min de preparación entre turnos.';
+        else if (selectedBufferMinutes === 15) descEl.innerText = '⚡ 15 min de descanso o esterilización de herramientas.';
+        else descEl.innerText = '⚡ 20 min holgados para máxima puntualidad.';
+      }
+    }
+
+    function toggleLunchInputs(enabled) {
+      const container = document.getElementById('cfg-lunch-time-container');
+      if (container) {
+        container.style.opacity = enabled ? '1' : '0.4';
+        container.style.pointerEvents = enabled ? 'auto' : 'none';
+      }
+    }
+
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        currentSettings = data.settings;
+        populateSettingsForm(data.settings);
+        updateUIWithSettings(data.settings);
+      } catch (err) {
+        console.error('Error cargando ajustes:', err);
+      }
+    }
+
+    function populateSettingsForm(s) {
+      if (!s) return;
+      const shopInput = document.getElementById('cfg-shop-name');
+      if (shopInput) shopInput.value = s.shopName || '';
+      const barberInput = document.getElementById('cfg-barber-name');
+      if (barberInput) barberInput.value = s.barberName || '';
+      const phoneInput = document.getElementById('cfg-phone');
+      if (phoneInput) phoneInput.value = s.phone || '';
+      const addressInput = document.getElementById('cfg-address');
+      if (addressInput) addressInput.value = s.address || '';
+      const parkInput = document.getElementById('cfg-parking');
+      if (parkInput) parkInput.value = s.parkingInfo || '';
+
+      const startInput = document.getElementById('cfg-work-start');
+      if (startInput) startInput.value = s.workStartTime || '09:00';
+      const endInput = document.getElementById('cfg-work-end');
+      if (endInput) endInput.value = s.workEndTime || '19:00';
+
+      selectedActiveDays = Array.isArray(s.activeDays) ? [...s.activeDays] : [1, 2, 3, 4, 5, 6];
+      renderDaySelectionPills();
+
+      const lunchCb = document.getElementById('cfg-lunch-enabled');
+      if (lunchCb) {
+        lunchCb.checked = Boolean(s.lunchEnabled);
+        toggleLunchInputs(Boolean(s.lunchEnabled));
+      }
+      const lunchStart = document.getElementById('cfg-lunch-start');
+      if (lunchStart) lunchStart.value = s.lunchStartTime || '13:00';
+      const lunchEnd = document.getElementById('cfg-lunch-end');
+      if (lunchEnd) lunchEnd.value = s.lunchEndTime || '14:00';
+
+      selectBuffer(s.slotBufferMinutes || 10);
+
+      const botCb = document.getElementById('cfg-autobot-enabled');
+      if (botCb) botCb.checked = Boolean(s.autoBotEnabled);
+
+      const greetingTextarea = document.getElementById('cfg-custom-greeting');
+      if (greetingTextarea) greetingTextarea.value = s.customGreeting || '';
+    }
+
+    function updateUIWithSettings(s) {
+      if (!s) return;
+      const barberEl = document.getElementById('header-barber-name');
+      if (barberEl) {
+        barberEl.innerHTML = `${s.barberName} <i class="fa-solid fa-circle-check" style="color: var(--gold-primary); font-size: 11px;"></i>`;
+      }
+      const shopEl = document.getElementById('header-shop-name');
+      if (shopEl) {
+        shopEl.innerHTML = `<span class="pulse-dot"></span> Disponible • ${s.shopName.split('•')[0] || s.shopName}`;
+      }
+      const avatarEl = document.getElementById('header-avatar');
+      if (avatarEl && s.barberName) {
+        const parts = s.barberName.trim().split(' ');
+        const initials = (parts[0]?.[0] || 'M') + (parts[1]?.[0] || 'S');
+        avatarEl.innerText = initials.toUpperCase();
+      }
+      const bannerTitle = document.getElementById('banner-title');
+      if (bannerTitle) {
+        bannerTitle.innerHTML = `<i class="fa-solid fa-scissors"></i> ${s.barberName} • App Móvil Personal`;
+      }
+    }
+
+    async function saveAllSettings() {
+      const payload = {
+        shopName: document.getElementById('cfg-shop-name').value.trim(),
+        barberName: document.getElementById('cfg-barber-name').value.trim(),
+        phone: document.getElementById('cfg-phone').value.trim(),
+        address: document.getElementById('cfg-address').value.trim(),
+        parkingInfo: document.getElementById('cfg-parking').value.trim(),
+        workStartTime: document.getElementById('cfg-work-start').value,
+        workEndTime: document.getElementById('cfg-work-end').value,
+        activeDays: selectedActiveDays,
+        lunchEnabled: document.getElementById('cfg-lunch-enabled').checked,
+        lunchStartTime: document.getElementById('cfg-lunch-start').value,
+        lunchEndTime: document.getElementById('cfg-lunch-end').value,
+        slotBufferMinutes: selectedBufferMinutes,
+        autoBotEnabled: document.getElementById('cfg-autobot-enabled').checked,
+        customGreeting: document.getElementById('cfg-custom-greeting').value.trim(),
+      };
+
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          currentSettings = data.settings;
+          updateUIWithSettings(data.settings);
+          loadDashboardData();
+          showMobileToast('✓ ¡Configuración guardada y sincronizada en vivo!');
+        } else {
+          showMobileToast('❌ Error guardando configuración');
+        }
+      } catch (err) {
+        console.error(err);
+        showMobileToast('❌ Error de conexión al guardar');
+      }
     }
 
     // ========================================================================
@@ -1421,6 +1965,7 @@
 
     window.onload = () => {
       buildDayCarousel();
+      loadSettings();
       loadDashboardData();
       loadServices();
 

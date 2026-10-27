@@ -122,7 +122,18 @@ export class WhatsAppService {
     }
 
     // ========================================================================
-    // 2. ATENCIÓN PERSONALIZADA / LENGUAJE NATURAL (FAQ & Consultas)
+    // 2. VERIFICACIÓN DE MODO BOT AUTOMÁTICO (Configurable por el Barbero)
+    // ========================================================================
+    if (!store.settings.autoBotEnabled && !actionId.startsWith('CONFIRM_COMING_') && !actionId.startsWith('CANCEL_APPOINTMENT_')) {
+      return {
+        to: msg.from,
+        type: 'text',
+        body: `💈 ¡Hola${clientFirstName ? ' ' + clientFirstName : ''}! En este momento la respuesta automática está pausada porque *${store.settings.barberName}* está atendiendo personalmente cada mensaje.\n\nRecibí tu consulta: "${rawText}". Te responderé en cuanto me desocupe del sillón.\n\n(Puedes consultar la dirección escribiendo *"donde"* o la lista de cortes con *"precios"*).`,
+      };
+    }
+
+    // ========================================================================
+    // 3. ATENCIÓN PERSONALIZADA / LENGUAJE NATURAL (FAQ & Consultas)
     // ========================================================================
     
     // A) Pregunta por Ubicación / Dirección
@@ -130,8 +141,8 @@ export class WhatsAppService {
       return {
         to: msg.from,
         type: 'interactive_buttons',
-        header: '📍 Ubicación de Mateo Silva Studio',
-        body: `¡Hola${clientFirstName ? ' ' + clientFirstName : ''}! Estamos ubicados en la *Carrera 15 # 85-30, Zona Rosa, Bogotá* (a pocos pasos del parque).\n\n🚗 Contamos con convenio de parqueadero privado al frente del estudio.\n\n¿Deseas que te aparte un turno?`,
+        header: `📍 Ubicación de ${store.settings.shopName}`,
+        body: `¡Hola${clientFirstName ? ' ' + clientFirstName : ''}! Estamos ubicados en *${store.settings.address}*.\n\n🚗 *Parqueadero:* ${store.settings.parkingInfo}.\n\n¿Deseas que te aparte un turno?`,
         buttons: [
           { id: 'INTENT_BOOK', title: '📅 Agendar Cita' },
           { id: 'INTENT_PRICES', title: '✂️ Ver Cortes & Precios' },
@@ -150,7 +161,7 @@ export class WhatsAppService {
         to: msg.from,
         type: 'interactive_buttons',
         header: '💈 Catálogo de Cortes & Servicios',
-        body: `Con gusto${clientFirstName ? ' ' + clientFirstName : ''}, estos son los cortes y rituales que realiza Mateo Silva:\n\n${servicesList}\n\n✨ *Recomendación del Barbero:* Nuestro servicio estrella es el *Combo VIP con Toalla Caliente* ($55,000).\n\n¿Cuál te llama la atención?`,
+        body: `Con gusto${clientFirstName ? ' ' + clientFirstName : ''}, estos son los cortes y rituales que realiza ${store.settings.barberName}:\n\n${servicesList}\n\n✨ *Recomendación del Barbero:* Nuestro servicio estrella es el *Combo VIP con Toalla Caliente* ($55,000).\n\n¿Cuál te llama la atención?`,
         buttons: [
           { id: 'INTENT_BOOK', title: '📅 Ver Horarios Libres' },
           { id: 'INTENT_TALK_HUMAN', title: '💬 Hablar con Mateo' },
@@ -160,11 +171,15 @@ export class WhatsAppService {
 
     // C) Pregunta por Horarios de Atención
     if (text.includes('horario') || text.includes('a que hora') || text.includes('abren') || text.includes('cierran') || text.includes('atienden')) {
+      const dayMap: Record<number, string> = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo' };
+      const daysStr = store.settings.activeDays.map(d => dayMap[d] || '').filter(Boolean).join(', ');
+      const lunchNotice = store.settings.lunchEnabled ? `\n🍽️ *Receso de almuerzo:* ${store.settings.lunchStartTime} - ${store.settings.lunchEndTime}` : '';
+
       return {
         to: msg.from,
         type: 'interactive_buttons',
         header: '🕒 Horarios de Atención',
-        body: `Atendemos de *Lunes a Sábado de 9:00 AM a 7:00 PM*, exclusivamente con cita previa para garantizarte una atención sin esperas y con el tiempo que tu corte merece.\n\n¿Para qué día buscas tu espacio?`,
+        body: `Atendemos los días *${daysStr || 'Lunes a Sábado'}* de *${store.settings.workStartTime} a ${store.settings.workEndTime}*${lunchNotice}, exclusivamente con cita previa para garantizarte una atención sin esperas y con el tiempo que tu corte merece.\n\n¿Para qué día buscas tu espacio?`,
         buttons: [
           { id: 'INTENT_BOOK_TODAY', title: '⚡ Espacio para Hoy' },
           { id: 'INTENT_BOOK_TOMORROW', title: '📅 Para Mañana' },
@@ -177,7 +192,7 @@ export class WhatsAppService {
       return {
         to: msg.from,
         type: 'text',
-        body: `📲 ¡Listo${clientFirstName ? ' ' + clientFirstName : ''}! Le acabo de notificar a Mateo en su app móvil que deseas consultarle algo personalmente. Te responderá en cuanto termine con el sillón actual.\n\nSi mientras tanto deseas asegurar tu horario antes de que se agote la agenda, solo escribe *"agendar"* o *"menú"*.`,
+        body: `📲 ¡Listo${clientFirstName ? ' ' + clientFirstName : ''}! Le acabo de notificar a ${store.settings.barberName} en su app móvil que deseas consultarle algo personalmente. Te responderá en cuanto termine con el sillón actual.\n\nSi mientras tanto deseas asegurar tu horario antes de que se agote la agenda, solo escribe *"agendar"* o *"menú"*.`,
       };
     }
 
@@ -257,8 +272,8 @@ export class WhatsAppService {
       return {
         to: msg.from,
         type: 'interactive_list',
-        header: `💈 ${tenant.name}`,
-        body: `¡Hola! Bienvenido a la atención personalizada de *Mateo Silva (Master Barber)* 💈.\n\nPara brindarte el mejor servicio, ¿qué tipo de corte deseas agendar hoy?`,
+        header: `💈 ${store.settings.shopName}`,
+        body: store.settings.customGreeting || `¡Hola! Bienvenido a la atención personalizada de *${store.settings.barberName}* 💈.\n\nPara brindarte el mejor servicio, ¿qué tipo de corte deseas agendar hoy?`,
         footer: 'Selecciona una opción del catálogo',
         sections: [
           {
@@ -352,7 +367,7 @@ export class WhatsAppService {
           schedules: store.schedules,
           blocks: store.blocks,
           existingAppointments: store.appointments,
-          slotBufferMinutes: tenant.slotBufferMinutes,
+          slotBufferMinutes: store.settings.slotBufferMinutes,
         });
 
         const freeSlots = slots.filter((s) => s.available);
@@ -534,8 +549,8 @@ export class WhatsAppService {
           `📅 *Fecha:* ${dateStr}\n` +
           `⏰ *Horario:* ${timeStr}\n` +
           `💵 *Valor:* $${(ctx.servicePrice || 0).toLocaleString('es-CO')}\n\n` +
-          `📍 *Ubicación:* Carrera 15 # 85-30, Zona Rosa, Bogotá\n\n` +
-          `*Atención Personalizada:* Mateo Silva ya tiene tu espacio reservado. Te enviaremos un recordatorio interactivo 2 horas antes de tu turno. ¡Te esperamos para brindarte la mejor experiencia!`,
+          `📍 *Ubicación:* ${store.settings.address}\n\n` +
+          `*Atención Personalizada:* ${store.settings.barberName} ya tiene tu espacio reservado. Te enviaremos un recordatorio interactivo 2 horas antes de tu turno. ¡Te esperamos para brindarte la mejor experiencia!`,
       };
     });
   }

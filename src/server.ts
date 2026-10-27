@@ -91,7 +91,26 @@ app.delete('/api/services/:id', (req: any, res: any) => {
 });
 
 // ============================================================================
-// 3. DASHBOARD DATA API (Modo 1 Solo Barbero)
+// 3. CONFIGURACIÓN TOTAL DEL BARBERO (Horarios, Estudio, Bot, Buffer)
+// ============================================================================
+app.get('/api/settings', (req: any, res: any) => {
+  res.json({ settings: store.settings });
+});
+
+app.put('/api/settings', (req: any, res: any) => {
+  try {
+    const updated = store.updateSettings(req.body);
+    io.emit('settings:updated', { settings: updated });
+    io.emit('dashboard:refresh');
+    res.json({ success: true, settings: updated });
+  } catch (err: any) {
+    console.error('Error actualizando ajustes:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// 4. DASHBOARD DATA API (Modo 1 Solo Barbero)
 // ============================================================================
 app.get('/api/dashboard/today', (req: any, res: any) => {
   const tenantId = 'tenant-demo-1';
@@ -141,6 +160,7 @@ app.get('/api/dashboard/today', (req: any, res: any) => {
     barber,
     barbers: [barber],
     services,
+    settings: store.settings,
     appointments: appointmentsForDate,
     blocks: blocksForDate,
     metrics: {
@@ -287,7 +307,7 @@ app.get('/api/availability', (req: any, res: any) => {
     schedules: store.schedules,
     blocks: store.blocks,
     existingAppointments: store.appointments,
-    slotBufferMinutes: 10,
+    slotBufferMinutes: store.settings.slotBufferMinutes,
   });
 
   res.json({ 

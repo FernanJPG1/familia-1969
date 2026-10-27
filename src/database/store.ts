@@ -9,8 +9,25 @@ import {
   WhatsAppSession 
 } from '../core/types';
 
+export interface BarberSettings {
+  shopName: string;
+  barberName: string;
+  phone: string;
+  address: string;
+  parkingInfo: string;
+  slotBufferMinutes: number;
+  workStartTime: string;
+  workEndTime: string;
+  lunchStartTime: string;
+  lunchEndTime: string;
+  lunchEnabled: boolean;
+  activeDays: number[]; // 1 = Lun, 2 = Mar, ..., 7 = Dom
+  customGreeting: string;
+  autoBotEnabled: boolean;
+}
+
 /**
- * Almacén en memoria persistente para aplicación de 1 Solo Barbero
+ * Almacén en memoria persistente para aplicación de 1 Solo Barbero con Configuración Completa
  */
 export class DataStore {
   public tenants: Tenant[] = [];
@@ -21,6 +38,23 @@ export class DataStore {
   public blocks: ScheduleBlock[] = [];
   public appointments: Appointment[] = [];
   public sessions: WhatsAppSession[] = [];
+
+  public settings: BarberSettings = {
+    shopName: "Mateo Silva Studio • Barbershop",
+    barberName: "Mateo Silva (Master Barber)",
+    phone: "+57 311 111 2233",
+    address: "Carrera 15 # 85-30, Zona Rosa, Bogotá",
+    parkingInfo: "Convenio de parqueadero privado frente al estudio",
+    slotBufferMinutes: 10,
+    workStartTime: "09:00",
+    workEndTime: "19:00",
+    lunchStartTime: "13:00",
+    lunchEndTime: "14:00",
+    lunchEnabled: true,
+    activeDays: [1, 2, 3, 4, 5, 6], // Lunes a Sábado
+    customGreeting: "¡Hola! Bienvenido al canal de reservas de Mateo Silva. ¿Qué tipo de corte o servicio deseas agendar hoy?",
+    autoBotEnabled: true,
+  };
 
   private bookingLock: Promise<void> = Promise.resolve();
 
@@ -50,12 +84,12 @@ export class DataStore {
     this.tenants = [
       {
         id: tenantId,
-        name: "Mateo Silva Studio • Barbershop",
+        name: this.settings.shopName,
         slug: 'mateo-silva-barber',
-        phone: '+57 311 111 2233',
-        address: 'Carrera 15 # 85-30, Bogotá',
+        phone: this.settings.phone,
+        address: this.settings.address,
         timezone: 'America/Bogota',
-        slotBufferMinutes: 10,
+        slotBufferMinutes: this.settings.slotBufferMinutes,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -67,47 +101,17 @@ export class DataStore {
       {
         id: 'barber-1',
         tenantId,
-        name: 'Mateo Silva (Master Barber)',
-        phone: '+57 311 111 2233',
-        colorTag: '#F59E0B', // Dorado Luxury
-        commissionPercentage: 100.0, // 100% de ingreso para el barbero independiente
+        name: this.settings.barberName,
+        phone: this.settings.phone,
+        colorTag: '#F59E0B',
+        commissionPercentage: 100.0,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ];
 
-    // 3. Horarios semanales recurrentes del barbero (Lunes a Sábado de 09:00 a 19:00)
-    this.schedules = [];
-    for (let day = 1; day <= 6; day++) {
-      this.schedules.push({
-        id: `sch-barber-1-${day}`,
-        barberId: 'barber-1',
-        dayOfWeek: day,
-        startTime: '09:00',
-        endTime: '19:00',
-        isActive: true,
-      });
-    }
-
-    // 4. Bloqueos de almuerzo (13:00 - 14:00) para hoy y los próximos 7 días
-    this.blocks = [];
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      const dateStr = d.toISOString().split('T')[0];
-
-      this.blocks.push({
-        id: `block-barber-1-${dateStr}`,
-        barberId: 'barber-1',
-        date: dateStr,
-        startTime: '13:00',
-        endTime: '14:00',
-        reason: 'Receso de Almuerzo',
-        createdAt: new Date(),
-      });
-    }
+    this.rebuildSchedulesAndBlocks();
 
     // 5. Catálogo Inicial de Cortes y Servicios
     this.services = [
@@ -184,7 +188,8 @@ export class DataStore {
       },
     ];
 
-    // 7. Citas para hoy asignadas al barbero
+    // 7. Citas de prueba para hoy
+    const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
@@ -236,6 +241,80 @@ export class DataStore {
         updatedAt: new Date(),
       },
     ];
+  }
+
+  /**
+   * Reconstruye jornadas de atención y bloqueos de almuerzo según configuración actual
+   */
+  public rebuildSchedulesAndBlocks() {
+    this.schedules = [];
+    for (const day of this.settings.activeDays) {
+      this.schedules.push({
+        id: `sch-barber-1-${day}`,
+        barberId: 'barber-1',
+        dayOfWeek: day,
+        startTime: this.settings.workStartTime,
+        endTime: this.settings.workEndTime,
+        isActive: true,
+      });
+    }
+
+    this.blocks = [];
+    if (this.settings.lunchEnabled) {
+      const today = new Date();
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const dateStr = d.toISOString().split('T')[0];
+
+        this.blocks.push({
+          id: `block-barber-1-${dateStr}`,
+          barberId: 'barber-1',
+          date: dateStr,
+          startTime: this.settings.lunchStartTime,
+          endTime: this.settings.lunchEndTime,
+          reason: 'Receso de Almuerzo',
+          createdAt: new Date(),
+        });
+      }
+    }
+  }
+
+  /**
+   * Actualiza la configuración global del barbero y sus impactos en tiempo real
+   */
+  public updateSettings(partial: Partial<BarberSettings>) {
+    if (partial.slotBufferMinutes !== undefined) {
+      partial.slotBufferMinutes = Number(partial.slotBufferMinutes);
+    }
+    if (partial.lunchEnabled !== undefined) {
+      partial.lunchEnabled = partial.lunchEnabled === true || (partial.lunchEnabled as any) === 'true';
+    }
+    if (partial.autoBotEnabled !== undefined) {
+      partial.autoBotEnabled = partial.autoBotEnabled === true || (partial.autoBotEnabled as any) === 'true';
+    }
+    if (partial.activeDays && Array.isArray(partial.activeDays)) {
+      partial.activeDays = partial.activeDays.map(Number);
+    }
+
+    this.settings = { ...this.settings, ...partial };
+
+    if (this.tenants[0]) {
+      this.tenants[0].name = this.settings.shopName;
+      this.tenants[0].phone = this.settings.phone;
+      this.tenants[0].address = this.settings.address;
+      this.tenants[0].slotBufferMinutes = Number(this.settings.slotBufferMinutes);
+      this.tenants[0].updatedAt = new Date();
+    }
+
+    if (this.barbers[0]) {
+      this.barbers[0].name = this.settings.barberName;
+      this.barbers[0].phone = this.settings.phone;
+      this.barbers[0].updatedAt = new Date();
+    }
+
+    this.rebuildSchedulesAndBlocks();
+    return this.settings;
   }
 }
 
