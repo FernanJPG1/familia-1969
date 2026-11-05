@@ -13,6 +13,11 @@ export function createApp() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Redirección inmediata a index.html en raíz
+  app.get('/', (req, res) => {
+    return res.redirect(302, '/index.html');
+  });
+
   // Archivos estáticos del frontend móvil / PWA
   const publicDir = path.join(__dirname, '../public');
   if (fs.existsSync(publicDir)) {
@@ -26,16 +31,9 @@ export function createApp() {
   // Rutas principales del API
   app.use('/api', apiRoutes);
 
-  // Ruta raíz para servir index.html directamente en Vercel
-  app.get('/', (req, res) => {
-    const htmlPath = path.join(__dirname, '../public/index.html');
-    const rootHtmlPath = path.join(__dirname, '../index.html');
-    if (fs.existsSync(htmlPath)) {
-      return res.sendFile(htmlPath);
-    } else if (fs.existsSync(rootHtmlPath)) {
-      return res.sendFile(rootHtmlPath);
-    }
-    res.status(200).send('<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=/index.html"></head><body>FAMILIA 1969</body></html>');
+  // Fallback para 404
+  app.use((req, res) => {
+    res.redirect(302, '/index.html');
   });
 
   // Manejador centralizado de errores
