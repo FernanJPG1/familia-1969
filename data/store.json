@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "savedAt": "2026-11-04T14:30:11.045Z",
+  "settings": {
+    "shopName": "FAMILIA 1969",
+    "barberName": "Jensy Gomez",
+    "phone": "+57 311 111 2233",
+    "address": "Carrera 15 # 85-30, Zona Rosa, Bogotá",
+    "parkingInfo": "Valet parking VIP exclusivo en la entrada de FAMILIA 1969",
+    "slotBufferMinutes": 10,
+    "workStartTime": "09:00",
+    "workEndTime": "19:00",
+    "lunchStartTime": "13:00",
+    "lunchEndTime": "14:00",
+    "lunchEnabled": true,
+    "activeDays": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "customGreeting": "¡Hola! Bienvenido al canal de reservas de FAMILIA 1969 (Barbero: Jensy Gomez) 💈. ¿Qué corte o servicio deseas agendar hoy?",
+    "autoBotEnabled": true
+  },
+  "tenants": [
+    {
+      "id": "tenant-demo-1",
+      "name": "FAMILIA 1969",
+      "slug": "mateo-silva-barber",
+      "phone": "+57 311 111 2233",
+      "address": "Carrera 15 # 85-30, Zona Rosa, Bogotá",
+      "timezone": "America/Bogota",
+      "slotBufferMinutes": 10,
+      "isActive": true,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T08:13:07.130Z"
+    }
+  ],
+  "barbers": [
+    {
+      "id": "barber-1",
+      "tenantId": "tenant-demo-1",
+      "name": "Jensy Gomez",
+      "phone": "+57 311 111 2233",
+      "colorTag": "#F59E0B",
+      "commissionPercentage": 100,
+      "isActive": true,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T08:13:07.130Z"
+    }
+  ],
+  "services": [
+    {
+      "id": "srv-1",
+      "tenantId": "tenant-demo-1",
+      "name": "Corte Clásico & Fade Texturizado",
+      "category": "Corte",
+      "description": "Degradado milimétrico (Low, Mid o High Fade), corte a tijera superior, lavado y peinado con pomada mate.",
+      "badge": "🔥 Más Popular",
+      "icon": "fa-scissors",
+      "durationMinutes": 40,
+      "price": 35000,
+      "isActive": true,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "srv-2",
+      "tenantId": "tenant-demo-1",
+      "name": "Ritual de Barba con Toalla Caliente",
+      "category": "Barba",
+      "description": "Perfilado a navaja, toalla caliente al vapor, masaje con aceites esenciales hidratantes y bálsamo nutritivo.",
+      "badge": "⭐ Relajante",
+      "icon": "fa-user-tie",
+      "durationMinutes": 30,
+      "price": 25000,
+      "isActive": true,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "srv-3",
+      "tenantId": "tenant-demo-1",
+      "name": "Combo VIP: Corte + Barba + Mascarilla",
+      "category": "Combo",
+      "description": "Experiencia total: Corte o Fade completo, ritual de barba con toalla caliente y mascarilla negra purificante.",
+      "badge": "👑 VIP",
+      "icon": "fa-crown",
+      "durationMinutes": 60,
+      "price": 55000,
+      "isActive": true,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "srv-4",
+      "tenantId": "tenant-demo-1",
+      "name": "Perfilado de Cejas & Exfoliación",
+      "category": "Tratamiento",
+      "description": "Definición simétrica de cejas a navaja y exfoliación facial suave para retirar impurezas de la piel.",
+      "badge": "⚡ Rápido",
+      "icon": "fa-wand-magic-sparkles",
+      "durationMinutes": 20,
+      "price": 18000,
+      "isActive": true,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "srv-1793766984288",
+      "tenantId": "tenant-demo-1",
+      "name": "Taper Fade Moderno & Freestyle",
+      "description": "Desvanecido cónico en sienes y cuello, líneas freestyle y peinado mate con textura.",
+      "category": "Corte",
+      "badge": "⭐ Más Vendido",
+      "icon": "fa-scissors",
+      "durationMinutes": 45,
+      "price": 45000,
+      "isActive": true,
+      "createdAt": "2026-11-04T04:36:24.288Z",
+      "updatedAt": "2026-11-04T04:36:24.295Z"
+    }
+  ],
+  "clients": [
+    {
+      "id": "client-1",
+      "tenantId": "tenant-demo-1",
+      "name": "David Rincón",
+      "whatsappPhone": "573001234567",
+      "totalNoShows": 0,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "client-2",
+      "tenantId": "tenant-demo-1",
+      "name": "Alejandro Morales",
+      "whatsappPhone": "573109876543",
+      "totalNoShows": 1,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "client-3",
+      "tenantId": "tenant-demo-1",
+      "name": "Camilo Torres",
+      "whatsappPhone": "573155554433",
+      "totalNoShows": 0,
+      "createdAt": "2026-11-04T00:12:10.280Z",
+      "updatedAt": "2026-11-04T00:12:10.280Z"
+    },
+    {
+      "id": "client-1793766984216",
+      "tenantId": "tenant-demo-1",
+      "name": "Carlos Santana",
+      "whatsappPhone": "573998887766",
+      "totalNoShows": 0,
+      "createdAt": "2026-11-04T04:36:24.216Z",
+      "updatedAt": "2026-11-04T04:36:24.216Z"
+    },
+    {
+      "id": "client-test-1793766984362",
+      "tenantId": "tenant-demo-1",
+      "name": "Andrés Cepeda",
+      "whatsappPhone": "573109998877",
+      "totalNoShows": 0,
+      "createdAt": "2026-11-04T04:36:24.362Z",
+      "updatedAt": "2026-11-04T04:36:24.362Z"
+    },
+    {
+      "id": "client-1793766984464",
+      "tenantId": "tenant-demo-1",
+      "name": "Mauricio Gómez",
+      "whatsappPhone": "573198887766",
+      "totalNoShows": 0,
+      "createdAt": "2026-11-04T04:36:24.464Z",
+      "updatedAt": "2026-11-04T04:36:24.464Z"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "app-demo-1",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-1",
+      "serviceId": "srv-1",
+      "startTime": "2026-11-03T15:00:00.000Z",
+      "endTime": "2026-11-03T15:40:00.000Z",
+      "totalPrice": 35000,
+      "status": "completed",
+      "notes": "Cliente regular. Prefiere tijera arriba y fade medio.",
+      "reminderSentAt": "2026-11-03T23:12:10.281Z",
+      "createdAt": "2026-11-04T00:12:10.281Z",
+      "updatedAt": "2026-11-04T01:57:15.252Z"
+    },
+    {
+      "id": "app-demo-2",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-2",
+      "serviceId": "srv-3",
+      "startTime": "2026-11-03T16:00:00.000Z",
+      "endTime": "2026-11-03T17:00:00.000Z",
+      "totalPrice": 55000,
+      "status": "completed",
+      "notes": "Llegada marcada manualmente en el panel",
+      "reminderSentAt": "2026-11-03T23:42:10.281Z",
+      "createdAt": "2026-11-04T00:12:10.281Z",
+      "updatedAt": "2026-11-04T01:57:36.784Z"
+    },
+    {
+      "id": "app-demo-3",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-3",
+      "serviceId": "srv-2",
+      "startTime": "2026-11-03T20:00:00.000Z",
+      "endTime": "2026-11-03T20:30:00.000Z",
+      "totalPrice": 25000,
+      "status": "completed",
+      "notes": "Pendiente de confirmación interactiva T-2h.",
+      "reminderSentAt": null,
+      "createdAt": "2026-11-04T00:12:10.281Z",
+      "updatedAt": "2026-11-04T01:57:28.488Z"
+    },
+    {
+      "id": "app-1793762862671",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-1",
+      "serviceId": "srv-2",
+      "startTime": "2026-11-09T20:00:00.000Z",
+      "endTime": "2026-11-09T20:30:00.000Z",
+      "totalPrice": 25000,
+      "status": "confirmed",
+      "notes": "Agendado por WhatsApp Bot para David Rincón",
+      "reminderSentAt": null,
+      "createdAt": "2026-11-04T03:27:42.671Z",
+      "updatedAt": "2026-11-04T03:27:42.671Z"
+    },
+    {
+      "id": "app-reminder-test-1793766984362",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-test-1793766984362",
+      "serviceId": "srv-1",
+      "startTime": "2026-11-04T04:51:24.362Z",
+      "endTime": "2026-11-04T05:31:24.362Z",
+      "totalPrice": 35000,
+      "status": "confirmed",
+      "notes": "Turno de prueba para recordatorio 20m",
+      "reminderSentAt": "2026-11-04T04:36:24.362Z",
+      "createdAt": "2026-11-04T04:36:24.362Z",
+      "updatedAt": "2026-11-04T04:36:24.362Z"
+    },
+    {
+      "id": "app-1793766984465",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-1793766984464",
+      "serviceId": "srv-1",
+      "startTime": "2026-11-04T14:50:00.000Z",
+      "endTime": "2026-11-04T15:30:00.000Z",
+      "totalPrice": 35000,
+      "status": "confirmed",
+      "notes": "Agendado por WhatsApp Bot para Mauricio Gómez",
+      "reminderSentAt": "2026-11-04T14:30:11.044Z",
+      "createdAt": "2026-11-04T04:36:24.465Z",
+      "updatedAt": "2026-11-04T04:36:24.465Z"
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Icon & Button Test Studio - Valmont</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #060912;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 40px;
+    }
+    h2 { font-family: 'Outfit'; color: #F59E0B; margin-bottom: 24px; }
+    .grid { display: flex; flex-direction: column; gap: 24px; max-width: 900px; }
+    .row { display: flex; align-items: center; gap: 16px; background: #0E172C; padding: 18px 24px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); }
+    .label { width: 220px; font-size: 13px; color: #94A3B8; font-weight: 600; }
+    
+    .btn-gold {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%);
+      border: 1px solid #FCD34D;
+      color: #060912;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    }
+    .btn-surface {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #FFF;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-surface:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+    .v-icon { width: 16px; height: 16px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <h2>Studio de Íconos y Botones VALMONT Barber Club</h2>
+  <div class="grid">
+    
+    <div class="row">
+      <div class="label">1. Tijera Barbera Clásica (Tabler Pro)</div>
+      <button class="btn-surface">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="7" r="3" />
+          <circle cx="6" cy="17" r="3" />
+          <line x1="8.6" y1="8.6" x2="19" y2="19" />
+          <line x1="8.6" y1="15.4" x2="12" y2="12" />
+          <line x1="15" y1="9" x2="19" y2="5" />
+          <circle cx="12" cy="12" r="1.2" fill="#F59E0B" stroke="none" />
+        </svg>
+        <span>Nuevo Corte</span>
+      </button>
+      <button class="btn-gold">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#060912" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="3"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <line x1="12" y1="14" x2="12" y2="18"/>
+          <line x1="10" y1="16" x2="14" y2="16"/>
+        </svg>
+        <span>Nueva Cita</span>
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="label">2. Tijera Ergonómica Moderna (Líneas Curvas)</div>
+      <button class="btn-surface">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          <path d="M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+          <path d="M20 4 8.5 15.5"/>
+          <path d="m14.5 14.5 5.5 5.5"/>
+          <path d="m8.5 8.5 4 4"/>
+          <circle cx="12" cy="12" r="1" fill="#F59E0B"/>
+        </svg>
+        <span>Nuevo Corte</span>
+      </button>
+      <button class="btn-gold">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#060912" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="3"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <circle cx="12" cy="15" r="2" fill="currentColor"/>
+        </svg>
+        <span>Nueva Cita</span>
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="label">3. Navaja Clásica de Barbero (Straight Razor)</div>
+      <button class="btn-surface">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l6-6 4 4-6 6a2 2 0 0 1-2.83 0l-1.17-1.17a2 2 0 0 1 0-2.83z"/>
+          <path d="M9 11l9-9a2 2 0 0 1 2.83 0l.17.17a2 2 0 0 1 0 2.83l-8 8"/>
+          <circle cx="9" cy="11" r="1.5" fill="#F59E0B"/>
+        </svg>
+        <span>Nuevo Corte</span>
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="label">4. Estilo Botón "Catálogo" con Insignia</div>
+      <button class="btn-surface">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="7" r="3" />
+          <circle cx="6" cy="17" r="3" />
+          <line x1="8.6" y1="8.6" x2="19" y2="19" />
+          <line x1="8.6" y1="15.4" x2="12" y2="12" />
+          <line x1="15" y1="9" x2="19" y2="5" />
+          <circle cx="12" cy="12" r="1.2" fill="#F59E0B" stroke="none" />
+        </svg>
+        <span>Gestionar Cortes</span>
+      </button>
+      <button class="btn-gold">
+        <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#060912" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+        <span>+ Agendar Turno</span>
+      </button>
+    </div>
+
+  </div>
+</body>
+</html>

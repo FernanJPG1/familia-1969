@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Geometric Boundary -->
+  <polygon points="256,36 448,128 448,320 256,464 64,320 64,128" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="8 4"/>
+  <polygon points="256,54 430,136 430,310 256,442 82,310 82,136" fill="none" stroke="currentColor" stroke-width="2"/>
+
+  <!-- Main Monogram -->
+  <polygon points="256,410 110,120 184,120 256,296" fill="currentColor"/>
+  <polygon points="256,410 256,296 184,120 256,120" fill="currentColor" opacity="0.6"/>
+  <polygon points="256,410 256,296 328,120 256,120" fill="currentColor" opacity="0.75"/>
+  <polygon points="256,410 402,120 328,120 256,296" fill="currentColor" opacity="0.9"/>
+  
+  <path d="M250,72 L262,72 L260,236 L252,236 Z" fill="currentColor"/>
+  <path d="M256,44 L264,64 L284,72 L264,80 L256,100 L248,80 L228,72 L248,64 Z" fill="currentColor"/>
+  <circle cx="256" cy="410" r="11" fill="none" stroke="currentColor" stroke-width="4"/>
+</svg>

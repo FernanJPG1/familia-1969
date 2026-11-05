@@ -146,9 +146,23 @@ class BarberProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> addService(String name, int durationMinutes, int price) async {
+  Future<bool> addService(
+    String name,
+    int durationMinutes,
+    int price, {
+    String description = '',
+    String category = 'Corte',
+    String? badge,
+  }) async {
     try {
-      final newSrv = await _api.createService(name, durationMinutes, price);
+      final newSrv = await _api.createService(
+        name,
+        durationMinutes,
+        price,
+        description: description,
+        category: category,
+        badge: badge,
+      );
       _services.add(newSrv);
       notifyListeners();
       return true;

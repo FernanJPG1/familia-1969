@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc -w",
+    "test": "npm run build && node tests/suite.test.js && node tests/services.test.js && node tests/reminders_and_notifications.test.js && node tests/bot_conversation.test.js && node tests/calendar_and_day_off.test.js"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +17,8 @@
     "@types/node": "^26.6.5",
     "rimraf": "^6.1.3",
     "ts-node": "^10.9.2",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vercel": "^65.11.0"
   },
   "dependencies": {
     "@prisma/client": "^7.10.1",

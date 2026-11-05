@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { 
   Tenant, 
   Barber, 
@@ -6,28 +8,21 @@ import {
   BarberSchedule, 
   ScheduleBlock, 
   Appointment, 
-  WhatsAppSession 
+  WhatsAppSession,
+  BarberSettings
 } from '../core/types';
+import { DateTimeUtils } from '../core/utils/datetime.utils';
+import { globalMutex } from '../core/utils/mutex';
+import { APP_CONSTANTS } from '../config/constants';
 
-export interface BarberSettings {
-  shopName: string;
-  barberName: string;
-  phone: string;
-  address: string;
-  parkingInfo: string;
-  slotBufferMinutes: number;
-  workStartTime: string;
-  workEndTime: string;
-  lunchStartTime: string;
-  lunchEndTime: string;
-  lunchEnabled: boolean;
-  activeDays: number[]; // 1 = Lun, 2 = Mar, ..., 7 = Dom
-  customGreeting: string;
-  autoBotEnabled: boolean;
-}
+const isVercel = Boolean(process.env.VERCEL);
+const DATA_DIR = isVercel ? '/tmp/data' : path.resolve(process.cwd(), 'data');
+const DB_FILE = path.join(DATA_DIR, 'store.json');
+const BUNDLED_DB_FILE = path.resolve(process.cwd(), 'data', 'store.json');
 
 /**
- * Almacén en memoria persistente para aplicación de 1 Solo Barbero con Configuración Completa
+ * Almacén en memoria seguro para el negocio y agenda de Mateo Silva.
+ * Se encarga del estado de la barbería, sincronización de jornadas y descansos.
  */
 export class DataStore {
   public tenants: Tenant[] = [];
@@ -40,47 +35,144 @@ export class DataStore {
   public sessions: WhatsAppSession[] = [];
 
   public settings: BarberSettings = {
-    shopName: "Mateo Silva Studio • Barbershop",
-    barberName: "Mateo Silva (Master Barber)",
+    shopName: "FAMILIA 1969 • Barber Club & Atelier",
+    barberName: "Mateo Silva (Director & Master Barber)",
     phone: "+57 311 111 2233",
     address: "Carrera 15 # 85-30, Zona Rosa, Bogotá",
-    parkingInfo: "Convenio de parqueadero privado frente al estudio",
-    slotBufferMinutes: 10,
-    workStartTime: "09:00",
-    workEndTime: "19:00",
-    lunchStartTime: "13:00",
-    lunchEndTime: "14:00",
+    parkingInfo: "Convenio de parqueadero privado frente al club",
+    slotBufferMinutes: APP_CONSTANTS.DEFAULT_SLOT_BUFFER_MINUTES,
+    workStartTime: APP_CONSTANTS.DEFAULT_WORK_START,
+    workEndTime: APP_CONSTANTS.DEFAULT_WORK_END,
+    lunchStartTime: APP_CONSTANTS.DEFAULT_LUNCH_START,
+    lunchEndTime: APP_CONSTANTS.DEFAULT_LUNCH_END,
     lunchEnabled: true,
     activeDays: [1, 2, 3, 4, 5, 6], // Lunes a Sábado
-    customGreeting: "¡Hola! Bienvenido al canal de reservas de Mateo Silva. ¿Qué tipo de corte o servicio deseas agendar hoy?",
+    customGreeting: "¡Hola! Bienvenido al canal de reservas de FAMILIA 1969 (Master Barber: Mateo Silva) 💈. ¿Qué corte o servicio deseas agendar hoy?",
     autoBotEnabled: true,
   };
 
-  private bookingLock: Promise<void> = Promise.resolve();
-
   constructor() {
-    this.seed();
-  }
+    if (isVercel && !fs.existsSync(DB_FILE) && fs.existsSync(BUNDLED_DB_FILE)) {
+      try {
+        if (!fs.existsSync(DATA_DIR)) {
+          fs.mkdirSync(DATA_DIR, { recursive: true });
+        }
+        fs.copyFileSync(BUNDLED_DB_FILE, DB_FILE);
+      } catch (e) {
+        console.warn('Advertencia copiando data a /tmp:', e);
+      }
+    }
 
-  public async acquireLock<T>(fn: () => Promise<T>): Promise<T> {
-    const prevLock = this.bookingLock;
-    let release: () => void;
-    this.bookingLock = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-
-    await prevLock;
-    try {
-      return await fn();
-    } finally {
-      release!();
+    if (fs.existsSync(DB_FILE)) {
+      try {
+        this.load();
+      } catch (e) {
+        console.error('Error cargando persistencia store.json, iniciando semilla:', e);
+        this.seed();
+        this.persist();
+      }
+    } else if (fs.existsSync(BUNDLED_DB_FILE)) {
+      try {
+        const raw = fs.readFileSync(BUNDLED_DB_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (parsed.settings) this.settings = { ...this.settings, ...parsed.settings };
+        if (Array.isArray(parsed.tenants)) this.tenants = parsed.tenants;
+        if (Array.isArray(parsed.barbers)) this.barbers = parsed.barbers;
+        if (Array.isArray(parsed.services)) this.services = parsed.services;
+        if (Array.isArray(parsed.clients)) this.clients = parsed.clients;
+        if (Array.isArray(parsed.appointments)) this.appointments = parsed.appointments;
+        this.rebuildSchedulesAndBlocks();
+        this.persist();
+      } catch {
+        this.seed();
+        this.persist();
+      }
+    } else {
+      this.seed();
+      this.persist();
     }
   }
 
-  public seed() {
+  public persist(): void {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      const data = {
+        version: 1,
+        savedAt: new Date().toISOString(),
+        settings: this.settings,
+        tenants: this.tenants,
+        barbers: this.barbers,
+        services: this.services,
+        clients: this.clients,
+        appointments: this.appointments,
+      };
+      const tempFile = `${DB_FILE}.tmp`;
+      fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
+      fs.renameSync(tempFile, DB_FILE);
+    } catch (err) {
+      console.error('Error al persistir base de datos a disco:', err);
+    }
+  }
+
+  public load(): void {
+    const raw = fs.readFileSync(DB_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+
+    if (parsed.settings) {
+      this.settings = { ...this.settings, ...parsed.settings };
+    }
+    if (Array.isArray(parsed.tenants)) {
+      this.tenants = parsed.tenants.map((t: any) => ({
+        ...t,
+        createdAt: new Date(t.createdAt),
+        updatedAt: new Date(t.updatedAt),
+      }));
+    }
+    if (Array.isArray(parsed.barbers)) {
+      this.barbers = parsed.barbers.map((b: any) => ({
+        ...b,
+        createdAt: new Date(b.createdAt),
+        updatedAt: new Date(b.updatedAt),
+      }));
+    }
+    if (Array.isArray(parsed.services)) {
+      this.services = parsed.services.map((s: any) => ({
+        ...s,
+        createdAt: new Date(s.createdAt),
+        updatedAt: new Date(s.updatedAt),
+      }));
+    }
+    if (Array.isArray(parsed.clients)) {
+      this.clients = parsed.clients.map((c: any) => ({
+        ...c,
+        createdAt: new Date(c.createdAt),
+        updatedAt: new Date(c.updatedAt),
+      }));
+    }
+    if (Array.isArray(parsed.appointments)) {
+      this.appointments = parsed.appointments.map((a: any) => ({
+        ...a,
+        startTime: new Date(a.startTime),
+        endTime: new Date(a.endTime),
+        reminderSentAt: a.reminderSentAt ? new Date(a.reminderSentAt) : null,
+        createdAt: new Date(a.createdAt),
+        updatedAt: new Date(a.updatedAt),
+      }));
+    }
+
+    this.rebuildSchedulesAndBlocks();
+  }
+
+  public async acquireLock<T>(task: () => Promise<T>): Promise<T> {
+    return globalMutex.acquire(task);
+  }
+
+  public seed(): void {
     const tenantId = 'tenant-demo-1';
     
-    // 1. Tenant Personal
+    // 1. Tenant Principal
     this.tenants = [
       {
         id: tenantId,
@@ -88,7 +180,7 @@ export class DataStore {
         slug: 'mateo-silva-barber',
         phone: this.settings.phone,
         address: this.settings.address,
-        timezone: 'America/Bogota',
+        timezone: APP_CONSTANTS.TIMEZONE,
         slotBufferMinutes: this.settings.slotBufferMinutes,
         isActive: true,
         createdAt: new Date(),
@@ -96,7 +188,7 @@ export class DataStore {
       },
     ];
 
-    // 2. ÚNICO BARBERO (Propietario / Operador)
+    // 2. Barbero Principal
     this.barbers = [
       {
         id: 'barber-1',
@@ -111,14 +203,19 @@ export class DataStore {
       },
     ];
 
+    // 3. Generar jornadas y descansos
     this.rebuildSchedulesAndBlocks();
 
-    // 5. Catálogo Inicial de Cortes y Servicios
+    // 4. Catálogo de Servicios
     this.services = [
       {
         id: 'srv-1',
         tenantId,
         name: 'Corte Clásico & Fade Texturizado',
+        category: 'Corte',
+        description: 'Degradado milimétrico (Low, Mid o High Fade), corte a tijera superior, lavado y peinado con pomada mate.',
+        badge: '🔥 Más Popular',
+        icon: 'fa-scissors',
         durationMinutes: 40,
         price: 35000,
         isActive: true,
@@ -129,6 +226,10 @@ export class DataStore {
         id: 'srv-2',
         tenantId,
         name: 'Ritual de Barba con Toalla Caliente',
+        category: 'Barba',
+        description: 'Perfilado a navaja, toalla caliente al vapor, masaje con aceites esenciales hidratantes y bálsamo nutritivo.',
+        badge: '⭐ Relajante',
+        icon: 'fa-user-tie',
         durationMinutes: 30,
         price: 25000,
         isActive: true,
@@ -139,6 +240,10 @@ export class DataStore {
         id: 'srv-3',
         tenantId,
         name: 'Combo VIP: Corte + Barba + Mascarilla',
+        category: 'Combo',
+        description: 'Experiencia total: Corte o Fade completo, ritual de barba con toalla caliente y mascarilla negra purificante.',
+        badge: '👑 VIP',
+        icon: 'fa-crown',
         durationMinutes: 60,
         price: 55000,
         isActive: true,
@@ -149,6 +254,10 @@ export class DataStore {
         id: 'srv-4',
         tenantId,
         name: 'Perfilado de Cejas & Exfoliación',
+        category: 'Tratamiento',
+        description: 'Definición simétrica de cejas a navaja y exfoliación facial suave para retirar impurezas de la piel.',
+        badge: '⚡ Rápido',
+        icon: 'fa-wand-magic-sparkles',
         durationMinutes: 20,
         price: 18000,
         isActive: true,
@@ -157,7 +266,7 @@ export class DataStore {
       },
     ];
 
-    // 6. Clientes
+    // 5. Clientes habituales
     this.clients = [
       {
         id: 'client-1',
@@ -188,11 +297,17 @@ export class DataStore {
       },
     ];
 
-    // 7. Citas de prueba para hoy
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
+    // 6. Citas de prueba para hoy generadas con DateTimeUtils exacto
+    const todayStr = DateTimeUtils.getTodayDateString();
+
+    const start1 = DateTimeUtils.buildDateTime(todayStr, '10:00');
+    const end1 = DateTimeUtils.buildDateTime(todayStr, '10:40');
+
+    const start2 = DateTimeUtils.buildDateTime(todayStr, '11:00');
+    const end2 = DateTimeUtils.buildDateTime(todayStr, '12:00');
+
+    const start3 = DateTimeUtils.buildDateTime(todayStr, '15:00');
+    const end3 = DateTimeUtils.buildDateTime(todayStr, '15:30');
 
     this.appointments = [
       {
@@ -201,8 +316,8 @@ export class DataStore {
         barberId: 'barber-1',
         clientId: 'client-1',
         serviceId: 'srv-1',
-        startTime: new Date(`${yyyy}-${mm}-${dd}T10:00:00`),
-        endTime: new Date(`${yyyy}-${mm}-${dd}T10:40:00`),
+        startTime: start1,
+        endTime: end1,
         totalPrice: 35000,
         status: 'confirmed',
         notes: 'Cliente regular. Prefiere tijera arriba y fade medio.',
@@ -216,8 +331,8 @@ export class DataStore {
         barberId: 'barber-1',
         clientId: 'client-2',
         serviceId: 'srv-3',
-        startTime: new Date(`${yyyy}-${mm}-${dd}T11:00:00`),
-        endTime: new Date(`${yyyy}-${mm}-${dd}T12:00:00`),
+        startTime: start2,
+        endTime: end2,
         totalPrice: 55000,
         status: 'confirmed',
         notes: 'Combo VIP completo. Confirmó por WhatsApp.',
@@ -231,11 +346,11 @@ export class DataStore {
         barberId: 'barber-1',
         clientId: 'client-3',
         serviceId: 'srv-2',
-        startTime: new Date(`${yyyy}-${mm}-${dd}T15:00:00`),
-        endTime: new Date(`${yyyy}-${mm}-${dd}T15:30:00`),
+        startTime: start3,
+        endTime: end3,
         totalPrice: 25000,
         status: 'pending',
-        notes: 'Pendiente de recordatorio T-2h.',
+        notes: 'Pendiente de confirmación interactiva T-2h.',
         reminderSentAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -244,9 +359,9 @@ export class DataStore {
   }
 
   /**
-   * Reconstruye jornadas de atención y bloqueos de almuerzo según configuración actual
+   * Reconstruye horarios y bloqueos de almuerzo para los próximos 14 días
    */
-  public rebuildSchedulesAndBlocks() {
+  public rebuildSchedulesAndBlocks(): void {
     this.schedules = [];
     for (const day of this.settings.activeDays) {
       this.schedules.push({
@@ -261,14 +376,14 @@ export class DataStore {
 
     this.blocks = [];
     if (this.settings.lunchEnabled) {
-      const today = new Date();
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i);
-        const dateStr = d.toISOString().split('T')[0];
+      const now = new Date();
+      for (let i = -1; i < 14; i++) {
+        const d = new Date(now);
+        d.setDate(now.getDate() + i);
+        const dateStr = DateTimeUtils.extractDateAndTime(d).dateStr;
 
         this.blocks.push({
-          id: `block-barber-1-${dateStr}`,
+          id: `block-lunch-${dateStr}`,
           barberId: 'barber-1',
           date: dateStr,
           startTime: this.settings.lunchStartTime,
@@ -281,9 +396,9 @@ export class DataStore {
   }
 
   /**
-   * Actualiza la configuración global del barbero y sus impactos en tiempo real
+   * Actualiza la configuración global del negocio con validación de tipos
    */
-  public updateSettings(partial: Partial<BarberSettings>) {
+  public updateSettings(partial: Partial<BarberSettings>): BarberSettings {
     if (partial.slotBufferMinutes !== undefined) {
       partial.slotBufferMinutes = Number(partial.slotBufferMinutes);
     }
@@ -314,7 +429,39 @@ export class DataStore {
     }
 
     this.rebuildSchedulesAndBlocks();
+    this.persist();
     return this.settings;
+  }
+
+  // ==========================================================================
+  // HELPERS DE CONSULTA RÁPIDA
+  // ==========================================================================
+
+  public getPrimaryTenant(): Tenant {
+    return this.tenants[0];
+  }
+
+  public getPrimaryBarber(): Barber {
+    return this.barbers[0];
+  }
+
+  public findClientByPhone(phone: string): Client | undefined {
+    return this.clients.find((c) => c.whatsappPhone === phone);
+  }
+
+  public findServiceById(id: string): Service | undefined {
+    return this.services.find((s) => s.id === id);
+  }
+
+  public findAppointmentById(id: string): Appointment | undefined {
+    return this.appointments.find((a) => a.id === id);
+  }
+
+  public getAppointmentsForDate(dateStr: string): Appointment[] {
+    return this.appointments.filter((a) => {
+      const aDate = DateTimeUtils.extractDateAndTime(a.startTime).dateStr;
+      return aDate === dateStr;
+    });
   }
 }
 

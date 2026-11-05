@@ -2,6 +2,8 @@
 // DOMAIN MODELS & DTOs - B2B BARBERSHOP SAAS
 // ============================================================================
 
+export * from './whatsapp.types';
+
 export interface Tenant {
   id: string;
   name: string;
@@ -31,6 +33,10 @@ export interface Service {
   id: string;
   tenantId: string;
   name: string;
+  description?: string;
+  category?: string; // "Corte", "Barba", "Combo", "Tratamiento", "Especial"
+  badge?: string;    // "🔥 Más Popular", "⭐ Recomendado", "👑 VIP", "⚡ Express"
+  icon?: string;
   durationMinutes: number;
   price: number;
   isActive: boolean;
@@ -67,7 +73,7 @@ export interface ScheduleBlock {
   createdAt: Date;
 }
 
-export type AppointmentStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
+export type AppointmentStatus = 'pending' | 'confirmed' | 'arrived' | 'completed' | 'cancelled' | 'no_show';
 
 export interface Appointment {
   id: string;
@@ -83,57 +89,58 @@ export interface Appointment {
   reminderSentAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  // Relaciones hidratadas opcionales
-  barber?: Barber;
-  client?: Client;
-  service?: Service;
-}
-
-export interface WhatsAppSession {
-  id: string;
-  tenantId: string;
-  whatsappPhone: string;
-  currentStep: WhatsAppStep;
-  contextData: WhatsAppBookingContext;
-  lastInteractionAt: Date;
-  expiresAt: Date;
-}
-
-export type WhatsAppStep = 
-  | 'IDLE'
-  | 'AWAITING_SERVICE'
-  | 'AWAITING_BARBER'
-  | 'AWAITING_DATE'
-  | 'AWAITING_SLOT'
-  | 'AWAITING_NAME'
-  | 'CONFIRMED';
-
-export interface WhatsAppBookingContext {
-  serviceId?: string;
-  serviceName?: string;
-  servicePrice?: number;
-  serviceDuration?: number;
-  barberId?: string;
+  
+  // Propiedades enriquecidas para presentación
   barberName?: string;
-  date?: string; // YYYY-MM-DD
-  slotStartTime?: string; // ISO string
-  slotEndTime?: string;   // ISO string
+  barberColor?: string;
+  barberCommissionPct?: number;
+  commissionAmount?: number;
   clientName?: string;
-  clientId?: string;
+  clientPhone?: string;
+  clientNoShows?: number;
+  serviceName?: string;
+  serviceDuration?: number;
 }
 
 export interface TimeSlot {
-  startTime: string; // ISO String (UTC/Local)
-  endTime: string;   // ISO String (UTC/Local)
+  startTime: string;     // ISO String
+  endTime: string;       // ISO String
   formattedTime: string; // "10:00 AM - 10:40 AM"
   available: boolean;
   barberId: string;
   barberName?: string;
+  reason?: string;       // Motivo si no está disponible (ej: "Almuerzo", "Ocupado", "Pasado")
 }
 
 export interface AvailabilityQuery {
-  tenantId: string;
-  barberId?: string; // Si es null/undefined, busca para cualquier barbero disponible
+  tenantId?: string;
+  barberId?: string;
   serviceId: string;
   date: string; // YYYY-MM-DD
+}
+
+export interface BarberSettings {
+  shopName: string;
+  barberName: string;
+  phone: string;
+  address: string;
+  parkingInfo: string;
+  slotBufferMinutes: number;
+  workStartTime: string;
+  workEndTime: string;
+  lunchStartTime: string;
+  lunchEndTime: string;
+  lunchEnabled: boolean;
+  activeDays: number[]; // 1 = Lun, 2 = Mar, ..., 7 = Dom
+  customGreeting: string;
+  autoBotEnabled: boolean;
+}
+
+export interface DashboardMetrics {
+  totalBookings: number;
+  completedCount: number;
+  noShowCount: number;
+  totalRevenue: number;
+  myEarnings: number;
+  occupancyPercentage: number;
 }

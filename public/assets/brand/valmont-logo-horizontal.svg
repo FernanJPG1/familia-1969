@@ -1,0 +1,54 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 120" fill="none">
+  <defs>
+    <linearGradient id="hGoldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="45%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="hGoldDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="60%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#78350F"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ISOTIPO IZQUIERDA (Escalado a 100x100 en (10, 10)) -->
+  <g transform="translate(10, 10) scale(0.195)">
+    <!-- Boundary -->
+    <polygon points="256,36 448,128 448,320 256,464 64,320 64,128" fill="none" stroke="#D4AF37" stroke-width="4" stroke-opacity="0.3" stroke-dasharray="8 4"/>
+    <polygon points="256,54 430,136 430,310 256,442 82,310 82,136" fill="none" stroke="#FDE68A" stroke-width="2" stroke-opacity="0.45"/>
+    <!-- Left Wing -->
+    <polygon points="256,410 110,120 184,120 256,296" fill="url(#hGoldLight)"/>
+    <polygon points="256,410 256,296 184,120 256,120" fill="url(#hGoldDark)" opacity="0.65"/>
+    <!-- Right Wing -->
+    <polygon points="256,410 256,296 328,120 256,120" fill="url(#hGoldLight)" opacity="0.8"/>
+    <polygon points="256,410 402,120 328,120 256,296" fill="url(#hGoldDark)"/>
+    <!-- Center Spine Blade -->
+    <path d="M250,72 L262,72 L260,236 L252,236 Z" fill="#FFFFFF" opacity="0.9"/>
+    <!-- Star -->
+    <path d="M256,44 L264,64 L284,72 L264,80 L256,100 L248,80 L228,72 L248,64 Z" fill="#FFFBEB"/>
+    <!-- Pivot Pin -->
+    <circle cx="256" cy="410" r="11" fill="#0A0E1A" stroke="#FDE68A" stroke-width="4"/>
+  </g>
+
+  <!-- LÍNEA SEPARADORA HERALDICA -->
+  <line x1="126" y1="28" x2="126" y2="92" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1.5"/>
+  <circle cx="126" cy="60" r="3" fill="#D4AF37"/>
+
+  <!-- WORDMARK: VALMONT -->
+  <g transform="translate(148, 58)">
+    <text font-family="'Cinzel', 'Outfit', 'Playfair Display', Georgia, serif" font-size="38" font-weight="800" letter-spacing="7" fill="#FFFFFF">VALMONT</text>
+  </g>
+
+  <!-- TAGLINE DESCRIPTOR: BARBER CLUB & GROOMING -->
+  <g transform="translate(150, 84)">
+    <text font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10.5" font-weight="700" letter-spacing="3.8" fill="#F59E0B">BARBER CLUB &amp; GROOMING</text>
+  </g>
+
+  <!-- ESTRELLAS DE PRESTIGIO / 5-STAR ATELIER -->
+  <g transform="translate(470, 78)">
+    <circle cx="0" cy="0" r="2" fill="#D4AF37" opacity="0.6"/>
+    <circle cx="8" cy="0" r="2.5" fill="#D4AF37"/>
+    <circle cx="16" cy="0" r="2" fill="#D4AF37" opacity="0.6"/>
+  </g>
+</svg>

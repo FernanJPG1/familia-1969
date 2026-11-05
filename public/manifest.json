@@ -1,23 +1,23 @@
 {
-  "name": "BarberPro Mobile - The Gentleman's Cut",
-  "short_name": "BarberPro",
-  "description": "App móvil para barberos y gestión de citas con WhatsApp en tiempo real",
+  "name": "VALMONT • Barber Club & Executive Suite",
+  "short_name": "VALMONT",
+  "description": "Club de barbería de alta gama y gestión de turnos ejecutiva en tiempo real",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#080C14",
+  "background_color": "#060912",
   "theme_color": "#F59E0B",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2855/2855577.png",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "/assets/brand/valmont-favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2855/2855577.png",
+      "src": "/assets/brand/valmont-symbol.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]

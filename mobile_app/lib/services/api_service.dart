@@ -58,7 +58,14 @@ class ApiService {
     }
   }
 
-  Future<ServiceModel> createService(String name, int durationMinutes, int price) async {
+  Future<ServiceModel> createService(
+    String name,
+    int durationMinutes,
+    int price, {
+    String description = '',
+    String category = 'Corte',
+    String? badge,
+  }) async {
     final uri = Uri.parse('$baseUrl/api/services');
     final response = await http.post(
       uri,
@@ -67,6 +74,9 @@ class ApiService {
         'name': name,
         'durationMinutes': durationMinutes,
         'price': price,
+        'description': description,
+        'category': category,
+        if (badge != null && badge.isNotEmpty) 'badge': badge,
       }),
     );
 

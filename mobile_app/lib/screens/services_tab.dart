@@ -90,76 +90,114 @@ class ServicesTab extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppTheme.borderSubtle),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  service.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0x10FFFFFF),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      (service.category ?? 'CORTE').toUpperCase(),
+                      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white70),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.schedule, size: 12, color: AppTheme.textMuted),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${service.durationMinutes} minutos (+buffer automático)',
-                      style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                  if (service.badge != null && service.badge!.toString().isNotEmpty) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0x26F59E0B),
+                        border: Border.all(color: const Color(0x4DF59E0B)),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        service.badge!,
+                        style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.goldPrimary),
+                      ),
                     ),
                   ],
-                ),
-              ],
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    AppConstants.formatPrice(service.price),
+                    style: const TextStyle(
+                      color: AppTheme.goldPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: AppTheme.surface,
+                          title: const Text('Eliminar Corte', style: TextStyle(color: Colors.white)),
+                          content: Text(
+                            '¿Deseas retirar "${service.name}" del catálogo de reservas de WhatsApp?',
+                            style: const TextStyle(color: AppTheme.textMuted),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentRose),
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        await provider.removeService(service.id);
+                      }
+                    },
+                    icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFFF87171)),
+                    tooltip: 'Eliminar',
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            service.name,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
           ),
+          if (service.description != null && service.description.toString().isNotEmpty) ...[
+            const SizedBox(height: 3),
+            Text(
+              service.description,
+              style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
+            ),
+          ],
+          const SizedBox(height: 6),
           Row(
             children: [
+              const Icon(Icons.schedule, size: 12, color: AppTheme.textMuted),
+              const SizedBox(width: 4),
               Text(
-                AppConstants.formatPrice(service.price),
-                style: const TextStyle(
-                  color: AppTheme.goldPrimary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                ),
-              ),
-              const SizedBox(width: 10),
-              IconButton(
-                onPressed: () async {
-                  final confirm = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      backgroundColor: AppTheme.surface,
-                      title: const Text('Eliminar Corte', style: TextStyle(color: Colors.white)),
-                      content: Text(
-                        '¿Deseas retirar "${service.name}" del catálogo de reservas de WhatsApp?',
-                        style: const TextStyle(color: AppTheme.textMuted),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentRose),
-                          onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (confirm == true) {
-                    await provider.removeService(service.id);
-                  }
-                },
-                icon: const Icon(Icons.delete_outline, size: 18, color: Color(0xFFF87171)),
-                tooltip: 'Eliminar',
+                '${service.durationMinutes} minutos (+buffer automático)',
+                style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
               ),
             ],
           ),
@@ -172,6 +210,8 @@ class ServicesTab extends StatelessWidget {
     final nameCtrl = TextEditingController();
     final durationCtrl = TextEditingController(text: '40');
     final priceCtrl = TextEditingController(text: '35000');
+    final descCtrl = TextEditingController();
+    String selectedCategory = 'Corte';
 
     showModalBottomSheet(
       context: context,
@@ -181,112 +221,154 @@ class ServicesTab extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
               ),
-              const SizedBox(height: 14),
-              const Text(
-                '+ Añadir Tipo de Corte',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 2),
-              const Text(
-                'Se publicará de inmediato para los clientes en WhatsApp',
-                style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameCtrl,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  labelText: 'NOMBRE DEL CORTE O RITUAL *',
-                  hintText: 'Ej: Taper Fade con Diseño o Barba Spa',
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: durationCtrl,
-                      keyboardType: TextInputType.number,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'DURACIÓN (MIN) *',
-                        hintText: '40',
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.white24,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      controller: priceCtrl,
-                      keyboardType: TextInputType.number,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'PRECIO (\$) *',
-                        hintText: '35000',
+                    const SizedBox(height: 14),
+                    const Text(
+                      '+ Crear Tipo de Corte',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 46,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final name = nameCtrl.text.trim();
-                    final dur = int.tryParse(durationCtrl.text) ?? 35;
-                    final price = int.tryParse(priceCtrl.text) ?? 35000;
-
-                    if (name.isNotEmpty) {
-                      final provider = context.read<BarberProvider>();
-                      final ok = await provider.addService(name, dur, price);
-                      if (ok && ctx.mounted) {
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('✂️ ¡Nuevo corte publicado en WhatsApp!'),
-                            backgroundColor: Color(0xFF1E293B),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'Se publicará de inmediato para los clientes en WhatsApp',
+                      style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'NOMBRE DEL CORTE O RITUAL *',
+                        hintText: 'Ej: Taper Fade con Diseño o Barba Spa',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedCategory,
+                      dropdownColor: const Color(0xFF1E293B),
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(labelText: 'CATEGORÍA *'),
+                      items: const [
+                        DropdownMenuItem(value: 'Corte', child: Text('✂️ Corte de Cabello')),
+                        DropdownMenuItem(value: 'Barba', child: Text('🧔 Barba & Afeitado')),
+                        DropdownMenuItem(value: 'Combo', child: Text('👑 Combo VIP')),
+                        DropdownMenuItem(value: 'Tratamiento', child: Text('✨ Tratamiento / Cejas')),
+                        DropdownMenuItem(value: 'Especial', child: Text('🎨 Diseños & Color')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setModalState(() => selectedCategory = val);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: durationCtrl,
+                            keyboardType: TextInputType.number,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'DURACIÓN (MIN) *',
+                              hintText: '40',
+                            ),
                           ),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.goldPrimary,
-                    foregroundColor: const Color(0xFF080C14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('Guardar y Publicar', style: TextStyle(fontWeight: FontWeight.w800)),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: priceCtrl,
+                            keyboardType: TextInputType.number,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'PRECIO (\$) *',
+                              hintText: '35000',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: descCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      maxLines: 2,
+                      decoration: const InputDecoration(
+                        labelText: 'DESCRIPCIÓN / INCLUSIONES',
+                        hintText: 'Ej: Incluye lavado, peinado con cera mate y toalla caliente',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 46,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final name = nameCtrl.text.trim();
+                          final dur = int.tryParse(durationCtrl.text) ?? 35;
+                          final price = int.tryParse(priceCtrl.text) ?? 35000;
+                          final desc = descCtrl.text.trim();
+
+                          if (name.isNotEmpty) {
+                            final provider = context.read<BarberProvider>();
+                            final ok = await provider.addService(
+                              name,
+                              dur,
+                              price,
+                              description: desc,
+                              category: selectedCategory,
+                            );
+                            if (ok && ctx.mounted) {
+                              Navigator.pop(ctx);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('✂️ ¡Nuevo corte publicado en WhatsApp!'),
+                                  backgroundColor: Color(0xFF1E293B),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.goldPrimary,
+                          foregroundColor: const Color(0xFF080C14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: const Text('Guardar y Publicar en WhatsApp', style: TextStyle(fontWeight: FontWeight.w800)),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
