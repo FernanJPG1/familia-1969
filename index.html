@@ -1,0 +1,4694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080C14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FAMILIA 1969">
+  <link rel="icon" type="image/png" href="/assets/brand/favicon.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <title>FAMILIA 1969 • Barber Studio & Executive Suite</title>
+  
+  <!-- Google Fonts: Cinzel, Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Socket.io Client -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    :root {
+      --bg-body: #060912;
+      --bg-sidebar: #090E1D;
+      --bg-topbar: #0B1326;
+      --bg-workspace: #060912;
+      --bg-surface: #0E172C;
+      --bg-card: rgba(16, 26, 48, 0.85);
+      --bg-card-hover: #16223D;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(59, 130, 246, 0.4);
+      --gold-primary: #38BDF8;
+      --blue-primary: #3B82F6;
+      --brand-blue: #2563EB;
+      --gold-gradient: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%);
+      --blue-gradient: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent-emerald: #10B981;
+      --accent-blue: #3B82F6;
+      --accent-rose: #EF4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Scrollbars elegantes */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.5);
+    }
+
+    /* ====================================================================== */
+    /* ESTRUCTURA PRINCIPAL: ESCRITORIO SAAS FULL-WIDTH                      */
+    /* ====================================================================== */
+    .web-app-layout {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 1. BARRA LATERAL (SIDEBAR DE NAVEGACIÓN) */
+    .desktop-sidebar {
+      width: 280px;
+      min-width: 280px;
+      height: 100vh;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+    }
+
+    .sidebar-brand {
+      padding: 24px 18px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at top center, rgba(37, 99, 235, 0.18) 0%, rgba(9, 14, 29, 0.6) 70%, transparent 100%);
+      position: relative;
+    }
+    .brand-logo-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(37, 99, 235, 0.3) 0%, rgba(6, 12, 24, 0.98) 100%);
+      border: 2.5px solid rgba(56, 189, 248, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75), 0 0 24px rgba(37, 99, 235, 0.45);
+      overflow: hidden;
+      padding: 3px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .brand-logo-icon:hover {
+      transform: scale(1.06) translateY(-2px);
+      border-color: #38BDF8;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 32px rgba(56, 189, 248, 0.65);
+    }
+    .brand-logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+    }
+    .brand-text-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .brand-title {
+      font-size: 21px;
+      font-weight: 900;
+      color: #FFF;
+      letter-spacing: 2px;
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.1;
+      text-transform: uppercase;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    .brand-subtitle {
+      font-size: 10.5px;
+      color: #38BDF8;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      margin-top: 4px;
+    }
+
+    /* Perfil del Barbero en Sidebar */
+    .sidebar-profile-card {
+      margin: 14px 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-barber-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--blue-gradient);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
+    }
+    .header-barber-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .header-barber-status {
+      font-size: 10px;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* Menú de Navegación */
+    .sidebar-nav {
+      flex: 1;
+      padding: 10px 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-nav-heading {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 8px 10px 4px 10px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #FFF;
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.18) 0%, rgba(37, 99, 235, 0.02) 100%);
+      color: #FFF;
+      font-weight: 800;
+      border-color: rgba(59, 130, 246, 0.4);
+      box-shadow: inset 3px 0 0 #38BDF8;
+    }
+    .nav-item-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-item:hover .nav-item-icon {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #FFF;
+      transform: scale(1.04);
+    }
+    .nav-item.active .nav-item-icon {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: rgba(56, 189, 248, 0.55);
+      color: #38BDF8;
+      box-shadow: 0 0 14px rgba(37, 99, 235, 0.35);
+      transform: scale(1.04);
+    }
+    .nav-item-text {
+      flex: 1;
+      letter-spacing: 0.2px;
+    }
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+    .nav-badge.gold {
+      background: rgba(37, 99, 235, 0.22);
+      color: #38BDF8;
+    }
+    .nav-badge.emerald {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34D399;
+    }
+
+    /* Pie de Barra Lateral: Descarga APK */
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar-apk-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(14, 21, 36, 0.8) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .apk-download-btn {
+      width: 100%;
+      background: var(--accent-emerald);
+      color: #04251B;
+      padding: 9px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .apk-download-btn:hover {
+      background: #34D399;
+      transform: translateY(-1px);
+    }
+    .server-status-pill {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* 2. ÁREA PRINCIPAL (HEADER SUPERIOR + WORKSPACE) */
+    .desktop-main-wrapper {
+      flex: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg-workspace);
+    }
+
+    /* Topbar Desktop */
+    .desktop-topbar {
+      height: 64px;
+      min-height: 64px;
+      background: var(--bg-topbar);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      z-index: 40;
+      position: relative;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    /* Selector de Fecha en Topbar */
+    .topbar-date-widget {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 4px 6px;
+      flex-shrink: 0;
+    }
+    .topbar-date-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFF;
+      min-width: 170px;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    /* Sistema de Íconos Vectoriales de Alta Precisión */
+    .v-icon {
+      width: 15px;
+      height: 15px;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .v-icon-lg { width: 18px; height: 18px; }
+    .v-icon-sm { width: 13px; height: 13px; }
+
+    .topbar-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+    .topbar-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #FFF;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .topbar-icon-btn:active {
+      transform: translateY(0.5px);
+    }
+    .topbar-today-btn {
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #38BDF8;
+      padding: 0 12px;
+      height: 36px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(56, 189, 248, 0.2);
+      flex-shrink: 0;
+    }
+    .topbar-today-btn:hover {
+      background: #2563EB;
+      color: #FFFFFF;
+      border-color: #38BDF8;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5);
+      transform: translateY(-1px);
+    }
+    .topbar-today-btn:active {
+      transform: translateY(0.5px);
+    }
+
+    /* KPIs en Topbar con Responsive Graceful Degradation */
+    .topbar-kpis {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: 14px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    @media (max-width: 1450px) {
+      .topbar-kpi-bot,
+      .topbar-kpi-bot-divider {
+        display: none !important;
+      }
+    }
+    @media (max-width: 1200px) {
+      .topbar-kpis {
+        display: none !important;
+      }
+    }
+    .topbar-kpi-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      white-space: nowrap !important;
+      flex-shrink: 0;
+    }
+    .topbar-kpi-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap !important;
+    }
+    .topbar-kpi-val {
+      font-weight: 800;
+      color: #FFF;
+      white-space: nowrap !important;
+    }
+    .topbar-kpi-val.gold { color: #38BDF8; }
+    .topbar-kpi-val.emerald { color: #34D399; display: flex; align-items: center; gap: 5px; white-space: nowrap !important; }
+    .topbar-kpi-divider {
+      width: 1px;
+      height: 16px;
+      background: var(--border-subtle);
+    }
+
+    /* Acciones en Topbar (Garantizadas contra recortes y overflow) */
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .desktop-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      white-space: nowrap;
+      text-decoration: none;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .desktop-btn-gold,
+    .desktop-btn-blue {
+      background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%);
+      border: 1px solid #60A5FA;
+      color: #FFFFFF;
+      box-shadow: 0 3px 12px rgba(37, 99, 235, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    .desktop-btn-gold:hover,
+    .desktop-btn-blue:hover {
+      background: linear-gradient(135deg, #7DD3FC 0%, #3B82F6 50%, #1E40AF 100%);
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    }
+    .desktop-btn-gold:active {
+      transform: translateY(0.5px);
+    }
+    .desktop-btn-surface {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #F8FAFC;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .desktop-btn-surface:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #FFF;
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+    .desktop-btn-surface:active {
+      transform: translateY(0.5px);
+    }
+
+    
+    /* Micro Botones de Acción de Tarjetas (Edit, Pause, Delete) */
+    .valmont-mini-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .valmont-mini-btn:hover {
+      transform: translateY(-1.5px);
+    }
+    .valmont-mini-btn:active {
+      transform: translateY(0.5px);
+    }
+    .valmont-mini-surface {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-subtle);
+      color: #CBD5E1;
+    }
+    .valmont-mini-surface:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFF;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .valmont-mini-warning {
+      background: rgba(37, 99, 235, 0.15);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: #38BDF8;
+    }
+    .valmont-mini-warning:hover {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: #38BDF8;
+    }
+    .valmont-mini-gold {
+      background: rgba(37, 99, 235, 0.2);
+      border-color: #38BDF8;
+      color: #FFF;
+    }
+    .valmont-mini-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: #F87171;
+    }
+    .valmont-mini-danger:hover {
+      background: rgba(239, 68, 68, 0.22);
+      color: #FECACA;
+      border-color: #EF4444;
+    }
+
+    /* Sistema de Botones de Acción de Citas (Valmont Action Suite) */
+    .valmont-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 12px;
+      height: 32px;
+      border-radius: 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      user-select: none;
+      white-space: nowrap;
+    }
+    .valmont-action-btn:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+    .valmont-action-btn:active {
+      transform: translateY(0.5px);
+    }
+
+    /* Botón: Marcar Llegada al Local */
+    .valmont-btn-arrival {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(52, 211, 153, 0.35);
+      color: #34D399;
+    }
+    .valmont-btn-arrival:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(52, 211, 153, 0.6);
+      color: #6EE7B7;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Botón: Pasar al Sillón / Atender (Estado de Urgencia en Sala) */
+    .valmont-btn-chair {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.38) 100%);
+      border-color: #34D399;
+      color: #FFFFFF;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      animation: pulseGreenGlow 2.5s infinite ease-in-out;
+    }
+    @keyframes pulseGreenGlow {
+      0%, 100% { box-shadow: 0 0 10px rgba(52, 211, 153, 0.25); border-color: rgba(52, 211, 153, 0.5); }
+      50% { box-shadow: 0 0 18px rgba(52, 211, 153, 0.55); border-color: #34D399; }
+    }
+    .valmont-btn-chair:hover {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(5, 150, 105, 0.55) 100%);
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55);
+    }
+
+    /* Botón: Recordatorio T-20m */
+    .valmont-btn-reminder {
+      background: rgba(37, 99, 235, 0.12);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: #93C5FD;
+    }
+    .valmont-btn-reminder:hover {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: rgba(56, 189, 248, 0.6);
+      color: #E0F2FE;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Botón: Atendido / Completado */
+    .valmont-btn-complete {
+      background: rgba(59, 130, 246, 0.08);
+      border-color: rgba(96, 165, 250, 0.28);
+      color: #93C5FD;
+    }
+    .valmont-btn-complete:hover {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: rgba(96, 165, 250, 0.5);
+      color: #BFDBFE;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+    }
+
+    /* Botón: WhatsApp */
+    .valmont-btn-whatsapp {
+      background: rgba(37, 211, 102, 0.08);
+      border-color: rgba(37, 211, 102, 0.28);
+      color: #4ADE80;
+    }
+    .valmont-btn-whatsapp:hover {
+      background: rgba(37, 211, 102, 0.18);
+      border-color: rgba(37, 211, 102, 0.55);
+      color: #86EFAC;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+    }
+
+    /* Botón: Peligro / Cancelar */
+    .valmont-btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #FCA5A5;
+    }
+    .valmont-btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.55);
+      color: #FECACA;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Espacio de Contenido (Paneles de cada Tab) */
+    .desktop-workspace {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      background: var(--bg-workspace);
+    }
+
+    .desktop-tab-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ====================================================================== */
+    /* VISTA 1: AGENDA DESKTOP                                               */
+    /* ====================================================================== */
+    .agenda-desktop-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+    }
+
+    /* Tarjetas de Métricas Superior */
+    .desktop-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+    .metric-card-pro {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .metric-card-pro:hover {
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-2px);
+    }
+    .metric-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .metric-card-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFF;
+      font-family: 'Outfit', sans-serif;
+    }
+    .metric-card-footer {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Carrusel de Días Horizontal */
+    .day-carousel {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .day-chip {
+      flex: 1;
+      min-width: 78px;
+      padding: 12px 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .day-chip:hover {
+      border-color: #38BDF8;
+      transform: translateY(-1px);
+    }
+    .day-chip.active {
+      background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%);
+      color: #FFFFFF;
+      border-color: #60A5FA;
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.5);
+    }
+    .day-chip-name { font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .day-chip-number { font-size: 18px; font-weight: 900; }
+    .day-chip-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; margin: 0 auto; }
+
+    /* Feed de Citas en Escritorio */
+    .mobile-app-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-left: 5px solid #2563EB;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mobile-app-card:hover {
+      border-color: rgba(59, 130, 246, 0.45);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    .mobile-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mobile-time-badge {
+      font-size: 13px;
+      font-weight: 800;
+      color: #38BDF8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mobile-status-tag {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .mobile-client-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mobile-service-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .mobile-card-actions {
+      display: flex;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .action-btn-sm {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .action-btn-sm:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #FFF;
+    }
+
+    /* Columna Derecha: Hero Next Up */
+    .next-up-card {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.16) 0%, rgba(14, 21, 36, 0.95) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    .next-up-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .next-up-tag {
+      font-size: 11px;
+      font-weight: 800;
+      color: #38BDF8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .countdown-pill {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .next-up-client { font-size: 19px; font-weight: 800; color: #FFF; }
+    .next-up-service { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .next-up-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+    /* Almuerzo */
+    .mobile-lunch-card {
+      background: repeating-linear-gradient(-45deg, rgba(239, 68, 68, 0.06), rgba(239, 68, 68, 0.06) 8px, rgba(239, 68, 68, 0.12) 8px, rgba(239, 68, 68, 0.12) 16px);
+      border: 1px dashed rgba(239, 68, 68, 0.35);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #FCA5A5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* ====================================================================== */
+    /* VISTA 2: CATÁLOGO DE CORTES (GRID RESPONSIVO)                         */
+    /* ====================================================================== */
+    .templates-scroll-row {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .template-card-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .template-card-btn:hover {
+      border-color: #38BDF8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+    }
+    .category-filters-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .cat-filter-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .cat-filter-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFF;
+    }
+    .cat-filter-pill.active {
+      background: var(--gold-gradient);
+      border-color: transparent;
+      color: #080C14;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.35);
+    }
+
+    /* Grid de tarjetas de corte */
+    #m-services-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .service-card-pro {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+    .service-card-pro:hover {
+      border-color: rgba(59, 130, 246, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    .service-card-pro.is-paused {
+      opacity: 0.65;
+      background: rgba(15, 23, 42, 0.45);
+      border-style: dashed;
+    }
+    .service-name-text { font-size: 15px; font-weight: 800; color: #FFF; }
+    .service-price-pill { font-size: 16px; font-weight: 900; color: #38BDF8; font-family: 'Outfit', sans-serif; }
+
+    /* ====================================================================== */
+    /* VISTA 3: CONSOLA WHATSAPP BOT (SPLIT DESKTOP)                         */
+    /* ====================================================================== */
+    .whatsapp-desktop-console {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      height: calc(100vh - 140px);
+      max-height: 820px;
+      min-height: 520px;
+      background: #0B141A;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+    .wa-console-sidebar {
+      background: #111B21;
+      border-right: 1px solid #202C33;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 14px;
+      overflow-y: auto;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .wa-console-chat {
+      display: flex;
+      flex-direction: column;
+      background: #0B141A;
+      position: relative;
+      height: 100%;
+      min-height: 0;
+      box-sizing: border-box;
+    }
+    .wa-header {
+      background: #202C33;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .wa-chat-thread {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23111b21' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .wa-input-container {
+      background: #202C33;
+      padding: 12px 18px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .wa-quick-prompt-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #202C33;
+      color: #E2E8F0;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .wa-quick-prompt-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #38BDF8;
+      color: #FFF;
+    }
+
+    /* Chips de Consulta Rápida dentro del Chat */
+    .wa-chat-quick-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 8px 14px;
+      background: #111B21;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+    }
+    .wa-chat-chip {
+      background: #202C33;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94A3B8;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .wa-chat-chip:hover {
+      background: rgba(0, 168, 132, 0.2);
+      border-color: #00A884;
+      color: #34D399;
+      transform: translateY(-1px);
+    }
+
+    /* Widget Flotante de Acceso a WhatsApp Bot */
+    .wa-floating-launcher {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(17, 27, 33, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 168, 132, 0.45);
+      border-radius: 40px;
+      padding: 6px 16px 6px 7px;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 16px rgba(0, 168, 132, 0.25);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .wa-floating-launcher:hover {
+      transform: translateY(-3px) scale(1.03);
+      border-color: #00A884;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 168, 132, 0.4);
+    }
+    .wa-floating-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 22px;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    }
+    .wa-floating-dot {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      width: 11px;
+      height: 11px;
+      background: #34D399;
+      border: 2px solid #111B21;
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+    .wa-floating-label {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 768px) {
+      .wa-floating-launcher {
+        bottom: 84px;
+        right: 16px;
+        padding: 5px;
+      }
+      .wa-floating-label {
+        display: none;
+      }
+    }
+
+    /* ====================================================================== */
+    /* VISTA 4 & 5: GANANCIAS Y CONFIGURACIÓN TOTAL                          */
+    /* ====================================================================== */
+    .settings-desktop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 20px;
+    }
+    .settings-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .settings-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .settings-card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(37, 99, 235, 0.16);
+      color: #38BDF8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .settings-card-title { font-size: 15px; font-weight: 800; color: #FFF; }
+    .settings-card-desc { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .settings-field { display: flex; flex-direction: column; gap: 6px; }
+    .settings-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .settings-input {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .settings-input:focus {
+      border-color: #38BDF8;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .settings-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 11px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      color: #FFF;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.4;
+      transition: all 0.2s;
+    }
+    .settings-textarea:focus {
+      border-color: #38BDF8;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Switch Moderno */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .toggle-slider { background: var(--gold-gradient); }
+    input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+    .day-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .day-btn {
+      padding: 9px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .day-btn.selected {
+      background: var(--gold-gradient);
+      color: #080C14;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+    .buffer-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .buffer-btn {
+      padding: 10px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .buffer-btn.selected {
+      background: var(--gold-gradient);
+      color: #080C14;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+    .quick-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #CBD5E1;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .quick-chip:hover {
+      background: rgba(37, 99, 235, 0.16);
+      border-color: #38BDF8;
+      color: #38BDF8;
+    }
+
+    /* ====================================================================== */
+    /* MODALES DE ESCRITORIO CENTRADOS                                        */
+    /* ====================================================================== */
+    .bottom-sheet-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+    .bottom-sheet-backdrop.active { display: flex; }
+
+    .bottom-sheet {
+      width: 100%;
+      max-width: 620px;
+      background: #0E1626;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9);
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 88vh;
+      overflow-y: auto;
+      animation: modalZoom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalZoom {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .sheet-handle { display: none; }
+
+    .mobile-btn {
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.18s;
+    }
+    .mobile-btn-gold { background: var(--gold-gradient); color: #080C14; }
+    .mobile-btn-emerald { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .mobile-btn-surface { background: rgba(255, 255, 255, 0.08); color: #FFF; border: 1px solid var(--border-subtle); }
+
+    /* Toast Notification (Posicionado en esquina inferior sobre el launcher) */
+    .mobile-toast {
+      position: fixed;
+      bottom: 84px;
+      right: 28px;
+      background: #0E172C;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-left: 4px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 12px 18px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFF;
+      z-index: 1000;
+      animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(80px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Ocultar elementos móviles heredados no utilizados */
+    .mobile-status-bar, .mobile-notch, .mobile-fab, .desktop-banner {
+      display: none !important;
+    }
+
+    /* ====================================================================== */
+    /* DISEÑO RESPONSIVO Y ADAPTATIVO (MOBILE, TABLET, DESKTOP)              */
+    /* ====================================================================== */
+
+    /* Botón Menú Móvil & Sidebar Drawer */
+    .mobile-menu-btn {
+      display: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: #FFF;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.18s;
+      flex-shrink: 0;
+    }
+    .mobile-menu-btn:hover, .mobile-menu-btn:active {
+      background: rgba(37, 99, 235, 0.2);
+      border-color: #38BDF8;
+      color: #38BDF8;
+    }
+
+    .sidebar-close-btn {
+      display: none;
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.18s;
+      z-index: 10;
+    }
+    .sidebar-close-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #EF4444;
+    }
+
+    .mobile-brand-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1040;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+    .sidebar-backdrop.active {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .btn-text-short {
+      display: none;
+    }
+
+    /* Barra de Navegación Inferior Móvil (Thumb Bar Ergonómica) */
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(11, 19, 38, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: none;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 4px env(safe-area-inset-bottom, 0px) 4px;
+      z-index: 1020;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.55);
+    }
+    .mobile-bottom-nav-item {
+      flex: 1;
+      height: 100%;
+      max-width: 76px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      position: relative;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      padding: 4px 0;
+    }
+    .mob-icon-wrap {
+      position: relative;
+      font-size: 18px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease;
+    }
+    .mobile-bottom-nav-item span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: color 0.18s ease;
+    }
+    .mobile-bottom-nav-item.active {
+      color: #38BDF8;
+    }
+    .mobile-bottom-nav-item.active .mob-icon-wrap {
+      transform: translateY(-2px);
+    }
+    .mobile-bottom-nav-item.active span {
+      color: #38BDF8;
+      font-weight: 800;
+    }
+    .mob-nav-dot {
+      position: absolute;
+      top: -1px;
+      right: -6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 6px var(--accent-emerald);
+    }
+
+    /* ====================================================================== */
+    /* BREAKPOINT 1: TABLETS & PANTALLAS MEDIANAS (<= 1024px)                */
+    /* ====================================================================== */
+    @media (max-width: 1024px) {
+      .desktop-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 14px 0 40px rgba(0, 0, 0, 0.75);
+      }
+      .desktop-sidebar.drawer-open {
+        transform: translateX(0);
+      }
+      .sidebar-close-btn {
+        display: flex;
+      }
+      .mobile-menu-btn {
+        display: flex;
+      }
+      .desktop-topbar {
+        padding: 0 16px;
+      }
+      .topbar-kpis {
+        display: none !important;
+      }
+      .desktop-workspace {
+        padding: 20px 18px 24px 18px;
+      }
+      .agenda-desktop-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .agenda-side-col {
+        order: -1;
+      }
+      .desktop-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .whatsapp-desktop-console {
+        grid-template-columns: 280px 1fr;
+      }
+      .settings-desktop-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+    }
+
+    /* ====================================================================== */
+    /* BREAKPOINT 2: SMARTPHONES & PANTALLAS MÓVILES (<= 768px)              */
+    /* ====================================================================== */
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .web-app-layout {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        display: block;
+      }
+      .desktop-main-wrapper {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+      }
+      .desktop-topbar {
+        height: 56px;
+        min-height: 56px;
+        padding: 0 12px;
+        gap: 8px;
+        position: sticky;
+        top: 0;
+        z-index: 1010;
+        background: rgba(11, 19, 38, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+      .topbar-date-widget {
+        padding: 3px 6px;
+        gap: 4px;
+      }
+      .topbar-date-info {
+        min-width: auto;
+        font-size: 11px;
+        padding: 0 4px;
+        font-weight: 700;
+      }
+      .topbar-date-info i {
+        display: none;
+      }
+      .topbar-today-btn {
+        padding: 3px 8px;
+        font-size: 10px;
+      }
+      .topbar-icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 11px;
+      }
+      .btn-hide-mobile {
+        display: none !important;
+      }
+      .btn-text-full {
+        display: none;
+      }
+      .btn-text-short {
+        display: inline;
+      }
+      .desktop-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        border-radius: 10px;
+      }
+      .desktop-workspace {
+        padding: 14px 12px 88px 12px;
+        overflow-y: visible;
+      }
+      .mobile-bottom-nav {
+        display: flex;
+      }
+      .mobile-brand-pill {
+        display: flex;
+      }
+      
+      /* Tarjetas de Métricas en Mobile */
+      .desktop-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .metric-card-pro {
+        padding: 14px;
+        border-radius: 14px;
+      }
+      .metric-card-val {
+        font-size: 20px;
+      }
+      .metric-card-header {
+        font-size: 10px;
+      }
+
+      /* Carrusel de Días */
+      .day-carousel {
+        gap: 6px;
+        margin-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .day-chip {
+        min-width: 58px;
+        padding: 8px 4px;
+        border-radius: 12px;
+      }
+      .day-chip-name {
+        font-size: 10px;
+      }
+      .day-chip-number {
+        font-size: 16px;
+      }
+
+      /* Catálogo de Cortes */
+      #m-services-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .service-card-pro {
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      /* WhatsApp Consola en Mobile */
+      .whatsapp-desktop-console {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 165px);
+        height: calc(100dvh - 165px);
+        border-radius: 16px;
+      }
+      .wa-console-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #202C33;
+        padding: 10px 12px;
+        gap: 8px;
+        max-height: 140px;
+        flex-shrink: 0;
+        overflow-y: auto;
+      }
+      .wa-prompts-container {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        gap: 6px !important;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .wa-quick-prompt-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+        font-size: 11px;
+        padding: 6px 10px;
+      }
+      .wa-console-chat {
+        flex: 1;
+        min-height: 0;
+      }
+      .wa-chat-thread {
+        padding: 12px;
+        gap: 8px;
+      }
+      .wa-input-container {
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      #m-wa-input {
+        font-size: 14px !important;
+        padding: 10px 14px !important;
+      }
+
+      /* Ajustes Grid */
+      .settings-desktop-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .settings-card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+      .settings-input, .settings-textarea, select {
+        font-size: 16px !important; /* Prevents auto-zoom on iOS */
+        min-height: 44px;
+      }
+      .day-selector-grid .day-btn, .buffer-selector-grid .buffer-btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Bottom Sheet en Mobile */
+      .bottom-sheet-backdrop {
+        align-items: flex-end;
+        padding: 0;
+      }
+      .bottom-sheet {
+        max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        max-height: 90vh;
+        padding: 16px 18px env(safe-area-inset-bottom, 20px) 18px;
+        animation: slideUpSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        border-bottom: none;
+      }
+      @keyframes slideUpSheet {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+      .sheet-handle {
+        display: block;
+        width: 40px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 4px;
+        margin: 0 auto 10px auto;
+      }
+
+      /* Toast Notification centrado en móvil */
+      .mobile-toast {
+        bottom: 16px;
+        top: auto;
+        left: 14px;
+        right: 14px;
+        justify-content: center;
+        font-size: 12px;
+        padding: 10px 14px;
+      }
+    }
+
+    /* ====================================================================== */
+    /* BREAKPOINT 3: PANTALLAS PEQUEÑAS (<= 480px)                            */
+    /* ====================================================================== */
+    @media (max-width: 480px) {
+      .topbar-date-info {
+        max-width: 125px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .next-up-card {
+        padding: 14px;
+      }
+      .next-up-client {
+        font-size: 16px;
+      }
+      .mobile-app-card {
+        padding: 12px 14px;
+      }
+      .mobile-client-name {
+        font-size: 15px;
+      }
+    }
+
+    /* Estilos del Banner de Notificación al Barbero y Estados de Llegada */
+    @keyframes bannerSlideDown {
+      from { transform: translate(-50%, -40px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    .pulse-dot-green {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 8px #10B981;
+    }
+    .mobile-app-card.is-client-arrived {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(14, 23, 44, 0.95) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONTENEDOR PRINCIPAL: SISTEMA WEB DE GESTIÓN (SAAS DESKTOP) -->
+  <div class="web-app-layout" id="mobile-app-root">
+
+    <!-- 1. BARRA LATERAL (SIDEBAR DE NAVEGACIÓN) -->
+    <aside class="desktop-sidebar">
+      <!-- Marca & Logo -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-icon">
+          <img src="/assets/brand/familia1969-badge-blue.png" alt="FAMILIA 1969 Emblem">
+        </div>
+        <div class="brand-text-block">
+          <div class="brand-title">FAMILIA 1969</div>
+          <div class="brand-subtitle">BARBER CLUB &bull; EST. 1969</div>
+        </div>
+        <button class="sidebar-close-btn" onclick="toggleMobileSidebar(false)" aria-label="Cerrar Menú">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Tarjeta del Barbero Propietario -->
+      <div class="sidebar-profile-card">
+        <div class="header-barber-avatar" id="header-avatar">MS</div>
+        <div>
+          <div class="header-barber-name" id="header-barber-name">
+            Mateo Silva <i class="fa-solid fa-circle-check" style="color: #38BDF8; font-size: 11px;"></i>
+          </div>
+          <div class="header-barber-status" id="header-shop-name">
+            <span class="pulse-dot"></span> Disponible • Master Barber
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú de Navegación de Módulos -->
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-heading">Módulos del Sistema</div>
+
+        <div class="nav-item active" id="nav-btn-agenda" onclick="switchMobileTab('agenda')">
+          <div class="nav-item-icon">
+            <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="6" r="3"/>
+              <path d="M8.12 8.12 12 12"/>
+              <path d="M20 4 8.12 15.88"/>
+              <circle cx="6" cy="18" r="3"/>
+              <path d="M14.8 14.8 20 20"/>
+            </svg>
+          </div>
+          <span class="nav-item-text">Mis Tipos de Corte</span>
+          <span class="nav-badge gold" id="services-count-badge">Catálogo</span>
+        </div>
+
+        <div class="nav-item" id="nav-btn-whatsapp" onclick="switchMobileTab('whatsapp')">
+          <div class="nav-item-icon">
+            <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="4"/><circle cx="9" cy="13" r="1.5" fill="currentColor"/><circle cx="15" cy="13" r="1.5" fill="currentColor"/><path d="M12 2v4"/><path d="M9 17h6"/></svg>
+          </div>
+          <span class="nav-item-text">Consola Bot 24/7</span>
+          <span class="nav-badge emerald">En vivo</span>
+        </div>
+
+        <div class="nav-item" id="nav-btn-earnings" onclick="switchMobileTab('earnings')">
+          <div class="nav-item-icon">
+            <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/><path d="M16 3H4a2 2 0 0 0-2 2v2"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/></svg>
+          </div>
+          <span class="nav-item-text">Caja & Ganancias</span>
+        </div>
+
+        <div class="nav-item" id="nav-btn-settings" onclick="switchMobileTab('settings')">
+          <div class="nav-item-icon">
+            <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          </div>
+          <span class="nav-item-text">Configuración Total</span>
+        </div>
+      </nav>
+
+      <!-- Pie de Barra Lateral: App Móvil APK y Estado -->
+      <div class="sidebar-footer">
+        <div class="sidebar-apk-card">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(16, 185, 129, 0.2); color: #34D399; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+              <i class="fa-brands fa-android"></i>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #FFF;">App Android (APK)</div>
+              <div style="font-size: 9px; color: var(--text-muted);">Descarga directa instalable</div>
+            </div>
+          </div>
+          <a href="/downloads/Barberia-MateoSilva.apk" download="Barberia-MateoSilva.apk" class="apk-download-btn">
+            <i class="fa-solid fa-download"></i> Descargar APK (165 MB)
+          </a>
+        </div>
+
+        <div class="server-status-pill">
+          <span class="pulse-dot"></span>
+          <span>Web Server • http://localhost:3000</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. ÁREA PRINCIPAL (HEADER SUPERIOR + WORKSPACE) -->
+    <main class="desktop-main-wrapper">
+      
+      <!-- Topbar Desktop -->
+      <header class="desktop-topbar">
+        <!-- Grupo Izquierdo: Botón Menú + Marca Móvil + Navegador de Fechas -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="mobile-menu-btn" onclick="toggleMobileSidebar(true)" aria-label="Abrir Menú Lateral">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          
+          <div class="mobile-brand-pill">
+            <div class="brand-logo-icon" style="width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5); padding: 1px;">
+              <img src="/assets/brand/familia1969-badge-blue.png" alt="FAMILIA 1969" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+            <div style="margin-left: 6px;">
+              <div style="font-weight: 900; font-size: 14px; color: #FFF; font-family: 'Outfit', sans-serif; letter-spacing: 1px; line-height: 1.1;">FAMILIA 1969</div>
+              <div style="font-size: 8.5px; color: #38BDF8; font-weight: 800; letter-spacing: 1.5px;">BARBER CLUB</div>
+            </div>
+          </div>
+
+          <!-- Navegador de Fechas -->
+          <div class="topbar-date-widget">
+            <button class="topbar-icon-btn" onclick="navigateDate(-1)" title="Día Anterior">
+              <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="topbar-date-info">
+              <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #38BDF8;"><rect x="3" y="4" width="18" height="18" rx="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="15" r="2" fill="currentColor"/></svg>
+              <span id="topbar-date-label">Lunes, 2 de Noviembre</span>
+            </div>
+            <button class="topbar-icon-btn" onclick="navigateDate(1)" title="Día Siguiente">
+              <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="topbar-today-btn" onclick="goToToday()">
+              Hoy
+            </button>
+          </div>
+        </div>
+
+        <!-- KPIs en Vivo en Topbar -->
+        <div class="topbar-kpis">
+          <div class="topbar-kpi-item">
+            <span class="topbar-kpi-label">Caja Hoy:</span>
+            <span class="topbar-kpi-val gold" id="mobile-m-revenue">$115,000</span>
+          </div>
+          <div class="topbar-kpi-divider"></div>
+          <div class="topbar-kpi-item">
+            <span class="topbar-kpi-label">Citas Programadas:</span>
+            <span class="topbar-kpi-val" id="mobile-m-bookings">3</span>
+          </div>
+          <div class="topbar-kpi-divider topbar-kpi-bot-divider"></div>
+          <div class="topbar-kpi-item topbar-kpi-bot">
+            <span class="topbar-kpi-label">Asistente WhatsApp:</span>
+            <span class="topbar-kpi-val emerald"><span class="pulse-dot"></span> Activo 24/7</span>
+          </div>
+        </div>
+
+        <!-- Acciones Principales -->
+        <div class="topbar-actions">
+          <button class="desktop-btn desktop-btn-surface btn-hide-mobile" onclick="openNewServiceSheet()" title="Añadir Tipo de Corte al Catálogo">
+            <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="6" r="3"/>
+              <path d="M8.12 8.12 12 12"/>
+              <path d="M20 4 8.12 15.88"/>
+              <circle cx="6" cy="18" r="3"/>
+              <path d="M14.8 14.8 20 20"/>
+            </svg>
+            <span>Nuevo Corte</span>
+          </button>
+          <button class="desktop-btn desktop-btn-gold" onclick="openNewBookingSheet()">
+            <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2v4"/>
+              <path d="M16 2v4"/>
+              <rect width="18" height="18" x="3" y="4" rx="3"/>
+              <path d="M3 10h18"/>
+              <line x1="12" y1="14" x2="12" y2="18"/>
+              <line x1="10" y1="16" x2="14" y2="16"/>
+            </svg>
+            <span class="btn-text-full">Nueva Cita</span><span class="btn-text-short">Cita</span>
+          </button>
+          <button class="topbar-icon-btn" onclick="loadDashboardData()" title="Sincronizar Datos">
+            <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          </button>
+          <button class="topbar-icon-btn btn-hide-mobile" onclick="toggleFullscreen()" title="Pantalla Completa">
+            <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Espacio de Contenido (Paneles de cada Tab) -->
+      <section class="desktop-workspace">
+
+        <!-- ================================================================ -->
+        <!-- TAB 1: AGENDA & TURNOS (DESKTOP GRID)                            -->
+        <!-- ================================================================ -->
+        <div class="desktop-tab-pane" id="tab-agenda-view">
+          
+          <!-- Selector de Días Superior -->
+          <div class="day-carousel" id="mobile-day-carousel"></div>
+
+          <!-- Cuadrícula 2 Columnas de la Agenda -->
+          <div class="agenda-desktop-grid">
+            
+            <!-- Columna Izquierda: Línea de Tiempo y Citas -->
+            <div class="agenda-main-col" style="display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-clock" style="color: #38BDF8;"></i> Turnos y Citas del Día
+                </h3>
+                <span style="font-size: 12px; color: #38BDF8; font-weight: 700;" id="agenda-sub-count">3 citas registradas</span>
+              </div>
+
+              <!-- Feed de Citas del Día -->
+              <div id="mobile-appointments-feed" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+
+            <!-- Columna Derecha: Hero Próximo Cliente & Accesos -->
+            <div class="agenda-side-col" style="display: flex; flex-direction: column; gap: 16px;">
+              
+              <!-- Próximo Cliente Inmediato -->
+              <div class="next-up-card" id="hero-next-up"></div>
+
+              <!-- Receso de Almuerzo Widget -->
+              <div class="mobile-lunch-card">
+                <i class="fa-solid fa-utensils"></i>
+                <span>1:00 PM - 2:00 PM • Receso de Almuerzo Bloqueado</span>
+              </div>
+
+              <!-- Acceso Rápido a Crear Cita -->
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 18px;">
+                <div style="font-size: 13px; font-weight: 800; color: #FFF; margin-bottom: 6px;">
+                  <i class="fa-solid fa-bolt" style="color: #38BDF8;"></i> Agendamiento Rápido
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
+                  ¿Un cliente llegó directamente al local o llamó por teléfono? Regístralo de inmediato para apartar el slot.
+                </p>
+                <button class="desktop-btn desktop-btn-gold" style="width: 100%; justify-content: center; font-size: 12.5px; padding: 0 10px;" onclick="openNewBookingSheet()">
+                  <i class="fa-solid fa-calendar-plus"></i> Registrar Cita Manual
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- TAB 2: MIS TIPOS DE CORTE (CATÁLOGO PRO)                          -->
+        <!-- ================================================================ -->
+        <div class="desktop-tab-pane" id="tab-services-view" style="display: none;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 800; color: #FFF;">Catálogo de Tipos de Corte & Precios</h2>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Crea, personaliza duraciones, precios e inclusiones. Los clientes reservan estos cortes en tu WhatsApp.
+              </p>
+            </div>
+            <button class="desktop-btn desktop-btn-gold" onclick="openNewServiceSheet()">
+              <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="#060912" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="6" cy="6" r="3"/>
+                <path d="M8.12 8.12 12 12"/>
+                <path d="M20 4 8.12 15.88"/>
+                <circle cx="6" cy="18" r="3"/>
+                <path d="M14.8 14.8 20 20"/>
+              </svg>
+              <span>Nuevo Corte</span>
+            </button>
+          </div>
+
+          <!-- ⚡ Carrusel de Plantillas Rápidas con 1 Clic -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 14px 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-size: 12px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-bolt" style="color: #38BDF8;"></i> Plantillas Populares (1 Clic para rellenar)
+              </span>
+              <span style="font-size: 11px; color: #38BDF8; font-weight: 700;">Toca cualquier plantilla</span>
+            </div>
+            <div id="templates-carousel" class="templates-scroll-row"></div>
+          </div>
+
+          <!-- Filtro por Categorías -->
+          <div id="service-category-filters" class="category-filters-row"></div>
+
+          <!-- Lista / Cuadrícula de Servicios -->
+          <div id="m-services-list"></div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- TAB 3: CONSOLA WHATSAPP BOT 24/7 (SPLIT DESKTOP)                  -->
+        <!-- ================================================================ -->
+        <div class="desktop-tab-pane" id="tab-whatsapp-view" style="display: none;">
+          
+          <div class="whatsapp-desktop-console">
+            
+            <!-- Panel Izquierdo: Configuración del Simulador y Prompts -->
+            <div class="wa-console-sidebar">
+              <div>
+                <div style="font-size: 13px; font-weight: 800; color: #FFF; margin-bottom: 2px;">
+                  <i class="fa-brands fa-whatsapp" style="color: #34D399;"></i> Consola WhatsApp Live
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted);">Prueba la atención automática de tu bot</div>
+              </div>
+
+              <!-- Selector de Cliente Simulador -->
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Simular como cliente:</label>
+                <select id="sim-client-select" onchange="switchSimulatedClient()" style="width: 100%; padding: 8px 10px; background: #202C33; border: 1px solid var(--border-subtle); border-radius: 10px; color: #FFF; font-size: 12px; font-weight: 700; outline: none;">
+                  <option value="573001234567">David Rincón (Cliente Frecuente)</option>
+                  <option value="573199998877">Nuevo Cliente Ocasional</option>
+                </select>
+              </div>
+
+              <!-- Botón Auto Demo -->
+              <button onclick="runAutoBookingDemo()" class="desktop-btn desktop-btn-gold" style="justify-content: center; width: 100%; font-size: 11px;">
+                <i class="fa-solid fa-bolt"></i> Ejecutar Auto-Demo de Reserva
+              </button>
+
+              <!-- Prompts Rápidos de Prueba -->
+              <div style="margin-top: 4px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Consultas Rápidas de Clientes:</div>
+                <div class="wa-prompts-container" style="display: flex; flex-direction: column; gap: 6px;">
+                  <button class="wa-quick-prompt-btn" onclick="askQuickQuestion('¿Dónde queda la barbería?')">
+                    📍 ¿Dónde queda la barbería?
+                  </button>
+                  <button class="wa-quick-prompt-btn" onclick="askQuickQuestion('¿Qué precios tienen?')">
+                    ✂️ ¿Qué precios tienen?
+                  </button>
+                  <button class="wa-quick-prompt-btn" onclick="askQuickQuestion('¿A qué hora atienden?')">
+                    🕒 ¿A qué hora atienden?
+                  </button>
+                  <button class="wa-quick-prompt-btn" onclick="askQuickQuestion('¿Tienes espacio hoy en la tarde?')">
+                    ⚡ ¿Tienes espacio hoy en la tarde?
+                  </button>
+                  <button class="wa-quick-prompt-btn" onclick="askQuickQuestion('Quiero hablar con Mateo')">
+                    💬 Quiero hablar con Mateo
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel Derecho: Conversación de WhatsApp -->
+            <div class="wa-console-chat">
+              
+              <!-- Cabecera de WhatsApp -->
+              <div class="wa-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid #00A884; box-shadow: 0 2px 10px rgba(0,0,0,0.5); padding: 1px; background: #0B141A; flex-shrink: 0;">
+                    <img src="/assets/brand/familia1969-badge-blue.png" alt="FAMILIA 1969" style="width: 100%; height: 100%; object-fit: contain;">
+                  </div>
+                  <div>
+                    <div style="font-size: 14px; font-weight: 800; color: #FFF;">FAMILIA 1969 • Canal Oficial</div>
+                    <div style="font-size: 11px; color: #34D399;"><i class="fa-solid fa-circle-check"></i> Asistente de Reservas Activo 24/7</div>
+                  </div>
+                </div>
+
+                <div style="font-size: 11px; color: #8696A0;">
+                  Motor de NLU Operativo
+                </div>
+              </div>
+
+              <!-- Hilo de Mensajes -->
+              <div class="wa-chat-thread" id="m-wa-chat"></div>
+
+              <!-- Chips Rápidos en Vivo Directos en el Chat -->
+              <div class="wa-chat-quick-chips">
+                <button class="wa-chat-chip" onclick="askQuickQuestion('¿Dónde queda la barbería?')">📍 Ubicación</button>
+                <button class="wa-chat-chip" onclick="askQuickQuestion('¿Qué cortes y precios tienen?')">✂️ Precios</button>
+                <button class="wa-chat-chip" onclick="askQuickQuestion('¿A qué hora atienden?')">🕒 Horarios</button>
+                <button class="wa-chat-chip" onclick="askQuickQuestion('Quiero agendar un corte')">📅 Agendar Cita</button>
+                <button class="wa-chat-chip" onclick="askQuickQuestion('Ya llegué al local')">🚗 Ya Llegué</button>
+                <button class="wa-chat-chip" onclick="askQuickQuestion('Quiero hablar con Mateo')">💬 Hablar con Mateo</button>
+              </div>
+
+              <!-- Barra de Envío -->
+              <div class="wa-input-container">
+                <input type="text" id="m-wa-input" placeholder="Escribe un mensaje como cliente (ej: 'quiero agendar hoy a las 3')..." 
+                  style="flex: 1; background: #2A3942; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 12px 18px; color: #FFF; font-size: 13px; outline: none;" 
+                  onkeypress="handleMobileKeyPress(event)">
+                <button onclick="sendMobileTextMessage()" style="width: 44px; height: 44px; border-radius: 50%; background: #00A884; border: none; color: #FFF; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0;" title="Enviar Mensaje">
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- TAB 4: GANANCIAS & CAJA                                          -->
+        <!-- ================================================================ -->
+        <div class="desktop-tab-pane" id="tab-earnings-view" style="display: none;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 800; color: #FFF;">Caja & Rendimiento Financiero</h2>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Seguimiento de ingresos en tiempo real. 100% de comisión directa para Mateo Silva.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4 KPIs Financieros -->
+          <div class="desktop-metrics-grid">
+            <div class="metric-card-pro">
+              <div class="metric-card-header">
+                <span>Total Facturado Hoy</span>
+                <i class="fa-solid fa-wallet" style="color: #38BDF8;"></i>
+              </div>
+              <div class="metric-card-val" id="earnings-total-val" style="color: #38BDF8;">$115,000</div>
+              <div class="metric-card-footer">Citas confirmadas y completadas</div>
+            </div>
+
+            <div class="metric-card-pro">
+              <div class="metric-card-header">
+                <span>Ganancia Neta Barbero</span>
+                <i class="fa-solid fa-user-check" style="color: #34D399;"></i>
+              </div>
+              <div class="metric-card-val" style="color: #34D399;">100%</div>
+              <div class="metric-card-footer">Sin deducciones de franquicia</div>
+            </div>
+
+            <div class="metric-card-pro">
+              <div class="metric-card-header">
+                <span>Ticket Promedio</span>
+                <i class="fa-solid fa-receipt" style="color: #60A5FA;"></i>
+              </div>
+              <div class="metric-card-val" style="color: #60A5FA;">$38,333</div>
+              <div class="metric-card-footer">Por servicio en sillón</div>
+            </div>
+
+            <div class="metric-card-pro">
+              <div class="metric-card-header">
+                <span>Tasa de Asistencia</span>
+                <i class="fa-solid fa-shield-halved" style="color: #A78BFA;"></i>
+              </div>
+              <div class="metric-card-val" style="color: #A78BFA;">100%</div>
+              <div class="metric-card-footer">0 No-Shows registrados hoy</div>
+            </div>
+          </div>
+
+          <!-- Historial de Servicios Realizados -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 20px;">
+            <h3 style="font-size: 15px; font-weight: 800; color: #FFF; margin-bottom: 14px;">
+              <i class="fa-solid fa-list-check" style="color: #38BDF8;"></i> Detalle de Turnos y Pagos de Hoy
+            </h3>
+            <div id="m-earnings-breakdown" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
+
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- TAB 5: CONFIGURACIÓN TOTAL                                       -->
+        <!-- ================================================================ -->
+        <div class="desktop-tab-pane" id="tab-settings-view" style="display: none;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 800; color: #FFF;">Configuración Total del Negocio</h2>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Ajusta tus horarios de apertura, receso de almuerzo, buffer y parámetros del bot.
+              </p>
+            </div>
+
+            <button class="desktop-btn desktop-btn-gold" onclick="saveAllSettings()">
+              <i class="fa-solid fa-floppy-disk"></i> Guardar Todos los Ajustes
+            </button>
+          </div>
+
+          <div class="settings-desktop-grid">
+            
+            <!-- Tarjeta 1: Mi Negocio & Perfil -->
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <div class="settings-card-icon"><i class="fa-solid fa-store"></i></div>
+                <div>
+                  <div class="settings-card-title">Perfil & Datos del Estudio</div>
+                  <div class="settings-card-desc">Información pública para los clientes</div>
+                </div>
+              </div>
+
+              <div class="settings-field">
+                <label class="settings-label">Nombre del Estudio</label>
+                <input type="text" id="cfg-shop-name" class="settings-input">
+              </div>
+
+              <div class="settings-field">
+                <label class="settings-label">Nombre del Barbero (Propietario)</label>
+                <input type="text" id="cfg-barber-name" class="settings-input">
+              </div>
+
+              <div class="settings-field">
+                <label class="settings-label">Teléfono / WhatsApp de Contacto</label>
+                <input type="text" id="cfg-phone" class="settings-input">
+              </div>
+
+              <div class="settings-field">
+                <label class="settings-label">Dirección Física</label>
+                <input type="text" id="cfg-address" class="settings-input">
+              </div>
+
+              <div class="settings-field">
+                <label class="settings-label">Convenio o Info de Parqueadero</label>
+                <input type="text" id="cfg-parking" class="settings-input">
+              </div>
+            </div>
+
+            <!-- Tarjeta 2: Jornada Laboral & Horarios -->
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <div class="settings-card-icon"><i class="fa-solid fa-clock"></i></div>
+                <div>
+                  <div class="settings-card-title">Jornada de Trabajo</div>
+                  <div class="settings-card-desc">Horario en que el bot agenda tus citas</div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="settings-field">
+                  <label class="settings-label">Hora Apertura</label>
+                  <input type="time" id="cfg-work-start" class="settings-input">
+                </div>
+                <div class="settings-field">
+                  <label class="settings-label">Hora Cierre</label>
+                  <input type="time" id="cfg-work-end" class="settings-input">
+                </div>
+              </div>
+
+              <div class="settings-field" style="margin-top: 4px;">
+                <label class="settings-label">Días de Atención Activos</label>
+                <div class="day-selector-grid" id="cfg-days-grid">
+                  <div class="day-btn selected" data-day="1" onclick="toggleDaySelection(1)">Lun</div>
+                  <div class="day-btn selected" data-day="2" onclick="toggleDaySelection(2)">Mar</div>
+                  <div class="day-btn selected" data-day="3" onclick="toggleDaySelection(3)">Mié</div>
+                  <div class="day-btn selected" data-day="4" onclick="toggleDaySelection(4)">Jue</div>
+                  <div class="day-btn selected" data-day="5" onclick="toggleDaySelection(5)">Vie</div>
+                  <div class="day-btn selected" data-day="6" onclick="toggleDaySelection(6)">Sáb</div>
+                  <div class="day-btn" data-day="7" onclick="toggleDaySelection(7)">Dom</div>
+                </div>
+              </div>
+
+              <!-- Receso de Almuerzo -->
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div>
+                    <div style="font-size: 13px; font-weight: 800; color: #FFF;">Receso de Almuerzo</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Bloquea turnos automáticamente</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="cfg-lunch-enabled" onchange="toggleLunchInputs(this.checked)">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div id="cfg-lunch-time-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <div class="settings-field">
+                    <label class="settings-label">Inicio</label>
+                    <input type="time" id="cfg-lunch-start" class="settings-input" value="13:00">
+                  </div>
+                  <div class="settings-field">
+                    <label class="settings-label">Fin</label>
+                    <input type="time" id="cfg-lunch-end" class="settings-input" value="14:00">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta 3: Buffer & Bot de WhatsApp -->
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <div class="settings-card-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div>
+                  <div class="settings-card-title">WhatsApp Bot & Buffer</div>
+                  <div class="settings-card-desc">Respuestas y tiempos de preparación</div>
+                </div>
+              </div>
+
+              <!-- Buffer -->
+              <div class="settings-field">
+                <label class="settings-label">Buffer de Limpieza entre Clientes</label>
+                <div class="buffer-selector-grid" id="cfg-buffer-grid">
+                  <div class="buffer-btn" data-buffer="0" onclick="selectBuffer(0)">0 m</div>
+                  <div class="buffer-btn" data-buffer="5" onclick="selectBuffer(5)">5 m</div>
+                  <div class="buffer-btn selected" data-buffer="10" onclick="selectBuffer(10)">10 m</div>
+                  <div class="buffer-btn" data-buffer="15" onclick="selectBuffer(15)">15 m</div>
+                  <div class="buffer-btn" data-buffer="20" onclick="selectBuffer(20)">20 m</div>
+                </div>
+                <span style="font-size: 11px; color: #38BDF8; margin-top: 2px;" id="buffer-description-text">
+                  ⚡ Recomendado: 10 minutos de preparación entre turnos.
+                </span>
+              </div>
+
+              <!-- Modo Bot -->
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div>
+                    <div style="font-size: 13px; font-weight: 800; color: #FFF;">Bot Automático 24/7</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Responde y agenda citas solo</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="cfg-autobot-enabled">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="settings-field">
+                  <label class="settings-label">Saludo Personalizado para Nuevos Clientes</label>
+                  <textarea id="cfg-custom-greeting" class="settings-textarea" placeholder="Escribe tu saludo de bienvenida..."></textarea>
+                </div>
+              </div>
+
+              <!-- Descargas Móviles Card -->
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: 6px;">
+                <div style="font-size: 12px; font-weight: 800; color: #FFF; margin-bottom: 6px;">
+                  <i class="fa-brands fa-android" style="color: #34D399;"></i> Distribución de la App Móvil
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <a href="/downloads/Barberia-MateoSilva.apk" download="Barberia-MateoSilva.apk" class="desktop-btn desktop-btn-surface" style="text-decoration: none; font-size: 11px; flex: 1; justify-content: center;">
+                    <i class="fa-solid fa-download"></i> Descargar APK
+                  </a>
+                  <button id="btn-install-pwa" onclick="installPWA()" class="desktop-btn desktop-btn-surface" style="font-size: 11px; flex: 1; justify-content: center;">
+                    <i class="fa-solid fa-laptop"></i> Instalar Web App
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <!-- BACKDROP PARA SIDEBAR OFF-CANVAS EN MÓVIL/TABLET -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileSidebar(false)"></div>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR MÓVIL (THUMB BAR ERGONÓMICA) -->
+  <nav class="mobile-bottom-nav">
+    <div class="mobile-bottom-nav-item active" id="mob-nav-agenda" onclick="switchMobileTab('agenda')">
+      <div class="mob-icon-wrap"><i class="fa-solid fa-calendar-day"></i></div>
+      <span>Agenda</span>
+    </div>
+    <div class="mobile-bottom-nav-item" id="mob-nav-services" onclick="switchMobileTab('services')">
+      <div class="mob-icon-wrap"><i class="fa-solid fa-scissors"></i></div>
+      <span>Cortes</span>
+    </div>
+    <div class="mobile-bottom-nav-item" id="mob-nav-whatsapp" onclick="switchMobileTab('whatsapp')">
+      <div class="mob-icon-wrap"><i class="fa-brands fa-whatsapp"></i><span class="mob-nav-dot"></span></div>
+      <span>Bot 24/7</span>
+    </div>
+    <div class="mobile-bottom-nav-item" id="mob-nav-earnings" onclick="switchMobileTab('earnings')">
+      <div class="mob-icon-wrap"><i class="fa-solid fa-wallet"></i></div>
+      <span>Caja</span>
+    </div>
+    <div class="mobile-bottom-nav-item" id="mob-nav-settings" onclick="switchMobileTab('settings')">
+      <div class="mob-icon-wrap"><i class="fa-solid fa-sliders"></i></div>
+      <span>Ajustes</span>
+    </div>
+  </nav>
+
+  <!-- ====================================================================== -->
+  <!-- MODALES DE ESCRITORIO CENTRADOS                                        -->
+  <!-- ====================================================================== -->
+
+  <!-- MODAL: CREAR / EDITAR TIPO DE CORTE -->
+  <div class="bottom-sheet-backdrop" id="sheet-new-service" onclick="closeSheetOnBackdrop(event, 'sheet-new-service')">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+        <div>
+          <h3 id="sheet-service-title" style="font-size: 18px; font-weight: 800; color: #FFF;">Nuevo Tipo de Corte</h3>
+          <p id="sheet-service-subtitle" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Configura nombre, duración, precio e inclusiones para tus clientes en WhatsApp.
+          </p>
+        </div>
+        <button type="button" onclick="closeSheet('sheet-new-service')" class="topbar-icon-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-service-editor" onsubmit="handleServiceFormSubmit(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;">
+        <input type="hidden" id="srv-edit-id" value="">
+
+        <!-- Nombre -->
+        <div>
+          <label class="settings-label">Nombre del Corte o Ritual *</label>
+          <input type="text" id="srv-name-input" required placeholder="Ej: Mid Fade Clásico o Ritual de Barba" 
+            oninput="updateServiceWhatsAppPreview()" class="settings-input" style="margin-top: 4px;">
+        </div>
+
+        <!-- Categoría e Insignia -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label class="settings-label">Categoría *</label>
+            <select id="srv-category-input" required onchange="updateServiceWhatsAppPreview()" class="settings-input" style="margin-top: 4px;">
+              <option value="Corte">✂️ Corte de Cabello</option>
+              <option value="Barba">🧔 Barba & Afeitado</option>
+              <option value="Combo">👑 Combo VIP</option>
+              <option value="Tratamiento">✨ Tratamiento / Cejas</option>
+              <option value="Especial">🎨 Color & Diseños</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="settings-label">Insignia Destacada</label>
+            <select id="srv-badge-input" onchange="updateServiceWhatsAppPreview()" class="settings-input" style="margin-top: 4px;">
+              <option value="">Sin insignia</option>
+              <option value="🔥 Más Popular">🔥 Más Popular</option>
+              <option value="⭐ Recomendado">⭐ Recomendado</option>
+              <option value="👑 VIP">👑 Experiencia VIP</option>
+              <option value="⚡ Express">⚡ Rápido / Express</option>
+              <option value="👶 Infantil">👶 Niños / Infantil</option>
+              <option value="✨ Color Pro">✨ Color Pro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Duración con Quick Chips -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="settings-label">Duración del Turno (Minutos) *</label>
+            <span style="font-size: 11px; color: #38BDF8; font-weight: 700;">+10 min buffer de limpieza</span>
+          </div>
+          <div style="display: flex; gap: 6px; margin: 6px 0; overflow-x: auto;">
+            <button type="button" class="quick-chip" onclick="setServiceDuration(20)">20m</button>
+            <button type="button" class="quick-chip" onclick="setServiceDuration(30)">30m</button>
+            <button type="button" class="quick-chip" onclick="setServiceDuration(40)">40m</button>
+            <button type="button" class="quick-chip" onclick="setServiceDuration(45)">45m</button>
+            <button type="button" class="quick-chip" onclick="setServiceDuration(60)">60m</button>
+            <button type="button" class="quick-chip" onclick="setServiceDuration(90)">90m</button>
+          </div>
+          <input type="number" id="srv-duration-input" required min="10" max="240" step="5" value="40" 
+            oninput="updateServiceWhatsAppPreview()" class="settings-input">
+        </div>
+
+        <!-- Precio con Quick Chips -->
+        <div>
+          <label class="settings-label">Precio en Pesos ($ COP) *</label>
+          <div style="display: flex; gap: 6px; margin: 6px 0; overflow-x: auto;">
+            <button type="button" class="quick-chip" onclick="setServicePrice(25000)">$25k</button>
+            <button type="button" class="quick-chip" onclick="setServicePrice(30000)">$30k</button>
+            <button type="button" class="quick-chip" onclick="setServicePrice(35000)">$35k</button>
+            <button type="button" class="quick-chip" onclick="setServicePrice(45000)">$45k</button>
+            <button type="button" class="quick-chip" onclick="setServicePrice(55000)">$55k</button>
+            <button type="button" class="quick-chip" onclick="setServicePrice(70000)">$70k</button>
+          </div>
+          <input type="number" id="srv-price-input" required min="5000" step="1000" value="35000" 
+            oninput="updateServiceWhatsAppPreview()" class="settings-input">
+        </div>
+
+        <!-- Descripción / Inclusiones -->
+        <div>
+          <label class="settings-label">Descripción / Inclusiones del Corte</label>
+          <textarea id="srv-desc-input" rows="2" 
+            placeholder="Ej: Degradado a navaja, textura a tijera, lavado previo y peinado mate..." 
+            oninput="updateServiceWhatsAppPreview()" class="settings-textarea" style="margin-top: 4px;"></textarea>
+        </div>
+
+        <!-- Vista previa en WhatsApp -->
+        <div style="background: #0B141A; border: 1px solid #202C33; border-radius: 14px; padding: 12px 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 800; color: #34D399; text-transform: uppercase;">
+              <i class="fa-brands fa-whatsapp"></i> Vista previa en WhatsApp
+            </span>
+            <span style="font-size: 10px; color: #8696A0;">Lo que verá tu cliente</span>
+          </div>
+          <div style="background: #202C33; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #E9EDEF;">
+            <div id="preview-wa-item" style="line-height: 1.4;">
+              • <strong id="preview-wa-name">Corte Clásico & Fade Texturizado</strong>: <span id="preview-wa-price" style="color: #38BDF8; font-weight: 800;">$35,000</span> (<span id="preview-wa-dur">40</span> min)
+              <div id="preview-wa-desc" style="font-size: 11px; color: #8696A0; font-style: italic; margin-top: 3px;">Degradado milimétrico y peinado final.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <button type="button" class="desktop-btn desktop-btn-surface" onclick="closeSheet('sheet-new-service')">Cancelar</button>
+          <button type="submit" id="btn-save-service" class="desktop-btn desktop-btn-gold">Guardar y Publicar en WhatsApp</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGENDAR CITA MANUAL RÁPIDA -->
+  <div class="bottom-sheet-backdrop" id="sheet-new-booking" onclick="closeSheetOnBackdrop(event, 'sheet-new-booking')">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 800; color: #FFF;">+ Agendar Cita Manual</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+            Registra una cita directa para un cliente presencial o telefónico.
+          </p>
+        </div>
+        <button type="button" onclick="closeSheet('sheet-new-booking')" class="topbar-icon-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleMobileBookingSubmit(event)" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;">
+        <div>
+          <label class="settings-label">Nombre del Cliente *</label>
+          <input type="text" id="m-new-name" required placeholder="Ej: Santiago Restrepo" class="settings-input" style="margin-top: 4px;">
+        </div>
+
+        <div>
+          <label class="settings-label">WhatsApp / Teléfono *</label>
+          <input type="text" id="m-new-phone" required placeholder="Ej: 573001234567" class="settings-input" style="margin-top: 4px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label class="settings-label">Tipo de Corte *</label>
+            <select id="m-new-service" class="settings-input" style="margin-top: 4px;"></select>
+          </div>
+
+          <div>
+            <label class="settings-label">Hora de Inicio *</label>
+            <input type="time" id="m-new-time" required value="10:00" class="settings-input" style="margin-top: 4px;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <button type="button" class="desktop-btn desktop-btn-surface" onclick="closeSheet('sheet-new-booking')">Cancelar</button>
+          <button type="submit" class="desktop-btn desktop-btn-gold">Confirmar y Bloquear Turno</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLE DE CITA -->
+  <div class="bottom-sheet-backdrop" id="sheet-app-details" onclick="closeSheetOnBackdrop(event, 'sheet-app-details')">
+    <div class="bottom-sheet" id="sheet-app-content"></div>
+  </div>
+
+  <!-- WIDGET FLOTANTE DE ACCESO RÁPIDO A WHATSAPP BOT -->
+  <div class="wa-floating-launcher" id="wa-floating-launcher" onclick="switchMobileTab('whatsapp')" title="Abrir Asistente WhatsApp 24/7">
+    <div class="wa-floating-btn">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span class="wa-floating-dot"></span>
+    </div>
+    <div class="wa-floating-label">
+      <span style="font-weight: 800; font-size: 12px; color: #FFF; line-height: 1.2;">Asistente Bot 24/7</span>
+      <span style="font-size: 10.5px; color: #34D399; font-weight: 700;">Atención Inmediata</span>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- JAVASCRIPT: LÓGICA COMPLETA DE NEGOCIO, SOCKET.IO Y ESTADOS            -->
+  <!-- ====================================================================== -->
+  <script>
+    // Sistema Centralizado de Íconos Vectoriales de Alta Precisión (VALMONT Design System)
+    const VALMONT_ICONS = {
+      calendar: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+      calendarPlus: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="3"/><path d="M3 10h18"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`,
+      scissors: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg>`,
+      razor: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4-6 6a2 2 0 0 1-2.83 0l-1.17-1.17a2 2 0 0 1 0-2.83z"/><path d="M9 11l9-9a2 2 0 0 1 2.83 0l.17.17a2 2 0 0 1 0 2.83l-8 8"/><circle cx="9" cy="11" r="1.5" fill="currentColor"/></svg>`,
+      bot: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="8" rx="2"/><path d="M12 2v6"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/></svg>`,
+      wallet: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="14" x="3" y="5" rx="3"/><path d="M16 12h3"/><circle cx="17.5" cy="12" r="1" fill="currentColor"/></svg>`,
+      sliders: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>`,
+      arrival: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+      chair: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"/><path d="M5 18v3"/><path d="M19 18v3"/></svg>`,
+      clockChime: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+      check: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+      whatsapp: `<svg class="v-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 00-3.48-8.413Z"/></svg>`,
+      plus: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+      pen: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>`,
+      pause: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="10" y1="5" x2="10" y2="19"/><line x1="14" y1="5" x2="14" y2="19"/></svg>`,
+      play: `<svg class="v-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`,
+      trash: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`,
+      clock: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+      user: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+      refresh: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>`,
+      expand: `<svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`
+    };
+
+    // Conexión directa a WhatsApp (abre en WhatsApp Web en PC o App en móvil)
+    function openWhatsAppDirect(phone, text = '') {
+      const cleanPhone = (phone || '').replace(/\D/g, '');
+      if (!cleanPhone) {
+        showMobileToast('⚠️ Teléfono no registrado');
+        return;
+      }
+      const encoded = encodeURIComponent(text);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const url = isMobile 
+        ? `https://wa.me/${cleanPhone}${encoded ? '?text=' + encoded : ''}`
+        : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encoded}`;
+      window.open(url, '_blank');
+    }
+
+    const socket = io();
+    socket.on('dashboard:refresh', () => {
+      loadDashboardData();
+      showMobileToast('⚡ Turno sincronizado en vivo vía WhatsApp');
+    });
+
+    socket.on('services:updated', () => {
+      loadServices();
+      loadDashboardData();
+      showMobileToast('✂️ Catálogo de cortes actualizado');
+    });
+
+    socket.on('settings:updated', (data) => {
+      if (data.settings) {
+        currentSettings = data.settings;
+        populateSettingsForm(data.settings);
+        updateUIWithSettings(data.settings);
+      }
+      showMobileToast('⚙️ Ajustes del estudio actualizados en vivo');
+    });
+
+    socket.on('appointment:updated', (data) => {
+      loadDashboardData();
+      showMobileToast(`Estado actualizado: ${data.status}`);
+    });
+
+    socket.on('barber:notification', (data) => {
+      playNotificationChime();
+      showBarberNotification(data);
+      loadDashboardData();
+    });
+
+    socket.on('whatsapp:reminder_sent', (data) => {
+      if (data && data.message) {
+        injectReminderIntoMobileChat(data.message);
+      }
+      showMobileToast('⏰ Recordatorio 20m enviado al cliente');
+      loadDashboardData();
+    });
+
+    function getLocalDateString(d = new Date()) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    let dashboardState = null;
+    let selectedDate = getLocalDateString();
+    let currentSettings = null;
+    let selectedActiveDays = [1, 2, 3, 4, 5, 6];
+    let selectedBufferMinutes = 10;
+
+    function navigateDate(days) {
+      const parts = selectedDate.split('-');
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      d.setDate(d.getDate() + days);
+      selectedDate = getLocalDateString(d);
+      buildDayCarousel();
+      loadDashboardData();
+    }
+
+    function goToToday() {
+      selectedDate = getLocalDateString();
+      buildDayCarousel();
+      loadDashboardData();
+    }
+
+    function updateDateLabel() {
+      const parts = selectedDate.split('-');
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const labelEl = document.getElementById('topbar-date-label');
+      if (labelEl) {
+        labelEl.innerText = `${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]}`;
+      }
+    }
+
+    function toggleMobileSidebar(forceState) {
+      const sidebar = document.querySelector('.desktop-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar) return;
+
+      const shouldOpen = typeof forceState === 'boolean'
+        ? forceState
+        : !sidebar.classList.contains('drawer-open');
+
+      if (shouldOpen) {
+        sidebar.classList.add('drawer-open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('drawer-open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function switchMobileTab(tabName) {
+      const tabs = ['agenda', 'services', 'whatsapp', 'earnings', 'settings'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`tab-${t}-view`);
+        if (view) view.style.display = t === tabName ? 'flex' : 'none';
+        
+        // Desktop sidebar
+        const btn = document.getElementById(`nav-btn-${t}`);
+        if (btn) btn.className = 'nav-item' + (t === tabName ? ' active' : '');
+
+        // Mobile bottom nav
+        const mobBtn = document.getElementById(`mob-nav-${t}`);
+        if (mobBtn) mobBtn.className = 'mobile-bottom-nav-item' + (t === tabName ? ' active' : '');
+      });
+
+      // Auto close mobile drawer if open
+      toggleMobileSidebar(false);
+
+      const ws = document.querySelector('.desktop-workspace');
+      if (ws) ws.scrollTop = 0;
+
+      const launcher = document.getElementById('wa-floating-launcher');
+      if (launcher) launcher.style.display = tabName === 'whatsapp' ? 'none' : 'flex';
+
+      if (tabName === 'services') loadServices();
+      if (tabName === 'earnings') renderEarningsView();
+      if (tabName === 'settings') loadSettings();
+      if (tabName === 'whatsapp') {
+        const inp = document.getElementById('m-wa-input');
+        if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 150);
+        if (chatContainer && chatContainer.children.length === 0) {
+          sendMobileTextMessageRaw('hola');
+        }
+      }
+    }
+
+    function buildDayCarousel() {
+      const container = document.getElementById('mobile-day-carousel');
+      if (!container) return;
+      container.innerHTML = '';
+      const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      
+      const parts = selectedDate.split('-');
+      const centerDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+
+      for (let i = -2; i <= 4; i++) {
+        const d = new Date(centerDate);
+        d.setDate(centerDate.getDate() + i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${day}`;
+        const isActive = dateStr === selectedDate;
+
+        const chip = document.createElement('div');
+        chip.className = 'day-chip' + (isActive ? ' active' : '');
+        chip.onclick = () => {
+          selectedDate = dateStr;
+          buildDayCarousel();
+          loadDashboardData();
+        };
+
+        chip.innerHTML = `
+          <span class="day-chip-name">${days[d.getDay()]}</span>
+          <span class="day-chip-number">${d.getDate()}</span>
+          <div class="day-chip-dot"></div>
+        `;
+        container.appendChild(chip);
+      }
+      updateDateLabel();
+    }
+
+    async function loadDashboardData() {
+      try {
+        const res = await fetch(`/api/dashboard/today?date=${selectedDate}`);
+        const data = await res.json();
+        dashboardState = data;
+        if (data.settings) {
+          currentSettings = data.settings;
+          updateUIWithSettings(data.settings);
+        }
+        renderMobileView(data);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderMobileView(data) {
+      const apps = data.appointments || [];
+      const activeApps = apps.filter(a => a.status !== 'cancelled');
+
+      const revEl = document.getElementById('mobile-m-revenue');
+      if (revEl) revEl.innerText = `$${data.metrics.totalRevenue.toLocaleString('es-CO')}`;
+
+      const bookEl = document.getElementById('mobile-m-bookings');
+      if (bookEl) bookEl.innerText = activeApps.length;
+
+      const turnosEl = document.getElementById('turnos-count-label');
+      if (turnosEl) turnosEl.innerText = `${activeApps.length} citas`;
+
+      const subCountEl = document.getElementById('agenda-sub-count');
+      if (subCountEl) subCountEl.innerText = `${activeApps.length} turnos para esta fecha`;
+
+      // Hero: Siguiente Cliente
+      const heroContainer = document.getElementById('hero-next-up');
+      const nextApp = activeApps.find(a => a.status === 'confirmed' || a.status === 'pending');
+
+      if (heroContainer) {
+        if (nextApp) {
+          const start = new Date(nextApp.startTime);
+          let h = start.getHours();
+          const m = String(start.getMinutes()).padStart(2, '0');
+          const p = h >= 12 ? 'PM' : 'AM';
+          if (h > 12) h -= 12;
+          if (h === 0) h = 12;
+          const timeStr = `${h}:${m} ${p}`;
+
+          const isArrived = nextApp.status === 'arrived';
+          heroContainer.style.display = 'flex';
+          heroContainer.style.borderColor = isArrived ? '#10B981' : 'rgba(59, 130, 246, 0.35)';
+          heroContainer.style.boxShadow = isArrived ? '0 8px 30px rgba(16, 185, 129, 0.35)' : '0 8px 24px rgba(0, 0, 0, 0.4)';
+
+          heroContainer.innerHTML = `
+            <div class="next-up-header">
+              <span class="next-up-tag" style="color: ${isArrived ? '#34D399' : 'var(--gold-primary)'};">
+                ${isArrived ? VALMONT_ICONS.arrival : VALMONT_ICONS.clockChime} 
+                ${isArrived ? '¡LLEGÓ AL LOCAL! En Sala de Espera' : 'Siguiente en Espera'}
+              </span>
+              <span class="countdown-pill" style="background: ${isArrived ? 'rgba(16, 185, 129, 0.25)' : 'rgba(16, 185, 129, 0.2)'}; color: #34D399; font-weight: 800; ${isArrived ? 'animation: pulse 1.5s infinite;' : ''}">
+                ${isArrived ? 'LISTO EN SILLÓN' : timeStr}
+              </span>
+            </div>
+
+            <div>
+              <div class="next-up-client" style="display: flex; align-items: center; gap: 8px;">
+                ${nextApp.clientName}
+                ${isArrived ? `<span style="font-size: 11px; background: rgba(16, 185, 129, 0.2); color: #34D399; padding: 2px 8px; border-radius: 12px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">${VALMONT_ICONS.check} Presente</span>` : ''}
+              </div>
+              <div class="next-up-service" style="display: flex; align-items: center; gap: 6px;">
+                ${VALMONT_ICONS.razor}
+                ${nextApp.serviceName} (${nextApp.serviceDuration} min) • $${nextApp.totalPrice.toLocaleString('es-CO')}
+              </div>
+            </div>
+
+            <div class="next-up-actions" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+              ${isArrived 
+                ? `<button class="valmont-action-btn valmont-btn-chair" style="flex: 1; height: 38px; font-size: 12.5px;" onclick="updateAppointmentStatus('${nextApp.id}', 'completed')">
+                     ${VALMONT_ICONS.chair} Pasar al Sillón / Atender
+                   </button>`
+                : `<button class="valmont-action-btn valmont-btn-arrival" style="flex: 1; height: 38px;" onclick="markClientArrived('${nextApp.id}')">
+                     ${VALMONT_ICONS.arrival} Marcar Llegada
+                   </button>
+                   <button class="valmont-action-btn valmont-btn-complete" style="flex: 1; height: 38px;" onclick="updateAppointmentStatus('${nextApp.id}', 'completed')">
+                     ${VALMONT_ICONS.check} Atendido
+                   </button>`
+              }
+              <button type="button" onclick="openWhatsAppDirect('${nextApp.clientPhone}', '¡Hola ${nextApp.clientName}! Te saluda el equipo de FAMILIA 1969 💈.')" class="valmont-action-btn valmont-btn-whatsapp" style="height: 38px;">
+                ${VALMONT_ICONS.whatsapp} WhatsApp
+              </button>
+            </div>
+          `;
+        } else {
+          heroContainer.style.display = 'flex';
+          heroContainer.innerHTML = `
+            <div class="next-up-header">
+              <span class="next-up-tag"><i class="fa-solid fa-chair"></i> Sillón Libre</span>
+              <span class="countdown-pill" style="background: rgba(37, 99, 235, 0.2); color: #38BDF8;">Disponible</span>
+            </div>
+            <div class="next-up-client" style="font-size: 15px; color: var(--text-muted);">Sin turnos inmediatos pendientes</div>
+          `;
+        }
+      }
+
+      // Lista de Turnos
+      const feed = document.getElementById('mobile-appointments-feed');
+      if (!feed) return;
+      feed.innerHTML = '';
+
+      if (apps.length === 0) {
+        feed.innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 40px; background: var(--bg-surface); border-radius: 18px; border: 1px dashed var(--border-subtle);">
+            <i class="fa-regular fa-calendar-xmark" style="font-size: 32px; margin-bottom: 12px; color: #38BDF8; opacity: 0.6;"></i>
+            <div style="font-size: 15px; font-weight: 800; color: #FFF;">Sin turnos agendados para este día.</div>
+            <div style="font-size: 12px; margin-top: 4px; color: var(--text-muted);">Tu bot de WhatsApp mantiene la agenda disponible 100% para reservas.</div>
+            <button class="desktop-btn desktop-btn-gold" style="margin: 16px auto 0 auto;" onclick="openNewBookingSheet()">
+              <i class="fa-solid fa-plus"></i> Agendar Turno Manual
+            </button>
+          </div>
+        `;
+      }
+
+      const sorted = [...apps].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+      sorted.forEach((app) => {
+        const start = new Date(app.startTime);
+        const end = new Date(app.endTime);
+        const formatTime = (d) => {
+          let h = d.getHours();
+          const m = String(d.getMinutes()).padStart(2, '0');
+          const p = h >= 12 ? 'PM' : 'AM';
+          if (h > 12) h -= 12;
+          if (h === 0) h = 12;
+          return `${h}:${m} ${p}`;
+        };
+        const timeRange = `${formatTime(start)} - ${formatTime(end)}`;
+
+        const isArrived = app.status === 'arrived';
+        const card = document.createElement('div');
+        card.className = 'mobile-app-card' + (isArrived ? ' is-client-arrived' : '');
+        card.style.borderLeftColor = isArrived ? '#10B981' : (app.status === 'completed' ? '#60A5FA' : 'var(--gold-primary)');
+        if (isArrived) {
+          card.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.25)';
+        }
+        card.onclick = () => openAppointmentDetailsSheet(app);
+
+        const statusLabel = isArrived 
+          ? `${VALMONT_ICONS.arrival} EN SALA DE ESPERA` 
+          : app.status.toUpperCase();
+
+        const statusBadgeStyle = isArrived 
+          ? 'background: rgba(16, 185, 129, 0.22); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 800; animation: pulse 1.8s infinite; display: inline-flex; align-items: center; gap: 5px;'
+          : `background: rgba(255,255,255,0.08); color: ${getStatusColor(app.status)};`;
+
+        card.innerHTML = `
+          <div class="mobile-card-top">
+            <span class="mobile-time-badge" style="display: inline-flex; align-items: center; gap: 5px;">${VALMONT_ICONS.clock} ${timeRange}</span>
+            <span class="mobile-status-tag" style="${statusBadgeStyle}">
+              ${statusLabel}
+            </span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="mobile-client-name" style="display: inline-flex; align-items: center; gap: 7px;">
+              ${VALMONT_ICONS.user} ${app.clientName}
+            </div>
+            <span style="font-size: 15px; font-weight: 800; color: #38BDF8;">$${app.totalPrice.toLocaleString('es-CO')}</span>
+          </div>
+
+          <div class="mobile-service-row">
+            <span style="display: inline-flex; align-items: center; gap: 6px;">${VALMONT_ICONS.razor} ${app.serviceName} (${app.serviceDuration} min)</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px;">${VALMONT_ICONS.whatsapp} ${app.clientPhone}</span>
+          </div>
+
+          <div class="mobile-card-actions" onclick="event.stopPropagation()">
+            ${isArrived 
+              ? `<button class="valmont-action-btn valmont-btn-chair" onclick="updateAppointmentStatus('${app.id}', 'completed')">
+                   ${VALMONT_ICONS.chair} Pasar al Sillón
+                 </button>`
+              : (app.status !== 'completed' && app.status !== 'cancelled' 
+                  ? `<button class="valmont-action-btn valmont-btn-arrival" onclick="markClientArrived('${app.id}')">
+                       ${VALMONT_ICONS.arrival} Llegó al Local
+                     </button>` 
+                  : '')
+            }
+            ${app.status !== 'completed' && app.status !== 'cancelled'
+              ? `<button class="valmont-action-btn valmont-btn-reminder" onclick="triggerReminder('${app.id}')">
+                   ${VALMONT_ICONS.clockChime} Recordar (20m)
+                 </button>`
+              : ''
+            }
+            ${app.status !== 'completed'
+              ? `<button class="valmont-action-btn valmont-btn-complete" onclick="updateAppointmentStatus('${app.id}', 'completed')">
+                   ${VALMONT_ICONS.check} Atendido
+                 </button>`
+              : ''
+            }
+            <button type="button" onclick="openWhatsAppDirect('${app.clientPhone}', '¡Hola ${app.clientName}! Te saluda el equipo de FAMILIA 1969 💈.')" class="valmont-action-btn valmont-btn-whatsapp">
+              ${VALMONT_ICONS.whatsapp} WhatsApp
+            </button>
+          </div>
+        `;
+        feed.appendChild(card);
+      });
+
+      // Llenar select de servicios en modal
+      const srvSelect = document.getElementById('m-new-service');
+      if (srvSelect && data.services) {
+        srvSelect.innerHTML = data.services.map(s => `<option value="${s.id}">${s.name} ($${s.price.toLocaleString('es-CO')})</option>`).join('');
+      }
+    }
+
+    function getStatusColor(status) {
+      if (status === 'arrived') return '#10B981';
+      if (status === 'confirmed') return '#34D399';
+      if (status === 'pending') return '#FBBF24';
+      if (status === 'completed') return '#60A5FA';
+      if (status === 'cancelled') return '#9CA3AF';
+      return '#F87171';
+    }
+
+    // ========================================================================
+    // SISTEMA DE NOTIFICACIONES EN VIVO Y CHIME SONORO PARA EL BARBERO
+    // ========================================================================
+    function playNotificationChime() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+        const now = ctx.currentTime;
+        
+        // Tono 1: Campana armónica principal (880 Hz / La5)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, now);
+        gain1.gain.setValueAtTime(0.35, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.45);
+
+        // Tono 2: Timbre brillante secundario (1318.5 Hz / Mi6)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(1318.5, now + 0.14);
+        gain2.gain.setValueAtTime(0.3, now + 0.14);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.14);
+        osc2.stop(now + 0.85);
+
+        // Vibración háptica en teléfonos móviles
+        if ('vibrate' in navigator) {
+          navigator.vibrate([200, 100, 200]);
+        }
+      } catch (err) {
+        console.warn('Audio chime notice:', err);
+      }
+    }
+
+    function showBarberNotification(data) {
+      const existing = document.querySelector('.barber-arrival-banner');
+      if (existing) existing.remove();
+
+      const banner = document.createElement('div');
+      banner.className = 'barber-arrival-banner';
+      
+      const isArrival = data.type === 'client_arrived';
+      const icon = isArrival ? 'fa-person-walking-luggage' : (data.type === 'new_booking' ? 'fa-calendar-check' : 'fa-bell');
+      const accentColor = isArrival ? '#10B981' : 'var(--gold-primary)';
+
+      banner.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(14, 23, 44, 0.98);
+        border: 2px solid ${accentColor};
+        border-radius: 18px;
+        padding: 14px 20px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.85), 0 0 25px ${accentColor}55;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        z-index: 9999;
+        max-width: 90vw;
+        width: 460px;
+        backdrop-filter: blur(16px);
+        animation: bannerSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      `;
+
+      banner.innerHTML = `
+        <div style="width: 44px; height: 44px; border-radius: 14px; background: ${accentColor}22; color: ${accentColor}; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; animation: pulse 1.5s infinite;">
+          <i class="fa-solid ${icon}"></i>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 13px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px;">
+            ${data.title}
+            <span style="font-size: 9px; background: ${accentColor}33; color: ${accentColor}; padding: 2px 6px; border-radius: 6px; font-weight: 800;">EN VIVO</span>
+          </div>
+          <div style="font-size: 11px; color: #CBD5E1; margin-top: 2px; line-height: 1.3;">${data.message}</div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 6px;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+
+      document.body.appendChild(banner);
+      setTimeout(() => {
+        if (banner.parentElement) {
+          banner.style.opacity = '0';
+          banner.style.transform = 'translateX(-50%) translateY(-20px)';
+          banner.style.transition = 'all 0.4s ease';
+          setTimeout(() => banner.remove(), 400);
+        }
+      }, 7000);
+
+      // Disparar Web Notification si está permitido
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(data.title, {
+            body: data.message,
+            icon: '/icons/icon-192.png',
+            tag: data.appointmentId || 'barber-alert',
+          });
+        } catch (e) {}
+      }
+    }
+
+    async function markClientArrived(appointmentId) {
+      try {
+        const res = await fetch(`/api/appointments/${appointmentId}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'arrived', notes: 'Llegada marcada manualmente en el panel' }),
+        });
+        if (res.ok) {
+          playNotificationChime();
+          showMobileToast('📍 Cliente registrado en sala de espera');
+          closeSheet('sheet-app-details');
+          loadDashboardData();
+        }
+      } catch (err) {
+        alert('Error al marcar llegada: ' + err.message);
+      }
+    }
+
+    function requestNotificationPermission() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+    }
+
+    // ========================================================================
+    // GESTIÓN COMPLETA DE TIPOS DE CORTE (Crear, Editar, Plantillas, Pausar)
+    // ========================================================================
+    const HAIRCUT_TEMPLATES = [
+      {
+        name: 'Mid / Low Fade Texturizado',
+        category: 'Corte',
+        durationMinutes: 40,
+        price: 35000,
+        badge: '🔥 Más Popular',
+        icon: 'fa-scissors',
+        description: 'Degradado milimétrico a navaja, textura a tijera superior, lavado y peinado con pomada mate.'
+      },
+      {
+        name: 'Low Taper Fade & Perfilado',
+        category: 'Corte',
+        durationMinutes: 35,
+        price: 32000,
+        badge: '⭐ Tendencia',
+        icon: 'fa-scissors',
+        description: 'Desvanecido limpio en patillas y nuca, conservación de volumen superior y contornos a cuchilla.'
+      },
+      {
+        name: 'Ritual Barba con Toalla Caliente',
+        category: 'Barba',
+        durationMinutes: 30,
+        price: 25000,
+        badge: '⭐ Relajante',
+        icon: 'fa-user-tie',
+        description: 'Vapor de ozono, toalla caliente relajante, navaja libre de irritación y bálsamo nutritivo.'
+      },
+      {
+        name: 'Combo VIP: Corte + Barba + Mascarilla',
+        category: 'Combo',
+        durationMinutes: 60,
+        price: 55000,
+        badge: '👑 VIP',
+        icon: 'fa-crown',
+        description: 'Experiencia total Mateo Silva: Corte completo o Fade, spa de barba con toalla caliente y mascarilla purificante.'
+      },
+      {
+        name: 'Corte Infantil / Niños con Paciencia',
+        category: 'Corte',
+        durationMinutes: 30,
+        price: 28000,
+        badge: '👶 Infantil',
+        icon: 'fa-child',
+        description: 'Corte adaptado para niños, tijera ergonómica sin tirones, ambiente tranquilo y golosina.'
+      },
+      {
+        name: 'Diseño Freestyle & Líneas Urbanas',
+        category: 'Especial',
+        durationMinutes: 20,
+        price: 15000,
+        badge: '⚡ Express',
+        icon: 'fa-wand-magic-sparkles',
+        description: 'Diseño artístico a mano alzada con navaja en lateral o nuca (grecas, líneas o tribal).'
+      },
+      {
+        name: 'Platinado Global & Matizado',
+        category: 'Especial',
+        durationMinutes: 90,
+        price: 90000,
+        badge: '✨ Color Pro',
+        icon: 'fa-gem',
+        description: 'Decoloración controlada de alto nivel, matizado cenizo o blanco platino y tratamiento plex.'
+      }
+    ];
+
+    let servicesState = [];
+    let currentCategoryFilter = 'all';
+
+    function renderTemplatesCarousel() {
+      const carousel = document.getElementById('templates-carousel');
+      if (!carousel) return;
+      carousel.innerHTML = HAIRCUT_TEMPLATES.map((tmpl, idx) => `
+        <button type="button" class="template-card-btn" onclick="applyHaircutTemplate(${idx})">
+          <div style="font-size: 12px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid ${tmpl.icon}" style="color: #38BDF8; font-size: 11px;"></i> ${tmpl.name}
+          </div>
+          <div style="font-size: 11px; color: #38BDF8; font-weight: 800;">
+            $${tmpl.price.toLocaleString('es-CO')} • ${tmpl.durationMinutes}m
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function applyHaircutTemplate(idx) {
+      const tmpl = HAIRCUT_TEMPLATES[idx];
+      if (!tmpl) return;
+
+      openNewServiceSheet();
+      document.getElementById('srv-name-input').value = tmpl.name;
+      document.getElementById('srv-category-input').value = tmpl.category;
+      document.getElementById('srv-badge-input').value = tmpl.badge || '';
+      document.getElementById('srv-duration-input').value = tmpl.durationMinutes;
+      document.getElementById('srv-price-input').value = tmpl.price;
+      document.getElementById('srv-desc-input').value = tmpl.description;
+
+      updateServiceWhatsAppPreview();
+      showMobileToast(`⚡ Plantilla cargada: ${tmpl.name}`);
+    }
+
+    function renderCategoryFilters() {
+      const filterContainer = document.getElementById('service-category-filters');
+      if (!filterContainer) return;
+
+      const totalCount = servicesState.length;
+      const cortesCount = servicesState.filter(s => s.category === 'Corte').length;
+      const barbaCount = servicesState.filter(s => s.category === 'Barba').length;
+      const combosCount = servicesState.filter(s => s.category === 'Combo').length;
+      const tratamientoCount = servicesState.filter(s => s.category === 'Tratamiento' || s.category === 'Especial').length;
+      const pausedCount = servicesState.filter(s => !s.isActive).length;
+
+      const filters = [
+        { id: 'all', label: `Todos (${totalCount})` },
+        { id: 'Corte', label: `✂️ Cortes (${cortesCount})` },
+        { id: 'Barba', label: `🧔 Barba (${barbaCount})` },
+        { id: 'Combo', label: `👑 Combos (${combosCount})` },
+        { id: 'Tratamiento', label: `✨ Tratamientos (${tratamientoCount})` },
+      ];
+
+      if (pausedCount > 0) {
+        filters.push({ id: 'paused', label: `⏸️ Pausados (${pausedCount})` });
+      }
+
+      filterContainer.innerHTML = filters.map(f => `
+        <button type="button" class="cat-filter-pill ${currentCategoryFilter === f.id ? 'active' : ''}" 
+          onclick="setServiceCategoryFilter('${f.id}')">
+          ${f.label}
+        </button>
+      `).join('');
+    }
+
+    function setServiceCategoryFilter(catId) {
+      currentCategoryFilter = catId;
+      renderCategoryFilters();
+      renderServicesList();
+    }
+
+    async function loadServices() {
+      const container = document.getElementById('m-services-list');
+      if (!container) return;
+
+      try {
+        const res = await fetch('/api/services?all=true');
+        const data = await res.json();
+        servicesState = data.services || [];
+
+        const badge = document.getElementById('services-count-badge');
+        if (badge) {
+          const activeCount = servicesState.filter(s => s.isActive).length;
+          badge.innerText = `${activeCount} Cortes Activos`;
+        }
+
+        renderTemplatesCarousel();
+        renderCategoryFilters();
+        renderServicesList();
+
+        const srvSelect = document.getElementById('m-new-service');
+        if (srvSelect) {
+          const activeOnes = servicesState.filter(s => s.isActive);
+          srvSelect.innerHTML = activeOnes.map(s => 
+            `<option value="${s.id}">${s.name} ($${s.price.toLocaleString('es-CO')} • ${s.durationMinutes}m)</option>`
+          ).join('');
+        }
+      } catch (e) {
+        console.error('Error cargando servicios:', e);
+      }
+    }
+
+    function renderServicesList() {
+      const container = document.getElementById('m-services-list');
+      if (!container) return;
+
+      let filtered = [...servicesState];
+      if (currentCategoryFilter === 'paused') {
+        filtered = filtered.filter(s => !s.isActive);
+      } else if (currentCategoryFilter !== 'all') {
+        filtered = filtered.filter(s => s.category === currentCategoryFilter);
+      }
+
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; background: var(--bg-surface); border: 1px dashed var(--border-subtle); border-radius: 18px; padding: 40px 20px; text-align: center;">
+            <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(37, 99, 235, 0.15); color: #38BDF8; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px auto; font-size: 22px;">
+              <i class="fa-solid fa-scissors"></i>
+            </div>
+            <div style="font-size: 16px; font-weight: 800; color: #FFF;">Sin cortes en esta categoría</div>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 6px 0 18px 0;">Crea un nuevo corte personalizado o usa una de las plantillas de arriba.</p>
+            <button class="desktop-btn desktop-btn-gold" style="margin: 0 auto;" onclick="openNewServiceSheet()">
+              <i class="fa-solid fa-plus"></i> Añadir Tipo de Corte
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(s => {
+        const item = document.createElement('div');
+        item.className = `service-card-pro ${s.isActive ? '' : 'is-paused'}`;
+
+        const iconClass = s.icon || (s.category === 'Barba' ? 'fa-user-tie' : s.category === 'Combo' ? 'fa-crown' : 'fa-scissors');
+        const badgeChip = s.badge ? `<span style="font-size: 10px; font-weight: 800; background: rgba(37, 99, 235, 0.16); color: #38BDF8; padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.35);">${s.badge}</span>` : '';
+        const categoryTag = `<span style="font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase;">${s.category || 'Corte'}</span>`;
+
+        const statusTag = s.isActive
+          ? `<span style="font-size: 10px; font-weight: 700; color: #34D399; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 10px; border-radius: 8px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #34D399;"></span> En WhatsApp</span>`
+          : `<span style="font-size: 10px; font-weight: 700; color: #FBBF24; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); padding: 3px 10px; border-radius: 8px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #FBBF24;"></span> Pausado</span>`;
+
+        item.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; color: #38BDF8; font-size: 17px; flex-shrink: 0;">
+                <i class="fa-solid ${iconClass}"></i>
+              </div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                  ${categoryTag}
+                  ${badgeChip}
+                </div>
+                <div class="service-name-text" style="margin-top: 3px;">${s.name}</div>
+              </div>
+            </div>
+
+            <div>
+              ${statusTag}
+            </div>
+          </div>
+
+          ${s.description ? `<div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">${s.description}</div>` : ''}
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 12px; margin-top: auto;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="service-price-pill">$${s.price.toLocaleString('es-CO')}</span>
+              <span style="font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">${VALMONT_ICONS.clock} ${s.durationMinutes} min</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button onclick="editService('${s.id}')" title="Editar Corte" class="valmont-mini-btn valmont-mini-surface">
+                ${VALMONT_ICONS.pen}
+              </button>
+              <button onclick="toggleServiceStatus('${s.id}')" title="${s.isActive ? 'Pausar Corte' : 'Reactivar Corte'}" class="valmont-mini-btn ${s.isActive ? 'valmont-mini-warning' : 'valmont-mini-gold'}">
+                ${s.isActive ? VALMONT_ICONS.pause : VALMONT_ICONS.play}
+              </button>
+              <button onclick="deleteService('${s.id}')" title="Eliminar del Catálogo" class="valmont-mini-btn valmont-mini-danger">
+                ${VALMONT_ICONS.trash}
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function openNewServiceSheet() {
+      document.getElementById('srv-edit-id').value = '';
+      document.getElementById('sheet-service-title').innerText = 'Nuevo Tipo de Corte';
+      document.getElementById('sheet-service-subtitle').innerText = 'Configura este estilo para que tus clientes puedan consultarlo y reservarlo automáticamente';
+      document.getElementById('btn-save-service').innerText = 'Guardar y Publicar en WhatsApp';
+
+      document.getElementById('srv-name-input').value = '';
+      document.getElementById('srv-category-input').value = 'Corte';
+      document.getElementById('srv-badge-input').value = '';
+      document.getElementById('srv-duration-input').value = '40';
+      document.getElementById('srv-price-input').value = '35000';
+      document.getElementById('srv-desc-input').value = '';
+
+      updateServiceWhatsAppPreview();
+      document.getElementById('sheet-new-service').classList.add('active');
+    }
+
+    function editService(id) {
+      const s = servicesState.find(item => item.id === id);
+      if (!s) return;
+
+      document.getElementById('srv-edit-id').value = s.id;
+      document.getElementById('sheet-service-title').innerText = '✏️ Editar Tipo de Corte';
+      document.getElementById('sheet-service-subtitle').innerText = 'Los cambios se reflejarán de inmediato en el bot de WhatsApp y en tu agenda';
+      document.getElementById('btn-save-service').innerText = 'Actualizar Corte';
+
+      document.getElementById('srv-name-input').value = s.name || '';
+      document.getElementById('srv-category-input').value = s.category || 'Corte';
+      document.getElementById('srv-badge-input').value = s.badge || '';
+      document.getElementById('srv-duration-input').value = s.durationMinutes || 40;
+      document.getElementById('srv-price-input').value = s.price || 35000;
+      document.getElementById('srv-desc-input').value = s.description || '';
+
+      updateServiceWhatsAppPreview();
+      document.getElementById('sheet-new-service').classList.add('active');
+    }
+
+    function setServiceDuration(min) {
+      document.getElementById('srv-duration-input').value = min;
+      updateServiceWhatsAppPreview();
+    }
+
+    function setServicePrice(price) {
+      document.getElementById('srv-price-input').value = price;
+      updateServiceWhatsAppPreview();
+    }
+
+    function updateServiceWhatsAppPreview() {
+      const name = document.getElementById('srv-name-input').value.trim() || 'Nuevo Tipo de Corte';
+      const price = Number(document.getElementById('srv-price-input').value) || 35000;
+      const duration = document.getElementById('srv-duration-input').value || '40';
+      const badge = document.getElementById('srv-badge-input').value;
+      const desc = document.getElementById('srv-desc-input').value.trim() || 'Corte profesional realizado por Mateo Silva.';
+
+      const badgeStr = badge ? ` [${badge}]` : '';
+
+      document.getElementById('preview-wa-name').innerText = name + badgeStr;
+      document.getElementById('preview-wa-price').innerText = `$${price.toLocaleString('es-CO')}`;
+      document.getElementById('preview-wa-dur').innerText = duration;
+      document.getElementById('preview-wa-desc').innerText = desc;
+    }
+
+    async function handleServiceFormSubmit(e) {
+      e.preventDefault();
+      const editId = document.getElementById('srv-edit-id').value;
+      const name = document.getElementById('srv-name-input').value.trim();
+      const category = document.getElementById('srv-category-input').value;
+      const badge = document.getElementById('srv-badge-input').value;
+      const durationMinutes = Number(document.getElementById('srv-duration-input').value);
+      const price = Number(document.getElementById('srv-price-input').value);
+      const description = document.getElementById('srv-desc-input').value.trim();
+
+      const payload = {
+        name,
+        category,
+        badge,
+        durationMinutes,
+        price,
+        description,
+        icon: category === 'Barba' ? 'fa-user-tie' : category === 'Combo' ? 'fa-crown' : 'fa-scissors'
+      };
+
+      try {
+        const url = editId ? `/api/services/${editId}` : '/api/services';
+        const method = editId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          closeSheet('sheet-new-service');
+          loadServices();
+          loadDashboardData();
+          showMobileToast(editId ? '✅ ¡Corte actualizado con éxito!' : '✂️ ¡Nuevo corte añadido y publicado en WhatsApp!');
+        } else {
+          const err = await res.json();
+          alert('Error: ' + (err.error || 'No se pudo guardar el corte'));
+        }
+      } catch (err) {
+        console.error('Error al guardar servicio:', err);
+      }
+    }
+
+    async function toggleServiceStatus(id) {
+      try {
+        const res = await fetch(`/api/services/${id}/toggle`, { method: 'PATCH' });
+        if (res.ok) {
+          const data = await res.json();
+          const s = data.service;
+          loadServices();
+          loadDashboardData();
+          showMobileToast(s.isActive ? `▶️ "${s.name}" activado en WhatsApp` : `⏸️ "${s.name}" pausado temporalmente`);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function deleteService(id) {
+      const s = servicesState.find(item => item.id === id);
+      const name = s ? s.name : 'este corte';
+      if (!confirm(`¿Deseas retirar "${name}" del catálogo de WhatsApp?`)) return;
+      try {
+        const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          loadServices();
+          loadDashboardData();
+          showMobileToast('🗑️ Corte retirado del catálogo');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ========================================================================
+    // GANANCIAS & CAJA
+    // ========================================================================
+    function renderEarningsView() {
+      const container = document.getElementById('m-earnings-breakdown');
+      const apps = dashboardState?.appointments || [];
+      const completed = apps.filter(a => a.status === 'completed' || a.status === 'confirmed');
+
+      const total = completed.reduce((sum, a) => sum + a.totalPrice, 0);
+      document.getElementById('earnings-total-val').innerText = `$${total.toLocaleString('es-CO')}`;
+
+      container.innerHTML = '';
+      if (completed.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 30px;">Sin ingresos registrados para esta fecha</div>';
+        return;
+      }
+
+      completed.forEach(a => {
+        const start = new Date(a.startTime);
+        let h = start.getHours();
+        const m = String(start.getMinutes()).padStart(2, '0');
+        const p = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+
+        const item = document.createElement('div');
+        item.style = `
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--border-subtle);
+          border-radius: 14px;
+          padding: 14px 18px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        `;
+        item.innerHTML = `
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: #FFF;">${a.clientName}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${a.serviceName} • ${h}:${m} ${p}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 15px; font-weight: 800; color: #38BDF8;">$${a.totalPrice.toLocaleString('es-CO')}</div>
+            <div style="font-size: 11px; color: #34D399; font-weight: 700;">100% Neto</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // ========================================================================
+    // CONFIGURACIÓN & AJUSTES TOTALES
+    // ========================================================================
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        currentSettings = data.settings;
+        populateSettingsForm(data.settings);
+        updateUIWithSettings(data.settings);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function populateSettingsForm(s) {
+      if (!s) return;
+      document.getElementById('cfg-shop-name').value = s.shopName || '';
+      document.getElementById('cfg-barber-name').value = s.barberName || '';
+      document.getElementById('cfg-phone').value = s.phone || '';
+      document.getElementById('cfg-address').value = s.address || '';
+      document.getElementById('cfg-parking').value = s.parkingInfo || '';
+      document.getElementById('cfg-work-start').value = s.workStartTime || '09:00';
+      document.getElementById('cfg-work-end').value = s.workEndTime || '19:00';
+
+      selectedActiveDays = s.activeDays || [1, 2, 3, 4, 5, 6];
+      document.querySelectorAll('#cfg-days-grid .day-btn').forEach(btn => {
+        const d = Number(btn.getAttribute('data-day'));
+        if (selectedActiveDays.includes(d)) btn.classList.add('selected');
+        else btn.classList.remove('selected');
+      });
+
+      document.getElementById('cfg-lunch-enabled').checked = s.lunchEnabled;
+      toggleLunchInputs(s.lunchEnabled);
+      document.getElementById('cfg-lunch-start').value = s.lunchStartTime || '13:00';
+      document.getElementById('cfg-lunch-end').value = s.lunchEndTime || '14:00';
+
+      selectedBufferMinutes = s.slotBufferMinutes !== undefined ? s.slotBufferMinutes : 10;
+      selectBuffer(selectedBufferMinutes);
+
+      document.getElementById('cfg-autobot-enabled').checked = s.autoBotEnabled !== false;
+      document.getElementById('cfg-custom-greeting').value = s.customGreeting || '';
+    }
+
+    function toggleDaySelection(dayNum) {
+      if (selectedActiveDays.includes(dayNum)) {
+        if (selectedActiveDays.length === 1) return alert('Debes dejar al menos 1 día de atención activo');
+        selectedActiveDays = selectedActiveDays.filter(d => d !== dayNum);
+      } else {
+        selectedActiveDays.push(dayNum);
+      }
+      document.querySelectorAll('#cfg-days-grid .day-btn').forEach(btn => {
+        const d = Number(btn.getAttribute('data-day'));
+        if (selectedActiveDays.includes(d)) btn.classList.add('selected');
+        else btn.classList.remove('selected');
+      });
+    }
+
+    function toggleLunchInputs(enabled) {
+      const container = document.getElementById('cfg-lunch-time-container');
+      if (container) container.style.opacity = enabled ? '1' : '0.4';
+    }
+
+    function selectBuffer(mins) {
+      selectedBufferMinutes = mins;
+      document.querySelectorAll('#cfg-buffer-grid .buffer-btn').forEach(btn => {
+        const b = Number(btn.getAttribute('data-buffer'));
+        if (b === mins) btn.classList.add('selected');
+        else btn.classList.remove('selected');
+      });
+      const desc = document.getElementById('buffer-description-text');
+      if (desc) {
+        if (mins === 0) desc.innerText = '⚡ Sin descanso entre cortes: agenda continua inmediata.';
+        else if (mins === 10) desc.innerText = '⚡ Recomendado: 10 minutos de desinfección y preparación.';
+        else desc.innerText = `⚡ ${mins} minutos de preparación entre cada turno.`;
+      }
+    }
+
+    function updateUIWithSettings(s) {
+      if (!s) return;
+      const barberEl = document.getElementById('header-barber-name');
+      if (barberEl) {
+        barberEl.innerHTML = `${s.barberName} <i class="fa-solid fa-circle-check" style="color: #38BDF8; font-size: 11px;"></i>`;
+      }
+      const shopEl = document.getElementById('header-shop-name');
+      if (shopEl) {
+        shopEl.innerHTML = `<span class="pulse-dot"></span> Disponible • ${s.shopName.split('•')[0] || s.shopName}`;
+      }
+      const avatarEl = document.getElementById('header-avatar');
+      if (avatarEl && s.barberName) {
+        const parts = s.barberName.trim().split(' ');
+        const initials = (parts[0]?.[0] || 'M') + (parts[1]?.[0] || 'S');
+        avatarEl.innerText = initials.toUpperCase();
+      }
+    }
+
+    async function saveAllSettings() {
+      const payload = {
+        shopName: document.getElementById('cfg-shop-name').value.trim(),
+        barberName: document.getElementById('cfg-barber-name').value.trim(),
+        phone: document.getElementById('cfg-phone').value.trim(),
+        address: document.getElementById('cfg-address').value.trim(),
+        parkingInfo: document.getElementById('cfg-parking').value.trim(),
+        workStartTime: document.getElementById('cfg-work-start').value,
+        workEndTime: document.getElementById('cfg-work-end').value,
+        activeDays: selectedActiveDays,
+        lunchEnabled: document.getElementById('cfg-lunch-enabled').checked,
+        lunchStartTime: document.getElementById('cfg-lunch-start').value,
+        lunchEndTime: document.getElementById('cfg-lunch-end').value,
+        slotBufferMinutes: selectedBufferMinutes,
+        autoBotEnabled: document.getElementById('cfg-autobot-enabled').checked,
+        customGreeting: document.getElementById('cfg-custom-greeting').value.trim(),
+      };
+
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          currentSettings = data.settings;
+          updateUIWithSettings(data.settings);
+          loadDashboardData();
+          showMobileToast('✓ ¡Configuración guardada y sincronizada en vivo!');
+        } else {
+          showMobileToast('❌ Error guardando configuración');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ========================================================================
+    // DETALLES Y CITAS MANUALES
+    // ========================================================================
+    function openAppointmentDetailsSheet(app) {
+      const start = new Date(app.startTime);
+      const end = new Date(app.endTime);
+      const formatTime = (d) => {
+        let h = d.getHours();
+        const m = String(d.getMinutes()).padStart(2, '0');
+        const p = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+        return `${h}:${m} ${p}`;
+      };
+
+      const content = document.getElementById('sheet-app-content');
+      content.innerHTML = `
+        <div class="sheet-handle"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 18px; font-weight: 800; color: #FFF;">Detalle del Turno</h3>
+            <span style="font-size: 11px; color: ${getStatusColor(app.status)}; font-weight: 800; text-transform: uppercase;">● ${app.status}</span>
+          </div>
+          <button type="button" onclick="closeSheet('sheet-app-details')" class="topbar-icon-btn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.04); border-radius: 14px; padding: 14px; margin-top: 8px;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Cliente</div>
+          <div style="font-size: 16px; font-weight: 800; color: #FFF; margin-top: 2px;">${app.clientName}</div>
+          <div style="font-size: 13px; color: #38BDF8; margin-top: 2px;"><i class="fa-brands fa-whatsapp"></i> ${app.clientPhone}</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div style="background: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 12px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Horario</div>
+            <div style="font-size: 14px; font-weight: 800; color: #FFF; margin-top: 2px;">${formatTime(start)} - ${formatTime(end)}</div>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 12px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Servicio</div>
+            <div style="font-size: 14px; font-weight: 800; color: #FFF; margin-top: 2px;">${app.serviceName}</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.25); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total a Cobrar</div>
+          <div style="font-size: 24px; font-weight: 900; color: #38BDF8;">$${app.totalPrice.toLocaleString('es-CO')}</div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button type="button" onclick="openWhatsAppDirect('${app.clientPhone}', '¡Hola ${app.clientName}! Te saluda el equipo de FAMILIA 1969 💈.')" class="valmont-action-btn valmont-btn-whatsapp" style="flex: 1; height: 38px; justify-content: center;">
+            ${VALMONT_ICONS.whatsapp} Abrir WhatsApp Web
+          </button>
+          <button class="valmont-action-btn valmont-btn-reminder" onclick="triggerReminder('${app.id}')" style="flex: 1; height: 38px; justify-content: center;">
+            ${VALMONT_ICONS.clockChime} Enviar Recordatorio (20m)
+          </button>
+        </div>
+
+        ${app.status !== 'arrived' && app.status !== 'completed' && app.status !== 'cancelled'
+          ? `<button class="valmont-action-btn valmont-btn-arrival" style="width: 100%; height: 40px; justify-content: center; font-weight: 800;" onclick="markClientArrived('${app.id}')">
+               ${VALMONT_ICONS.arrival} Marcar que Llegó al Local (Sala de Espera)
+             </button>`
+          : ''
+        }
+
+        <div style="display: flex; gap: 8px;">
+          <button class="valmont-action-btn valmont-btn-gold" style="flex: 2; height: 40px; justify-content: center;" onclick="updateAppointmentStatus('${app.id}', 'completed')">
+            ${VALMONT_ICONS.check} Marcar Completada / Atendida
+          </button>
+          <button class="valmont-action-btn valmont-btn-danger" style="flex: 1; height: 40px; justify-content: center;" onclick="updateAppointmentStatus('${app.id}', 'no_show')">
+            No-Show
+          </button>
+        </div>
+      `;
+      document.getElementById('sheet-app-details').classList.add('active');
+    }
+
+    function openNewBookingSheet() {
+      document.getElementById('sheet-new-booking').classList.add('active');
+    }
+
+    function closeSheet(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function closeSheetOnBackdrop(e, id) {
+      if (e.target.id === id) closeSheet(id);
+    }
+
+    async function handleMobileBookingSubmit(e) {
+      e.preventDefault();
+      const clientName = document.getElementById('m-new-name').value;
+      const clientPhone = document.getElementById('m-new-phone').value;
+      const serviceId = document.getElementById('m-new-service').value;
+      const time = document.getElementById('m-new-time').value;
+
+      const startTimeISO = new Date(`${selectedDate}T${time}:00`).toISOString();
+
+      try {
+        const res = await fetch('/api/appointments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            serviceId,
+            clientName,
+            clientPhone,
+            startTimeISO,
+          }),
+        });
+
+        if (res.ok) {
+          closeSheet('sheet-new-booking');
+          loadDashboardData();
+          showMobileToast('✓ Cita agendada con éxito');
+        } else {
+          const err = await res.json();
+          alert(err.error || 'Horario ocupado');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function updateAppointmentStatus(id, status) {
+      try {
+        const res = await fetch(`/api/appointments/${id}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) {
+          closeSheet('sheet-app-details');
+          loadDashboardData();
+        }
+      } catch (e) {}
+    }
+
+    async function triggerReminder(id) {
+      try {
+        const app = (dashboardState?.appointments || []).find(a => a.id === id);
+        const res = await fetch(`/api/appointments/${id}/trigger-reminder`, { method: 'POST' });
+        if (res.ok) {
+          showMobileToast('⏰ Recordatorio 20m enviado al cliente');
+          closeSheet('sheet-app-details');
+          loadDashboardData();
+          if (app && app.clientPhone) {
+            const reminderText = `💈 *FAMILIA 1969* • Recordatorio de Turno\n\nHola ${app.clientName}, tu cita para *${app.serviceName || 'Corte'}* está programada en 20 minutos (${app.timeFormatted || ''}). Te esperamos en la Carrera 15 # 85-30. ¡Nos vemos en breve! ✨`;
+            openWhatsAppDirect(app.clientPhone, reminderText);
+          }
+        }
+      } catch (e) {
+        showMobileToast('Error enviando recordatorio');
+      }
+    }
+
+    // ========================================================================
+    // WHATSAPP BOT CONSOLE
+    // ========================================================================
+    const chatContainer = document.getElementById('m-wa-chat');
+
+    
+    // RENDERIZADOR DE CALENDARIO INTERACTIVO PARA WHATSAPP
+    function renderWhatsAppCalendar(container, picker) {
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const dayNamesMin = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
+      const minDateObj = picker.minDate ? new Date(picker.minDate + 'T12:00:00') : new Date();
+      let currentYear = minDateObj.getFullYear();
+      let currentMonth = minDateObj.getMonth();
+
+      function buildGrid() {
+        container.innerHTML = '';
+
+        const card = document.createElement('div');
+        card.style = `
+          margin-top: 12px;
+          background: #111B21;
+          border: 1px solid rgba(59, 130, 246, 0.35);
+          border-radius: 14px;
+          padding: 12px;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+        `;
+
+        // Header navegación de mes
+        const headerRow = document.createElement('div');
+        headerRow.style = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 4px;';
+        headerRow.innerHTML = `
+          <button type="button" id="cal-prev-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFF; border-radius: 8px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">‹</button>
+          <span style="font-size: 13.5px; font-weight: 800; color: #FFF; font-family: 'Outfit', sans-serif;">${monthNames[currentMonth]} ${currentYear}</span>
+          <button type="button" id="cal-next-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFF; border-radius: 8px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">›</button>
+        `;
+        card.appendChild(headerRow);
+
+        headerRow.querySelector('#cal-prev-btn').onclick = (e) => {
+          e.stopPropagation();
+          currentMonth--;
+          if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+          buildGrid();
+        };
+        headerRow.querySelector('#cal-next-btn').onclick = (e) => {
+          e.stopPropagation();
+          currentMonth++;
+          if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+          buildGrid();
+        };
+
+        // Días de la semana header
+        const weekGrid = document.createElement('div');
+        weekGrid.style = 'display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: 6px;';
+        dayNamesMin.forEach((name, idx) => {
+          const isSun = idx === 6;
+          weekGrid.innerHTML += `<div style="font-size: 10.5px; font-weight: 700; color: ${isSun ? '#F87171' : '#8696A0'}; text-transform: uppercase;">${name}</div>`;
+        });
+        card.appendChild(weekGrid);
+
+        // Cuadrícula de días
+        const daysGrid = document.createElement('div');
+        daysGrid.style = 'display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;';
+
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+        const startOffset = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // 0 = Lunes, 6 = Domingo
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // Celdas vacías iniciales
+        for (let i = 0; i < startOffset; i++) {
+          daysGrid.innerHTML += `<div style="height: 38px;"></div>`;
+        }
+
+        const todayObj = new Date();
+        const todayMid = new Date(todayObj.getFullYear(), todayObj.getMonth(), todayObj.getDate(), 12, 0, 0);
+
+        for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+          const thisDateMid = new Date(currentYear, currentMonth, dayNum, 12, 0, 0);
+          const jsDay = thisDateMid.getDay();
+          const customDayOfWeek = jsDay === 0 ? 7 : jsDay;
+
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+          const isPast = thisDateMid < todayMid;
+          const isRestDay = picker.restDays && picker.restDays.includes(customDayOfWeek);
+          const isToday = thisDateMid.getTime() === todayMid.getTime();
+
+          const cell = document.createElement('button');
+          cell.type = 'button';
+          cell.style = `
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.15s ease;
+            position: relative;
+            user-select: none;
+            padding: 2px;
+          `;
+
+          if (isPast) {
+            cell.style.background = 'transparent';
+            cell.style.color = '#4A5568';
+            cell.style.border = '1px solid transparent';
+            cell.style.cursor = 'not-allowed';
+            cell.disabled = true;
+            cell.innerHTML = `<span>${dayNum}</span>`;
+          } else if (isRestDay) {
+            cell.style.background = 'rgba(239, 68, 68, 0.08)';
+            cell.style.color = '#F87171';
+            cell.style.border = '1px dashed rgba(239, 68, 68, 0.25)';
+            cell.style.cursor = 'not-allowed';
+            cell.title = `Día de descanso de ${picker.barberName || 'Mateo Silva'}`;
+            cell.innerHTML = `<span>${dayNum}</span><span style="font-size: 8px; opacity: 0.85;">⛔</span>`;
+            cell.onclick = (e) => {
+              e.stopPropagation();
+              showMobileToast(`⛔ Los ${picker.restDayNames || 'Domingos'} Mateo Silva descansa para recargar energías.`);
+            };
+          } else {
+            cell.style.background = '#202C33';
+            cell.style.color = isToday ? '#38BDF8' : '#FFF';
+            cell.style.border = isToday ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)';
+            cell.style.cursor = 'pointer';
+            cell.innerHTML = `<span>${dayNum}</span><span style="width: 4px; height: 4px; border-radius: 50%; background: #34D399; margin-top: 1px;"></span>`;
+            
+            cell.onmouseover = () => {
+              cell.style.background = '#2563EB';
+              cell.style.color = '#FFFFFF';
+              cell.style.transform = 'scale(1.08)';
+            };
+            cell.onmouseout = () => {
+              cell.style.background = '#202C33';
+              cell.style.color = isToday ? '#38BDF8' : '#FFF';
+              cell.style.transform = 'scale(1)';
+            };
+            cell.onclick = (e) => {
+              e.stopPropagation();
+              card.querySelectorAll('button').forEach(b => b.disabled = true);
+              const readTitle = `${dayNum} de ${monthNames[currentMonth]}`;
+              sendMobileButtonClick(`DATE_${dateStr}`, readTitle);
+            };
+          }
+
+          daysGrid.appendChild(cell);
+        }
+
+        card.appendChild(daysGrid);
+
+        // Leyenda
+        const legend = document.createElement('div');
+        legend.style = 'margin-top: 10px; display: flex; align-items: center; justify-content: space-around; font-size: 10px; color: #8696A0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;';
+        legend.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 4px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #34D399;"></span> Turnos Disponibles</div>
+          <div style="display: flex; align-items: center; gap: 4px;"><span style="color: #F87171;">⛔</span> Descanso Barbero</div>
+        `;
+        card.appendChild(legend);
+
+        container.appendChild(card);
+      }
+
+      buildGrid();
+    }
+
+    function appendMobileMessage(sender, text, buttons = [], sections = [], header = '', footer = '', calendarPicker = null) {
+      const msg = document.createElement('div');
+      const isOut = sender === 'outgoing';
+      msg.className = 'wa-msg-bubble ' + (isOut ? 'wa-msg-out' : 'wa-msg-in');
+      msg.style = `
+        max-width: 82%;
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-size: 13px;
+        line-height: 1.45;
+        align-self: ${isOut ? 'flex-end' : 'flex-start'};
+        background: ${isOut ? '#005C4B' : '#202C33'};
+        color: #E9EDEF;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        word-break: break-word;
+        position: relative;
+        animation: fadeIn 0.2s ease-in;
+      `;
+
+      let html = '';
+      if (header) {
+        html += `<div style="font-size: 13px; font-weight: 800; color: #38BDF8; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px;">${header}</div>`;
+      }
+
+      let formattedText = (text || '')
+        .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+        .replace(/_(.*?)_/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+
+      html += `<div>${formattedText}</div>`;
+
+      if (footer) {
+        html += `<div style="font-size: 11px; color: #8696A0; margin-top: 6px; font-style: italic;">${footer}</div>`;
+      }
+
+      // Estampa de tiempo y doble check azul estilo WhatsApp
+      const now = new Date();
+      let h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const p = h >= 12 ? 'PM' : 'AM';
+      if (h > 12) h -= 12;
+      if (h === 0) h = 12;
+      const timeStr = `${h}:${m} ${p}`;
+      const checks = isOut ? '<span style="color: #53BDEB; margin-left: 4px; font-weight: 800;">✓✓</span>' : '';
+      html += `<div style="font-size: 10px; color: #8696A0; text-align: right; margin-top: 4px; display: flex; justify-content: flex-end; align-items: center;">${timeStr} ${checks}</div>`;
+
+      msg.innerHTML = html;
+
+      if (buttons && buttons.length > 0) {
+        const btnBox = document.createElement('div');
+        btnBox.style = 'display: flex; flex-direction: column; gap: 6px; margin-top: 10px;';
+        buttons.forEach(b => {
+          const btn = document.createElement('button');
+          btn.setAttribute('data-action-id', b.id);
+          btn.innerText = b.title;
+          btn.style = `
+            background: #2A3942;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #34D399;
+            font-weight: 700;
+            padding: 9px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 12.5px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          `;
+          btn.onmouseover = () => btn.style.background = '#32444F';
+          btn.onmouseout = () => btn.style.background = '#2A3942';
+          btn.onclick = () => {
+            btnBox.querySelectorAll('button').forEach(el => el.disabled = true);
+            sendMobileButtonClick(b.id, b.title);
+          };
+          btnBox.appendChild(btn);
+        });
+        msg.appendChild(btnBox);
+      }
+
+      if (sections && sections.length > 0) {
+        const listContainer = document.createElement('div');
+        listContainer.style = 'margin-top: 10px; display: flex; flex-direction: column; gap: 8px;';
+        sections.forEach(sec => {
+          const secTitle = document.createElement('div');
+          secTitle.innerText = sec.title;
+          secTitle.style = 'font-size: 11px; font-weight: 800; color: #38BDF8; text-transform: uppercase; margin-bottom: 2px;';
+          listContainer.appendChild(secTitle);
+
+          (sec.rows || []).forEach(row => {
+            const rowBtn = document.createElement('button');
+            rowBtn.setAttribute('data-action-id', row.id);
+            rowBtn.style = `
+              background: #2A3942;
+              border: 1px solid rgba(255,255,255,0.08);
+              border-radius: 10px;
+              padding: 9px 12px;
+              color: #FFF;
+              cursor: pointer;
+              text-align: left;
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              margin-bottom: 4px;
+              transition: all 0.15s;
+            `;
+            rowBtn.onmouseover = () => rowBtn.style.background = '#32444F';
+            rowBtn.onmouseout = () => rowBtn.style.background = '#2A3942';
+            rowBtn.innerHTML = `
+              <div style="font-weight: 700; font-size: 12.5px; color: #FFF;">${row.title}</div>
+              <div style="font-size: 10.5px; color: #8696A0;">${row.description || ''}</div>
+            `;
+            rowBtn.onclick = () => {
+              listContainer.querySelectorAll('button').forEach(el => el.disabled = true);
+              sendMobileListClick(row.id, row.title);
+            };
+            listContainer.appendChild(rowBtn);
+          });
+        });
+        msg.appendChild(listContainer);
+      }
+
+
+      // Renderizar Calendario Interactivo si viene en el payload
+      if (calendarPicker) {
+        const calWrapper = document.createElement('div');
+        calWrapper.className = 'wa-calendar-container';
+        renderWhatsAppCalendar(calWrapper, calendarPicker);
+        msg.appendChild(calWrapper);
+      }
+
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const existing = document.getElementById('wa-typing-ind');
+      if (existing) existing.remove();
+      const ind = document.createElement('div');
+      ind.id = 'wa-typing-ind';
+      ind.style = `
+        align-self: flex-start;
+        background: #202C33;
+        color: #8696A0;
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-style: italic;
+      `;
+      ind.innerHTML = `<span class="pulse-dot" style="background: #34D399; width: 6px; height: 6px;"></span> Mateo Silva Studio está escribiendo...`;
+      chatContainer.appendChild(ind);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const ind = document.getElementById('wa-typing-ind');
+      if (ind) ind.remove();
+    }
+
+    let currentSimulatorPhone = '573001234567';
+
+    function switchSimulatedClient() {
+      const sel = document.getElementById('sim-client-select');
+      currentSimulatorPhone = sel.value;
+      chatContainer.innerHTML = '';
+      sendMobileTextMessageRaw('hola');
+    }
+
+    async function sendMobileTextMessageRaw(txt) {
+      appendMobileMessage('outgoing', txt);
+      showTypingIndicator();
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: currentSimulatorPhone, type: 'text', text: txt })
+        });
+        const reply = await res.json();
+        hideTypingIndicator();
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections, reply.header, reply.footer, reply.calendarPicker);
+      } catch (e) {
+        hideTypingIndicator();
+        console.error(e);
+        appendMobileMessage('incoming', '⚠️ Error temporal de conexión con el bot.');
+      }
+    }
+
+    function sendMobileTextMessage() {
+      const inp = document.getElementById('m-wa-input');
+      const txt = inp.value.trim();
+      if (!txt) return;
+      inp.value = '';
+      sendMobileTextMessageRaw(txt);
+    }
+
+    function handleMobileKeyPress(e) {
+      if (e.key === 'Enter') sendMobileTextMessage();
+    }
+
+    async function sendMobileButtonClick(buttonId, title) {
+      appendMobileMessage('outgoing', `[Opción: ${title}]`);
+      showTypingIndicator();
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: currentSimulatorPhone, type: 'interactive_button', buttonId })
+        });
+        const reply = await res.json();
+        hideTypingIndicator();
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections, reply.header, reply.footer, reply.calendarPicker);
+      } catch (e) {
+        hideTypingIndicator();
+        console.error(e);
+      }
+    }
+
+    async function sendMobileListClick(listId, title) {
+      appendMobileMessage('outgoing', `[Selección: ${title}]`);
+      showTypingIndicator();
+      try {
+        const res = await fetch('/api/whatsapp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: currentSimulatorPhone, type: 'interactive_list', listId })
+        });
+        const reply = await res.json();
+        hideTypingIndicator();
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections, reply.header, reply.footer, reply.calendarPicker);
+      } catch (e) {
+        hideTypingIndicator();
+        console.error(e);
+      }
+    }
+
+    function askQuickQuestion(q) {
+      const inp = document.getElementById('m-wa-input');
+      inp.value = q;
+      sendMobileTextMessage();
+    }
+
+    const waitDelay = (ms) => new Promise(res => setTimeout(res, ms));
+
+    async function runAutoBookingDemo() {
+      switchMobileTab('whatsapp');
+      chatContainer.innerHTML = '';
+      showMobileToast('🤖 Ejecutando reserva automática de prueba...');
+
+      // 1. Cliente envía saludo inicial
+      await sendMobileTextMessageRaw('hola');
+      await waitDelay(1000);
+
+      // 2. Click primer corte disponible
+      const srvBtn = chatContainer.querySelector('button[data-action-id^="SERVICE_"]');
+      if (srvBtn) {
+        srvBtn.click();
+      } else {
+        await sendMobileListClick('SERVICE_srv-1', 'Corte Clásico & Fade Texturizado');
+      }
+      await waitDelay(1100);
+
+      // 3. Click fecha (hoy o mañana)
+      const dateBtn = chatContainer.querySelector('button[data-action-id^="DATE_"]');
+      if (dateBtn) {
+        dateBtn.click();
+      } else {
+        const todayStr = getLocalDateString();
+        await sendMobileButtonClick(`DATE_${todayStr}`, 'Hoy');
+      }
+      await waitDelay(1100);
+
+      // 4. Click primer horario libre
+      const slotBtn = chatContainer.querySelector('button[data-action-id^="SLOT_"]');
+      if (slotBtn) {
+        slotBtn.click();
+        await waitDelay(1100);
+
+        // 5. Si pide nombre
+        const lastMsg = chatContainer.lastElementChild;
+        if (lastMsg && (lastMsg.innerText.includes('Nombre') || lastMsg.innerText.includes('Apellido'))) {
+          const inp = document.getElementById('m-wa-input');
+          if (inp) {
+            inp.value = 'Julián Castro (Demo Web)';
+            sendMobileTextMessage();
+          }
+        }
+      }
+      showMobileToast('🎉 ¡Cita de prueba agendada exitosamente!');
+    }
+
+    function showMobileToast(msg) {
+      const existing = document.querySelector('.mobile-toast');
+      if (existing) existing.remove();
+
+      const t = document.createElement('div');
+      t.className = 'mobile-toast';
+      t.innerHTML = `<i class="fa-solid fa-bell" style="color: #38BDF8;"></i> <span>${msg}</span>`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // PWA Support
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const pwaBtn = document.getElementById('btn-install-pwa');
+      if (pwaBtn) pwaBtn.style.display = 'inline-flex';
+    });
+
+    async function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showMobileToast('✓ Aplicación instalada en tu dispositivo');
+        }
+        deferredPrompt = null;
+      } else {
+        alert('Para instalar la App Web en tu dispositivo: abre el menú de tu navegador y pulsa "Instalar aplicación" o "Agregar a la pantalla de inicio".');
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').catch(console.error);
+    }
+
+    window.onload = () => {
+      document.addEventListener('click', requestNotificationPermission, { once: true });
+      document.addEventListener('touchstart', requestNotificationPermission, { once: true });
+      buildDayCarousel();
+      loadSettings();
+      loadDashboardData();
+      loadServices();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryTab = urlParams.get('tab');
+      if (queryTab && ['agenda', 'services', 'whatsapp', 'earnings', 'settings'].includes(queryTab)) {
+        switchMobileTab(queryTab);
+      } else if (window.location.hash) {
+        const hashTab = window.location.hash.replace('#', '');
+        if (['agenda', 'services', 'whatsapp', 'earnings', 'settings'].includes(hashTab)) {
+          switchMobileTab(hashTab);
+        }
+      }
+
+      fetch('/api/whatsapp/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: currentSimulatorPhone, type: 'text', text: 'hola' })
+      }).then(r => r.json()).then(reply => {
+        appendMobileMessage('incoming', reply.body, reply.buttons, reply.sections, reply.header, reply.footer, reply.calendarPicker);
+        if (urlParams.get('auto') === 'cal') {
+          setTimeout(async () => {
+            await sendMobileListClick('SERVICE_srv-1', 'Corte Clásico & Fade Texturizado');
+            setTimeout(async () => {
+              await sendMobileButtonClick('DATE_PICKER', '📅 Otra Fecha');
+            }, 800);
+          }, 800);
+        }
+      });
+    };
+  </script>
+</body>
+</html>
