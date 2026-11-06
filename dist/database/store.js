@@ -26,6 +26,7 @@ class DataStore {
     blocks = [];
     appointments = [];
     sessions = [];
+    users = [];
     settings = {
         shopName: "FAMILIA 1969 • Barber Club & Atelier",
         barberName: "Mateo Silva (Director & Master Barber)",
@@ -107,6 +108,7 @@ class DataStore {
                 services: this.services,
                 clients: this.clients,
                 appointments: this.appointments,
+                users: this.users,
             };
             const tempFile = `${DB_FILE}.tmp`;
             fs_1.default.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
@@ -150,6 +152,8 @@ class DataStore {
                 updatedAt: new Date(c.updatedAt),
             }));
         }
+        if (Array.isArray(parsed.users))
+            this.users = parsed.users;
         if (Array.isArray(parsed.appointments)) {
             this.appointments = parsed.appointments.map((a) => ({
                 ...a,
@@ -433,6 +437,31 @@ class DataStore {
             const aDate = datetime_utils_1.DateTimeUtils.extractDateAndTime(a.startTime).dateStr;
             return aDate === dateStr;
         });
+    }
+    findUserByEmail(email) {
+        if (!email)
+            return undefined;
+        return this.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    }
+    findUserById(id) {
+        return this.users.find(u => u.id === id);
+    }
+    createUser(user) {
+        this.users.push(user);
+        this.persist();
+        return user;
+    }
+    updateUser(id, updates) {
+        const idx = this.users.findIndex(u => u.id === id);
+        if (idx === -1)
+            return undefined;
+        this.users[idx] = {
+            ...this.users[idx],
+            ...updates,
+            updatedAt: new Date().toISOString()
+        };
+        this.persist();
+        return this.users[idx];
     }
 }
 exports.DataStore = DataStore;

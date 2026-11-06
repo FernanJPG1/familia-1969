@@ -6,6 +6,7 @@ import dashboardRoutes from '../modules/dashboard/dashboard.routes';
 import appointmentsRoutes from '../modules/appointments/appointments.routes';
 import availabilityRoutes from '../modules/availability/availability.routes';
 import whatsappRoutes from '../modules/whatsapp/whatsapp.routes';
+import authRoutes from '../modules/auth/auth.routes';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.get('/health', (req: any, res: any) => {
 });
 
 // Registrar módulos
+router.use('/auth', authRoutes);
 router.use('/services', servicesRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/dashboard', dashboardRoutes);

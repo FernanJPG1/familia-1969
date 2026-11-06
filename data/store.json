@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "savedAt": "2026-11-04T14:30:11.045Z",
+  "savedAt": "2026-11-06T05:51:22.651Z",
   "settings": {
     "shopName": "FAMILIA 1969",
     "barberName": "Jensy Gomez",
-    "phone": "+57 311 111 2233",
+    "phone": "+57 312 999 0011",
     "address": "Carrera 15 # 85-30, Zona Rosa, Bogotá",
     "parkingInfo": "Valet parking VIP exclusivo en la entrada de FAMILIA 1969",
     "slotBufferMinutes": 10,
@@ -29,13 +29,13 @@
       "id": "tenant-demo-1",
       "name": "FAMILIA 1969",
       "slug": "mateo-silva-barber",
-      "phone": "+57 311 111 2233",
+      "phone": "+57 312 999 0011",
       "address": "Carrera 15 # 85-30, Zona Rosa, Bogotá",
       "timezone": "America/Bogota",
       "slotBufferMinutes": 10,
       "isActive": true,
       "createdAt": "2026-11-04T00:12:10.280Z",
-      "updatedAt": "2026-11-04T08:13:07.130Z"
+      "updatedAt": "2026-11-06T05:51:22.649Z"
     }
   ],
   "barbers": [
@@ -43,12 +43,12 @@
       "id": "barber-1",
       "tenantId": "tenant-demo-1",
       "name": "Jensy Gomez",
-      "phone": "+57 311 111 2233",
+      "phone": "+57 312 999 0011",
       "colorTag": "#F59E0B",
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-04T00:12:10.280Z",
-      "updatedAt": "2026-11-04T08:13:07.130Z"
+      "updatedAt": "2026-11-06T05:51:22.649Z"
     }
   ],
   "services": [
@@ -269,6 +269,34 @@
       "reminderSentAt": "2026-11-04T14:30:11.044Z",
       "createdAt": "2026-11-04T04:36:24.465Z",
       "updatedAt": "2026-11-04T04:36:24.465Z"
+    },
+    {
+      "id": "app-1793930467786",
+      "tenantId": "tenant-demo-1",
+      "barberId": "barber-1",
+      "clientId": "client-1",
+      "serviceId": "srv-1",
+      "startTime": "2026-11-06T21:30:00.000Z",
+      "endTime": "2026-11-06T22:10:00.000Z",
+      "totalPrice": 35000,
+      "status": "confirmed",
+      "notes": "Agendado por WhatsApp Bot para David Rincón",
+      "reminderSentAt": null,
+      "createdAt": "2026-11-06T02:01:07.786Z",
+      "updatedAt": "2026-11-06T02:01:07.786Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr-1793944282588",
+      "email": "jensy_test@familia1969.com",
+      "passwordHash": "d626f5b0c21f732b3e8a06566fb4772a:ba2e93ca27c9b99b1f23688fc1e881c1f949eb5d8be5e46bdb02d0d9a26fed8cad327b6bad3d4fa48ccacf8d1a96b0b0083d917bc7531da273f2756aca659651",
+      "name": "Jensy Gomez",
+      "phone": "+57 312 999 0011",
+      "role": "barber",
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-06T05:51:22.588Z",
+      "updatedAt": "2026-11-06T05:51:22.650Z"
     }
   ]
 }

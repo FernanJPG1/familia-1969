@@ -7,6 +7,26 @@ class DashboardController {
         try {
             const queryDate = req.query?.date;
             const data = dashboard_service_1.DashboardService.getDashboardForDate(queryDate);
+            // Protección de privacidad: si no es el barbero autenticado, anonimizar datos sensibles
+            if (!req.user) {
+                data.appointments = data.appointments.map((a) => ({
+                    ...a,
+                    clientPhone: a.clientPhone ? a.clientPhone.replace(/(\+\d{2}\s?\d{3})\d{4,}(\d{2})/, '$1****$2') : 'Protegido',
+                    totalPrice: 0,
+                    commissionAmount: 0,
+                    notes: null
+                }));
+                data.metrics = {
+                    ...data.metrics,
+                    totalRevenue: 0,
+                    myEarnings: 0
+                };
+                data.isGuest = true;
+            }
+            else {
+                data.isGuest = false;
+                data.authenticatedUser = req.user;
+            }
             res.json(data);
         }
         catch (err) {

@@ -11,6 +11,7 @@ const dashboard_routes_1 = __importDefault(require("../modules/dashboard/dashboa
 const appointments_routes_1 = __importDefault(require("../modules/appointments/appointments.routes"));
 const availability_routes_1 = __importDefault(require("../modules/availability/availability.routes"));
 const whatsapp_routes_1 = __importDefault(require("../modules/whatsapp/whatsapp.routes"));
+const auth_routes_1 = __importDefault(require("../modules/auth/auth.routes"));
 const router = (0, express_1.Router)();
 // Health check & Server Status
 router.get('/health', (req, res) => {
@@ -25,6 +26,7 @@ router.get('/health', (req, res) => {
     });
 });
 // Registrar módulos
+router.use('/auth', auth_routes_1.default);
 router.use('/services', services_routes_1.default);
 router.use('/settings', settings_routes_1.default);
 router.use('/dashboard', dashboard_routes_1.default);

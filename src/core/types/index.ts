@@ -3,6 +3,7 @@
 // ============================================================================
 
 export * from './whatsapp.types';
+export * from './auth.types';
 
 export interface Tenant {
   id: string;

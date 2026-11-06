@@ -9,7 +9,8 @@ import {
   ScheduleBlock, 
   Appointment, 
   WhatsAppSession,
-  BarberSettings
+  BarberSettings,
+  User
 } from '../core/types';
 import { DateTimeUtils } from '../core/utils/datetime.utils';
 import { globalMutex } from '../core/utils/mutex';
@@ -33,6 +34,7 @@ export class DataStore {
   public blocks: ScheduleBlock[] = [];
   public appointments: Appointment[] = [];
   public sessions: WhatsAppSession[] = [];
+  public users: User[] = [];
 
   public settings: BarberSettings = {
     shopName: "FAMILIA 1969 • Barber Club & Atelier",
@@ -107,6 +109,7 @@ export class DataStore {
         services: this.services,
         clients: this.clients,
         appointments: this.appointments,
+        users: this.users,
       };
       const tempFile = `${DB_FILE}.tmp`;
       fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
@@ -151,6 +154,7 @@ export class DataStore {
         updatedAt: new Date(c.updatedAt),
       }));
     }
+    if (Array.isArray(parsed.users)) this.users = parsed.users;
     if (Array.isArray(parsed.appointments)) {
       this.appointments = parsed.appointments.map((a: any) => ({
         ...a,
@@ -463,7 +467,35 @@ export class DataStore {
       return aDate === dateStr;
     });
   }
+
+  public findUserByEmail(email: string): User | undefined {
+    if (!email) return undefined;
+    return this.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+  }
+
+  public findUserById(id: string): User | undefined {
+    return this.users.find(u => u.id === id);
+  }
+
+  public createUser(user: User): User {
+    this.users.push(user);
+    this.persist();
+    return user;
+  }
+
+  public updateUser(id: string, updates: Partial<User>): User | undefined {
+    const idx = this.users.findIndex(u => u.id === id);
+    if (idx === -1) return undefined;
+    this.users[idx] = {
+      ...this.users[idx],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    this.persist();
+    return this.users[idx];
+  }
 }
+
 
 export const store = new DataStore();
 export default store;
