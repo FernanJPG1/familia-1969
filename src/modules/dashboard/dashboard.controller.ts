@@ -1,5 +1,14 @@
 import { DashboardService } from './dashboard.service';
 
+function maskSensitivePhone(phone: string): string {
+  if (!phone) return 'Protegido';
+  const clean = phone.trim();
+  if (clean.length <= 4) return '****';
+  const start = clean.substring(0, Math.min(4, Math.floor(clean.length / 2)));
+  const end = clean.slice(-2);
+  return `${start}******${end}`;
+}
+
 export class DashboardController {
   public static getToday(req: any, res: any) {
     try {
@@ -10,7 +19,7 @@ export class DashboardController {
       if (!req.user) {
         data.appointments = data.appointments.map((a: any) => ({
           ...a,
-          clientPhone: a.clientPhone ? a.clientPhone.replace(/(\+\d{2}\s?\d{3})\d{4,}(\d{2})/, '$1****$2') : 'Protegido',
+          clientPhone: maskSensitivePhone(a.clientPhone),
           totalPrice: 0,
           commissionAmount: 0,
           notes: null

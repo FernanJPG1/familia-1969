@@ -2,6 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardController = void 0;
 const dashboard_service_1 = require("./dashboard.service");
+function maskSensitivePhone(phone) {
+    if (!phone)
+        return 'Protegido';
+    const clean = phone.trim();
+    if (clean.length <= 4)
+        return '****';
+    const start = clean.substring(0, Math.min(4, Math.floor(clean.length / 2)));
+    const end = clean.slice(-2);
+    return `${start}******${end}`;
+}
 class DashboardController {
     static getToday(req, res) {
         try {
@@ -11,7 +21,7 @@ class DashboardController {
             if (!req.user) {
                 data.appointments = data.appointments.map((a) => ({
                     ...a,
-                    clientPhone: a.clientPhone ? a.clientPhone.replace(/(\+\d{2}\s?\d{3})\d{4,}(\d{2})/, '$1****$2') : 'Protegido',
+                    clientPhone: maskSensitivePhone(a.clientPhone),
                     totalPrice: 0,
                     commissionAmount: 0,
                     notes: null
