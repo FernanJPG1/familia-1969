@@ -13,9 +13,12 @@ export class DashboardController {
   public static getToday(req: any, res: any) {
     try {
       const queryDate = req.query?.date as string;
-      const data = DashboardService.getDashboardForDate(queryDate);
+      const queryBarberId = req.query?.barberId as string;
+      const filterBarberId = (req.user?.role === 'barber' && !queryBarberId) ? req.user.barberId : queryBarberId;
 
-      // Protección de privacidad: si no es el barbero autenticado, anonimizar datos sensibles
+      const data = DashboardService.getDashboardForDate(queryDate, filterBarberId);
+
+      // Protección de privacidad: si no es el barbero o admin autenticado, anonimizar datos sensibles
       if (!req.user) {
         data.appointments = data.appointments.map((a: any) => ({
           ...a,
@@ -35,6 +38,7 @@ export class DashboardController {
       } else {
         (data as any).isGuest = false;
         (data as any).authenticatedUser = req.user;
+        (data as any).isAdmin = req.user.role === 'admin';
       }
 
       res.json(data);

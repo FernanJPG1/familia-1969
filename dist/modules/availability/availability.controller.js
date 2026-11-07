@@ -7,9 +7,9 @@ const datetime_utils_1 = require("../../core/utils/datetime.utils");
 class AvailabilityController {
     static getAvailability(req, res) {
         try {
-            const { serviceId, date } = req.query;
+            const { serviceId, date, barberId } = req.query;
             const targetDate = date || datetime_utils_1.DateTimeUtils.getTodayDateString();
-            const barber = store_1.store.getPrimaryBarber();
+            const barber = (barberId ? store_1.store.barbers.find(b => b.id === barberId && b.isActive) : null) || store_1.store.getPrimaryBarber();
             if (!serviceId) {
                 return res.status(400).json({ error: 'serviceId es requerido' });
             }
@@ -30,7 +30,7 @@ class AvailabilityController {
             return res.json({
                 date: targetDate,
                 service,
-                barber: { id: barber.id, name: barber.name, colorTag: barber.colorTag },
+                barber: { id: barber.id, name: barber.name, colorTag: barber.colorTag, phone: barber.phone },
                 slots,
                 freeSlotsCount: freeSlots.length,
                 totalGeneratedSlots: slots.length,

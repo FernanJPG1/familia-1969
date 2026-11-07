@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuth = requireAuth;
+exports.requireAdmin = requireAdmin;
 exports.optionalAuth = optionalAuth;
 const crypto_utils_1 = require("../core/utils/crypto.utils");
 function requireAuth(req, res, next) {
@@ -19,6 +20,16 @@ function requireAuth(req, res, next) {
     }
     req.user = payload;
     next();
+}
+function requireAdmin(req, res, next) {
+    requireAuth(req, res, () => {
+        if (req.user?.role !== 'admin') {
+            return res.status(403).json({
+                error: 'Acceso denegado. Se requieren permisos exclusivos de Administrador de FAMILIA 1969.'
+            });
+        }
+        next();
+    });
 }
 function optionalAuth(req, res, next) {
     const authHeader = req.headers ? (req.headers['authorization'] || req.headers['Authorization']) : null;

@@ -5,13 +5,14 @@ import { DateTimeUtils } from '../../core/utils/datetime.utils';
 export class AvailabilityController {
   public static getAvailability(req: any, res: any) {
     try {
-      const { serviceId, date } = req.query as {
+      const { serviceId, date, barberId } = req.query as {
         serviceId?: string;
         date?: string;
+        barberId?: string;
       };
 
       const targetDate = date || DateTimeUtils.getTodayDateString();
-      const barber = store.getPrimaryBarber();
+      const barber = (barberId ? store.barbers.find(b => b.id === barberId && b.isActive) : null) || store.getPrimaryBarber();
 
       if (!serviceId) {
         return res.status(400).json({ error: 'serviceId es requerido' });
@@ -37,7 +38,7 @@ export class AvailabilityController {
       return res.json({
         date: targetDate,
         service,
-        barber: { id: barber.id, name: barber.name, colorTag: barber.colorTag },
+        barber: { id: barber.id, name: barber.name, colorTag: barber.colorTag, phone: barber.phone },
         slots,
         freeSlotsCount: freeSlots.length,
         totalGeneratedSlots: slots.length,

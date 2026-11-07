@@ -3,12 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const store_1 = require("../../database/store");
 const crypto_utils_1 = require("../../core/utils/crypto.utils");
+const BARBER_PALETTE = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#06B6D4', '#14B8A6'];
 class AuthService {
     /**
-     * Registra un nuevo barbero / administrador en el sistema seguro.
+     * Registra un nuevo barbero en el sistema.
+     * La cuenta queda en estado "pending" e inactiva hasta que el Administrador la apruebe.
      */
     static async register(data) {
-        const { name, email, password, phone, shopName } = data;
+        const { name, email, password, phone } = data;
         if (!name || !email || !password || !phone) {
             throw new Error('Todos los campos son obligatorios (Nombre, Email, Contraseña, Teléfono WhatsApp).');
         }
@@ -24,6 +26,7 @@ class AuthService {
         const tenantId = store_1.store.tenants[0]?.id || 'tenant-demo-1';
         const userId = `usr-${Date.now()}`;
         const now = new Date().toISOString();
+        const colorTag = BARBER_PALETTE[Math.floor(Math.random() * BARBER_PALETTE.length)];
         const newUser = {
             id: userId,
             email: emailClean,
@@ -31,23 +34,15 @@ class AuthService {
             name: name.trim(),
             phone: phone.trim(),
             role: 'barber',
+            status: 'pending',
+            isActive: false,
+            colorTag,
+            commissionPercentage: 100,
             tenantId,
             createdAt: now,
             updatedAt: now,
         };
         store_1.store.createUser(newUser);
-        // Sincronizar teléfono y nombre con los ajustes de la barbería
-        store_1.store.updateSettings({
-            barberName: newUser.name,
-            phone: newUser.phone,
-            ...(shopName ? { shopName } : {})
-        });
-        const token = crypto_utils_1.CryptoUtils.createToken({
-            userId: newUser.id,
-            email: newUser.email,
-            role: newUser.role,
-            tenantId: newUser.tenantId
-        });
         return {
             user: {
                 id: newUser.id,
@@ -55,13 +50,17 @@ class AuthService {
                 name: newUser.name,
                 phone: newUser.phone,
                 role: newUser.role,
-                tenantId: newUser.tenantId
+                status: newUser.status,
+                isActive: newUser.isActive,
+                colorTag: newUser.colorTag,
+                tenantId: newUser.tenantId,
             },
-            token
+            token: '',
+            message: '¡Registro exitoso! Tu cuenta de barbero ha sido creada y está pendiente de activación por el Administrador de FAMILIA 1969. Tan pronto como el administrador verifique tu WhatsApp y active tu cuenta podrás iniciar sesión.'
         };
     }
     /**
-     * Inicia sesión verificando credenciales seguras.
+     * Inicia sesión verificando credenciales seguras y estado de activación.
      */
     static async login(data) {
         const { email, password } = data;
@@ -77,10 +76,25 @@ class AuthService {
         if (!isValid) {
             throw new Error('Credenciales inválidas. Verifica tu correo y contraseña.');
         }
+        // Si es un barbero, verificar si su cuenta fue activada por el Administrador
+        if (user.role === 'barber') {
+            if (user.status === 'pending' || !user.isActive) {
+                const err = new Error('Tu cuenta de barbero está en revisión y pendiente de activación por el Administrador de FAMILIA 1969. Comunícate con la administración para ser habilitado.');
+                err.statusCode = 403;
+                err.isPending = true;
+                throw err;
+            }
+            if (user.status === 'suspended') {
+                const err = new Error('Tu cuenta de barbero ha sido suspendida temporalmente por el Administrador de FAMILIA 1969.');
+                err.statusCode = 403;
+                throw err;
+            }
+        }
         const token = crypto_utils_1.CryptoUtils.createToken({
             userId: user.id,
             email: user.email,
             role: user.role,
+            status: user.status,
             tenantId: user.tenantId
         });
         return {
@@ -90,6 +104,10 @@ class AuthService {
                 name: user.name,
                 phone: user.phone,
                 role: user.role,
+                status: user.status,
+                isActive: user.isActive,
+                colorTag: user.colorTag,
+                commissionPercentage: user.commissionPercentage,
                 tenantId: user.tenantId
             },
             token
@@ -109,11 +127,15 @@ class AuthService {
             name: user.name,
             phone: user.phone,
             role: user.role,
+            status: user.status,
+            isActive: user.isActive,
+            colorTag: user.colorTag,
+            commissionPercentage: user.commissionPercentage,
             tenantId: user.tenantId
         };
     }
     /**
-     * Permite al barbero autenticado actualizar su número de WhatsApp y nombre.
+     * Permite al barbero o administrador autenticado actualizar su número de WhatsApp y datos.
      */
     static updateProfile(userId, data) {
         const user = store_1.store.findUserById(userId);
@@ -125,8 +147,18 @@ class AuthService {
             updates.name = data.name.trim();
         if (data.phone) {
             updates.phone = data.phone.trim();
-            // Actualizar automáticamente el número de WhatsApp oficial en Settings
-            store_1.store.updateSettings({ phone: updates.phone });
+            // Sincronizar en store.barbers si tiene registro de barbero
+            if (user.barberId) {
+                const barber = store_1.store.barbers.find(b => b.id === user.barberId);
+                if (barber) {
+                    barber.phone = updates.phone;
+                    barber.updatedAt = new Date();
+                }
+            }
+            // Si es el barbero principal o admin, actualizar en Settings
+            if (user.role === 'admin' || user.barberId === store_1.store.barbers[0]?.id) {
+                store_1.store.updateSettings({ phone: updates.phone });
+            }
         }
         const updated = store_1.store.updateUser(userId, updates);
         if (!updated) {
@@ -138,8 +170,13 @@ class AuthService {
             name: updated.name,
             phone: updated.phone,
             role: updated.role,
+            status: updated.status,
+            isActive: updated.isActive,
+            colorTag: updated.colorTag,
+            commissionPercentage: updated.commissionPercentage,
             tenantId: updated.tenantId
         };
     }
 }
 exports.AuthService = AuthService;
+exports.default = AuthService;

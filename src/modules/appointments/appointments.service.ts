@@ -10,9 +10,10 @@ export class AppointmentsService {
     clientPhone?: string;
     startTimeISO: string;
     notes?: string;
+    barberId?: string;
   }): Promise<Appointment> {
-    const { serviceId, clientName, clientPhone, startTimeISO, notes } = params;
-    const barber = store.getPrimaryBarber();
+    const { serviceId, clientName, clientPhone, startTimeISO, notes, barberId } = params;
+    const barber = (barberId ? store.barbers.find(b => b.id === barberId && b.isActive) : null) || store.getPrimaryBarber();
     const tenant = store.getPrimaryTenant();
 
     if (!serviceId || !clientName || !startTimeISO) {
@@ -37,7 +38,7 @@ export class AppointmentsService {
       });
 
       if (!isFree) {
-        throw new ConflictError('Ese horario ya no se encuentra libre para agendar');
+        throw new ConflictError('Ese horario ya no se encuentra libre para agendar con el barbero seleccionado');
       }
 
       const phone = clientPhone?.trim() || '573000000000';
@@ -66,7 +67,7 @@ export class AppointmentsService {
         endTime,
         totalPrice: service.price,
         status: 'confirmed',
-        notes: notes || 'Agendado manualmente desde el panel del barbero',
+        notes: notes || `Agendado con barbero: ${barber.name}`,
         reminderSentAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),

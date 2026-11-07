@@ -9,6 +9,7 @@ const path_1 = __importDefault(require("path"));
 const datetime_utils_1 = require("../core/utils/datetime.utils");
 const mutex_1 = require("../core/utils/mutex");
 const constants_1 = require("../config/constants");
+const crypto_utils_1 = require("../core/utils/crypto.utils");
 const isVercel = Boolean(process.env.VERCEL);
 const DATA_DIR = isVercel ? '/tmp/data' : path_1.default.resolve(process.cwd(), 'data');
 const DB_FILE = path_1.default.join(DATA_DIR, 'store.json');
@@ -93,6 +94,7 @@ class DataStore {
             this.seed();
             this.persist();
         }
+        this.ensureDefaultUsers();
     }
     persist() {
         try {
@@ -462,6 +464,179 @@ class DataStore {
         };
         this.persist();
         return this.users[idx];
+    }
+    ensureDefaultUsers() {
+        const tenantId = this.tenants[0]?.id || 'tenant-demo-1';
+        const adminEmail = 'admin@familia1969.com';
+        let admin = this.users.find(u => u.email.toLowerCase() === adminEmail);
+        if (!admin) {
+            this.users.push({
+                id: 'usr-admin-master',
+                email: adminEmail,
+                passwordHash: crypto_utils_1.CryptoUtils.hashPassword('FamiliaAdmin1969*'),
+                name: 'Administrador General',
+                phone: '+57 311 111 2233',
+                role: 'admin',
+                status: 'active',
+                isActive: true,
+                tenantId,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            });
+        }
+        else {
+            admin.role = 'admin';
+            admin.status = 'active';
+            admin.isActive = true;
+        }
+        const masterBarberEmail = 'barbero@familia1969.com';
+        let masterBarber = this.users.find(u => u.email.toLowerCase() === masterBarberEmail);
+        if (!masterBarber) {
+            this.users.push({
+                id: 'usr-barber-master',
+                email: masterBarberEmail,
+                passwordHash: crypto_utils_1.CryptoUtils.hashPassword('Familia1969*'),
+                name: this.settings.barberName || 'Jensy Gomez',
+                phone: this.settings.phone || '+57 311 111 2233',
+                role: 'barber',
+                status: 'active',
+                isActive: true,
+                barberId: 'barber-1',
+                colorTag: '#3B82F6',
+                commissionPercentage: 100,
+                tenantId,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            });
+        }
+        else {
+            masterBarber.role = 'barber';
+            masterBarber.status = 'active';
+            masterBarber.isActive = true;
+            if (!masterBarber.barberId)
+                masterBarber.barberId = 'barber-1';
+        }
+        // Sanitize any existing user
+        for (const u of this.users) {
+            if (!u.status) {
+                u.status = u.isActive === false ? 'pending' : 'active';
+                u.isActive = u.status === 'active';
+            }
+            if (!u.colorTag) {
+                u.colorTag = '#3B82F6';
+            }
+            if (u.role === 'barber' && u.isActive && u.status === 'active') {
+                this.syncUserToBarber(u, false);
+            }
+        }
+        this.persist();
+    }
+    getActiveBarbers() {
+        return this.barbers.filter((b) => b.isActive);
+    }
+    syncUserToBarber(user, shouldPersist = true) {
+        const tenantId = this.tenants[0]?.id || 'tenant-demo-1';
+        const barberId = user.barberId || ('barber-' + user.id);
+        let existing = this.barbers.find(b => b.id === barberId);
+        if (existing) {
+            existing.name = user.name;
+            existing.phone = user.phone;
+            existing.colorTag = user.colorTag || existing.colorTag || '#3B82F6';
+            existing.commissionPercentage = user.commissionPercentage ?? existing.commissionPercentage ?? 100;
+            existing.isActive = user.isActive;
+            existing.updatedAt = new Date();
+        }
+        else {
+            existing = {
+                id: barberId,
+                tenantId,
+                name: user.name,
+                phone: user.phone,
+                colorTag: user.colorTag || '#3B82F6',
+                commissionPercentage: user.commissionPercentage ?? 100,
+                isActive: user.isActive,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            this.barbers.push(existing);
+        }
+        user.barberId = barberId;
+        this.rebuildSchedulesAndBlocks();
+        if (shouldPersist)
+            this.persist();
+        return existing;
+    }
+    updateUserStatus(userId, status, isActive, adminEmail) {
+        const user = this.findUserById(userId);
+        if (!user)
+            return undefined;
+        user.status = status;
+        user.isActive = isActive;
+        user.updatedAt = new Date().toISOString();
+        if (isActive && status === 'active') {
+            user.approvedAt = new Date().toISOString();
+            user.approvedBy = adminEmail || 'Administrador General';
+            this.syncUserToBarber(user, false);
+        }
+        else {
+            if (user.barberId) {
+                const barber = this.barbers.find(b => b.id === user.barberId);
+                if (barber) {
+                    barber.isActive = false;
+                    barber.updatedAt = new Date();
+                }
+            }
+        }
+        this.persist();
+        return user;
+    }
+    deleteUser(userId) {
+        const idx = this.users.findIndex(u => u.id === userId);
+        if (idx === -1)
+            return false;
+        const user = this.users[idx];
+        if (user.barberId) {
+            const bIdx = this.barbers.findIndex(b => b.id === user.barberId);
+            if (bIdx !== -1) {
+                const hasAppts = this.appointments.some(a => a.barberId === user.barberId);
+                if (hasAppts) {
+                    this.barbers[bIdx].isActive = false;
+                }
+                else {
+                    this.barbers.splice(bIdx, 1);
+                }
+            }
+        }
+        this.users.splice(idx, 1);
+        this.persist();
+        return true;
+    }
+    getAllBarbersWithStats() {
+        return this.users
+            .filter(u => u.role === 'barber')
+            .map(u => {
+            const barberId = u.barberId || ('barber-' + u.id);
+            const appts = this.appointments.filter(a => a.barberId === barberId);
+            const earnings = appts
+                .filter(a => a.status === 'completed' || a.status === 'confirmed')
+                .reduce((sum, a) => sum + (a.totalPrice || 0), 0);
+            return {
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                phone: u.phone,
+                role: u.role,
+                status: u.status,
+                isActive: u.isActive,
+                barberId: u.barberId,
+                colorTag: u.colorTag || '#3B82F6',
+                commissionPercentage: u.commissionPercentage ?? 100,
+                appointmentsCount: appts.length,
+                totalEarnings: earnings,
+                createdAt: u.createdAt,
+                approvedAt: u.approvedAt || null,
+            };
+        });
     }
 }
 exports.DataStore = DataStore;

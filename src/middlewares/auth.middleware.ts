@@ -21,6 +21,17 @@ export function requireAuth(req: any, res: any, next: any) {
   next();
 }
 
+export function requireAdmin(req: any, res: any, next: any) {
+  requireAuth(req, res, () => {
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({
+        error: 'Acceso denegado. Se requieren permisos exclusivos de Administrador de FAMILIA 1969.'
+      });
+    }
+    next();
+  });
+}
+
 export function optionalAuth(req: any, res: any, next: any) {
   const authHeader = req.headers ? (req.headers['authorization'] || req.headers['Authorization']) : null;
   if (authHeader && authHeader.startsWith('Bearer ')) {

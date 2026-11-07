@@ -20,7 +20,11 @@ class AuthController {
             res.status(200).json(response);
         }
         catch (error) {
-            res.status(401).json({ error: error.message || 'Error al iniciar sesión.' });
+            const status = error.statusCode || 401;
+            res.status(status).json({
+                error: error.message || 'Error al iniciar sesión.',
+                isPending: Boolean(error.isPending)
+            });
         }
     }
     static getMe(req, res) {

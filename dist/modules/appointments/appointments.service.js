@@ -6,8 +6,8 @@ const availability_engine_1 = require("../availability/availability.engine");
 const app_error_1 = require("../../core/errors/app-error");
 class AppointmentsService {
     static async createManual(params) {
-        const { serviceId, clientName, clientPhone, startTimeISO, notes } = params;
-        const barber = store_1.store.getPrimaryBarber();
+        const { serviceId, clientName, clientPhone, startTimeISO, notes, barberId } = params;
+        const barber = (barberId ? store_1.store.barbers.find(b => b.id === barberId && b.isActive) : null) || store_1.store.getPrimaryBarber();
         const tenant = store_1.store.getPrimaryTenant();
         if (!serviceId || !clientName || !startTimeISO) {
             throw new app_error_1.BadRequestError('Faltan campos obligatorios (serviceId, clientName, startTimeISO)');
@@ -27,7 +27,7 @@ class AppointmentsService {
                 blocks: store_1.store.blocks,
             });
             if (!isFree) {
-                throw new app_error_1.ConflictError('Ese horario ya no se encuentra libre para agendar');
+                throw new app_error_1.ConflictError('Ese horario ya no se encuentra libre para agendar con el barbero seleccionado');
             }
             const phone = clientPhone?.trim() || '573000000000';
             let client = store_1.store.findClientByPhone(phone);
@@ -53,7 +53,7 @@ class AppointmentsService {
                 endTime,
                 totalPrice: service.price,
                 status: 'confirmed',
-                notes: notes || 'Agendado manualmente desde el panel del barbero',
+                notes: notes || `Agendado con barbero: ${barber.name}`,
                 reminderSentAt: null,
                 createdAt: new Date(),
                 updatedAt: new Date(),
