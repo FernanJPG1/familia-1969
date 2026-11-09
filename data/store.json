@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-11-09T02:13:16.020Z",
+  "savedAt": "2026-11-09T03:34:56.673Z",
   "settings": {
     "shopName": "FAMILIA 1969",
     "barberName": "Jensy Gomez",
@@ -48,7 +48,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-04T00:12:10.280Z",
-      "updatedAt": "2026-11-09T02:13:15.640Z"
+      "updatedAt": "2026-11-09T03:34:56.322Z"
     },
     {
       "id": "barber-usr-1793944282588",
@@ -59,7 +59,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-09T02:13:15.640Z",
-      "updatedAt": "2026-11-09T02:13:15.640Z"
+      "updatedAt": "2026-11-09T03:34:56.322Z"
     },
     {
       "id": "barber-usr-1794190395916",
@@ -70,7 +70,18 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-09T02:13:15.962Z",
-      "updatedAt": "2026-11-09T02:13:16.020Z"
+      "updatedAt": "2026-11-09T03:34:56.322Z"
+    },
+    {
+      "id": "barber-usr-1794195296590",
+      "tenantId": "tenant-demo-1",
+      "name": "Carlos Mendoza",
+      "phone": "+57 320 888 7766",
+      "colorTag": "#8B5CF6",
+      "commissionPercentage": 100,
+      "isActive": true,
+      "createdAt": "2026-11-09T03:34:56.640Z",
+      "updatedAt": "2026-11-09T03:34:56.673Z"
     }
   ],
   "services": [
@@ -322,7 +333,15 @@
       "status": "active",
       "isActive": true,
       "colorTag": "#3B82F6",
-      "barberId": "barber-usr-1793944282588"
+      "barberId": "barber-usr-1793944282588",
+      "membership": {
+        "plan": "mensual",
+        "startDate": "2026-11-06T05:51:22.588Z",
+        "expiresAt": "2026-12-09T03:17:05.835Z",
+        "price": 50000,
+        "paymentMethod": "Nequi / Transferencia",
+        "notes": "Membresía asignada automáticamente."
+      }
     },
     {
       "id": "usr-admin-master",
@@ -352,7 +371,15 @@
       "commissionPercentage": 100,
       "tenantId": "tenant-demo-1",
       "createdAt": "2026-11-09T02:13:15.640Z",
-      "updatedAt": "2026-11-09T02:13:15.640Z"
+      "updatedAt": "2026-11-09T02:13:15.640Z",
+      "membership": {
+        "plan": "mensual",
+        "startDate": "2026-11-09T02:13:15.640Z",
+        "expiresAt": "2026-12-09T03:17:05.835Z",
+        "price": 50000,
+        "paymentMethod": "Nequi / Transferencia",
+        "notes": "Membresía asignada automáticamente."
+      }
     },
     {
       "id": "usr-1794190395916",
@@ -370,7 +397,87 @@
       "updatedAt": "2026-11-09T02:13:16.020Z",
       "approvedAt": "2026-11-09T02:13:15.962Z",
       "approvedBy": "admin@familia1969.com",
-      "barberId": "barber-usr-1794190395916"
+      "barberId": "barber-usr-1794190395916",
+      "membership": {
+        "plan": "mensual",
+        "startDate": "2026-11-09T02:13:15.916Z",
+        "expiresAt": "2026-12-09T03:17:05.836Z",
+        "price": 50000,
+        "paymentMethod": "Nequi / Transferencia",
+        "notes": "Membresía asignada automáticamente."
+      }
+    },
+    {
+      "id": "usr-1794194273835",
+      "email": "carlos.mendoza.1794194273788@familia1969.com",
+      "passwordHash": "v2:3080f12546288ba8ff31d26f2ce0673b:3b653e5bec4881ba315b976ab9858a4938401596d857ab72a5c89f49b7febc5a",
+      "name": "Carlos Mendoza",
+      "phone": "+57 315 777 8899",
+      "role": "barber",
+      "status": "pending",
+      "isActive": false,
+      "colorTag": "#10B981",
+      "commissionPercentage": 100,
+      "membership": {
+        "plan": "trial",
+        "startDate": "2026-11-09T03:17:53.835Z",
+        "expiresAt": "2026-11-24T03:17:53.835Z",
+        "price": 0,
+        "paymentMethod": "Prueba Gratuita",
+        "notes": "Período de prueba inicial de 15 días asignado al registrarse."
+      },
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T03:17:53.835Z",
+      "updatedAt": "2026-11-09T03:17:53.835Z"
+    },
+    {
+      "id": "usr-1794194568551",
+      "email": "carlos.mendoza.1794194568523@familia1969.com",
+      "passwordHash": "v2:e91ec06e9b5143da7615cca9a5ae061e:03328176cecc17de2674415b780673d4b9edcbd2eee2bc8c7db649a9a2068be5",
+      "name": "Carlos Mendoza",
+      "phone": "+57 315 777 8899",
+      "role": "barber",
+      "status": "pending",
+      "isActive": false,
+      "colorTag": "#06B6D4",
+      "commissionPercentage": 100,
+      "membership": {
+        "plan": "trial",
+        "startDate": "2026-11-09T03:22:48.551Z",
+        "expiresAt": "2026-11-24T03:22:48.551Z",
+        "price": 0,
+        "paymentMethod": "Prueba Gratuita",
+        "notes": "Período de prueba inicial de 15 días asignado al registrarse."
+      },
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T03:22:48.551Z",
+      "updatedAt": "2026-11-09T03:22:48.551Z"
+    },
+    {
+      "id": "usr-1794195296590",
+      "email": "carlos.mendoza.1794195296565@familia1969.com",
+      "passwordHash": "v2:5e586d083cbdcfa4eab2179ceb68af4e:4f6e56904c268f72942fe19c0a7d331b552b46e950b5e818f1e8563ee5a9f9b1",
+      "name": "Carlos Mendoza",
+      "phone": "+57 320 888 7766",
+      "role": "barber",
+      "status": "active",
+      "isActive": true,
+      "colorTag": "#8B5CF6",
+      "commissionPercentage": 100,
+      "membership": {
+        "plan": "trial",
+        "startDate": "2026-11-09T03:34:56.590Z",
+        "expiresAt": "2026-11-24T03:34:56.590Z",
+        "price": 0,
+        "paymentMethod": "Prueba Gratuita",
+        "notes": "Período de prueba inicial de 15 días asignado al registrarse."
+      },
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T03:34:56.590Z",
+      "updatedAt": "2026-11-09T03:34:56.673Z",
+      "approvedAt": "2026-11-09T03:34:56.640Z",
+      "approvedBy": "admin@familia1969.com",
+      "barberId": "barber-usr-1794195296590"
     }
   ]
 }

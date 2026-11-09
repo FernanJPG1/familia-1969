@@ -42,6 +42,29 @@ export class AdminController {
     }
   }
 
+    public static updateMembership(req: any, res: any) {
+    try {
+      const { id } = req.params;
+      const result = AdminService.updateBarberMembership(id, req.body);
+      eventBus.emit('dashboard:refresh');
+      res.json(result);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  public static getMembershipMetrics(req: any, res: any) {
+    try {
+      const stats = AdminService.getAdminStats();
+      res.json({
+        memberships: stats.memberships,
+        barbers: AdminService.listBarbers()
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || 'Error obteniendo métricas de membresías' });
+    }
+  }
+
   public static deleteBarber(req: any, res: any) {
     try {
       const { id } = req.params;

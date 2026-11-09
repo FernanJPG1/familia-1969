@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const store_1 = require("../../database/store");
 const crypto_utils_1 = require("../../core/utils/crypto.utils");
+const membership_utils_1 = require("../../core/utils/membership.utils");
 const BARBER_PALETTE = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#06B6D4', '#14B8A6'];
 class AuthService {
     /**
@@ -38,6 +39,14 @@ class AuthService {
             isActive: false,
             colorTag,
             commissionPercentage: 100,
+            membership: {
+                plan: 'trial',
+                startDate: now,
+                expiresAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+                price: 0,
+                paymentMethod: 'Prueba Gratuita',
+                notes: 'Período de prueba inicial de 15 días asignado al registrarse.'
+            },
             tenantId,
             createdAt: now,
             updatedAt: now,
@@ -97,6 +106,7 @@ class AuthService {
             status: user.status,
             tenantId: user.tenantId
         });
+        const membership = user.role === 'barber' ? membership_utils_1.MembershipUtils.evaluate(user.membership, user.status) : undefined;
         return {
             user: {
                 id: user.id,
@@ -108,6 +118,7 @@ class AuthService {
                 isActive: user.isActive,
                 colorTag: user.colorTag,
                 commissionPercentage: user.commissionPercentage,
+                membership,
                 tenantId: user.tenantId
             },
             token
@@ -121,6 +132,7 @@ class AuthService {
         if (!user) {
             throw new Error('Usuario no encontrado.');
         }
+        const membership = user.role === 'barber' ? membership_utils_1.MembershipUtils.evaluate(user.membership, user.status) : undefined;
         return {
             id: user.id,
             email: user.email,
@@ -131,6 +143,7 @@ class AuthService {
             isActive: user.isActive,
             colorTag: user.colorTag,
             commissionPercentage: user.commissionPercentage,
+            membership,
             tenantId: user.tenantId
         };
     }

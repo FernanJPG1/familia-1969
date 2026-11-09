@@ -1,5 +1,6 @@
 import { store } from '../../database/store';
-import { UserStatus, AdminBarberItem } from '../../core/types';
+import { UserStatus, AdminBarberItem, MembershipPlan, BarberMembership } from '../../core/types';
+import { MembershipUtils } from '../../core/utils/membership.utils';
 
 export class AdminService {
   /**
@@ -88,6 +89,39 @@ export class AdminService {
   /**
    * Elimina una cuenta de barbero.
    */
+    /**
+   * Gestiona el tiempo y vigencia de la membresía de software del barbero.
+   * Permite renovar sumando días (+30, +90, +365), fijar fecha exacta o cambiar de plan.
+   */
+  public static updateBarberMembership(userId: string, data: {
+    plan?: MembershipPlan;
+    addDays?: number;
+    expiresAt?: string;
+    price?: number;
+    paymentMethod?: string;
+    notes?: string;
+    autoRenew?: boolean;
+  }) {
+    const result = store.updateBarberMembership(userId, data);
+    if (!result) {
+      throw new Error('Barbero no encontrado para actualizar su membresía.');
+    }
+
+    const { user, membership } = result;
+    return {
+      success: true,
+      message: `Membresía del barbero ${user.name} actualizada con éxito (${membership.plan.toUpperCase()} • ${membership.daysRemaining} días restantes).`,
+      barber: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        status: user.status,
+        membership
+      }
+    };
+  }
+
   public static deleteBarber(userId: string) {
     const user = store.findUserById(userId);
     if (!user) {
@@ -117,6 +151,14 @@ export class AdminService {
     const totalBarbers = barbers.length;
     const activeBarbers = barbers.filter(b => b.isActive && b.status === 'active').length;
     const pendingBarbers = barbers.filter(b => b.status === 'pending' || !b.isActive).length;
+    const suspendedBarbers = barbers.filter(b => b.status === 'suspended').length;
+
+    // Métricas clave de Membresías de Software ("medir las membresias de el software")
+    const membershipsList = barbers.map(b => b.membership);
+    const activeMemberships = membershipsList.filter(m => !m.isExpired && m.status !== 'suspended').length;
+    const expiringSoonMemberships = membershipsList.filter(m => m.isExpiringSoon).length;
+    const expiredMemberships = membershipsList.filter(m => m.isExpired).length;
+    const monthlyRecurringRevenue = MembershipUtils.calculateMRR(membershipsList);
 
     const totalRevenue = store.appointments
       .filter(a => a.status === 'completed' || a.status === 'confirmed')
@@ -126,6 +168,14 @@ export class AdminService {
       totalBarbers,
       activeBarbers,
       pendingBarbers,
+      suspendedBarbers,
+      memberships: {
+        total: membershipsList.length,
+        active: activeMemberships,
+        expiringSoon: expiringSoonMemberships,
+        expired: expiredMemberships,
+        monthlyRecurringRevenue,
+      },
       totalAppointments: store.appointments.length,
       totalClients: store.clients.length,
       totalRevenue,

@@ -10,6 +10,7 @@ const datetime_utils_1 = require("../core/utils/datetime.utils");
 const mutex_1 = require("../core/utils/mutex");
 const constants_1 = require("../config/constants");
 const crypto_utils_1 = require("../core/utils/crypto.utils");
+const membership_utils_1 = require("../core/utils/membership.utils");
 const isVercel = Boolean(process.env.VERCEL);
 const DATA_DIR = isVercel ? '/tmp/data' : path_1.default.resolve(process.cwd(), 'data');
 const DB_FILE = path_1.default.join(DATA_DIR, 'store.json');
@@ -507,6 +508,14 @@ class DataStore {
                 barberId: 'barber-1',
                 colorTag: '#3B82F6',
                 commissionPercentage: 100,
+                membership: {
+                    plan: 'mensual',
+                    startDate: new Date().toISOString(),
+                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    price: 50000,
+                    paymentMethod: 'Nequi / Transferencia',
+                    notes: 'Membresía activa de Barbero Principal.'
+                },
                 tenantId,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
@@ -530,6 +539,16 @@ class DataStore {
             }
             if (!u.colorTag) {
                 u.colorTag = '#3B82F6';
+            }
+            if (u.role === 'barber' && !u.membership) {
+                u.membership = {
+                    plan: 'mensual',
+                    startDate: u.createdAt || new Date().toISOString(),
+                    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    price: 50000,
+                    paymentMethod: 'Nequi / Transferencia',
+                    notes: 'Membresía asignada automáticamente.'
+                };
             }
             if (u.role === 'barber' && u.isActive && u.status === 'active') {
                 this.syncUserToBarber(u, false);
@@ -617,6 +636,35 @@ class DataStore {
         this.persist();
         return true;
     }
+    updateBarberMembership(userId, data) {
+        const user = this.findUserById(userId);
+        if (!user)
+            return undefined;
+        const currentEvaluated = membership_utils_1.MembershipUtils.evaluate(user.membership, user.status);
+        let newExpiresAt = currentEvaluated.expiresAt;
+        if (typeof data.addDays === 'number' && data.addDays > 0) {
+            newExpiresAt = membership_utils_1.MembershipUtils.calculateNewExpiry(user.membership?.expiresAt, data.addDays);
+        }
+        else if (data.expiresAt) {
+            newExpiresAt = new Date(data.expiresAt).toISOString();
+        }
+        const plan = data.plan || user.membership?.plan || 'mensual';
+        const price = typeof data.price === 'number' ? data.price : (membership_utils_1.PLAN_PRICING[plan]?.price ?? 50000);
+        user.membership = {
+            plan,
+            startDate: user.membership?.startDate || new Date().toISOString(),
+            expiresAt: newExpiresAt,
+            price,
+            autoRenew: typeof data.autoRenew === 'boolean' ? data.autoRenew : (user.membership?.autoRenew ?? false),
+            lastPaymentDate: new Date().toISOString(),
+            paymentMethod: data.paymentMethod || user.membership?.paymentMethod || 'Nequi / Transferencia',
+            notes: typeof data.notes === 'string' ? data.notes : (user.membership?.notes || '')
+        };
+        user.updatedAt = new Date().toISOString();
+        this.persist();
+        const evaluated = membership_utils_1.MembershipUtils.evaluate(user.membership, user.status);
+        return { user, membership: evaluated };
+    }
     getAllBarbersWithStats() {
         return this.users
             .filter(u => u.role === 'barber')
@@ -626,6 +674,7 @@ class DataStore {
             const earnings = appts
                 .filter(a => a.status === 'completed' || a.status === 'confirmed')
                 .reduce((sum, a) => sum + (a.totalPrice || 0), 0);
+            const membership = membership_utils_1.MembershipUtils.evaluate(u.membership, u.status);
             return {
                 id: u.id,
                 name: u.name,
@@ -641,6 +690,7 @@ class DataStore {
                 totalEarnings: earnings,
                 createdAt: u.createdAt,
                 approvedAt: u.approvedAt || null,
+                membership,
             };
         });
     }

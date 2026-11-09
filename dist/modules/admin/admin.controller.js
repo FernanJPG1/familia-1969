@@ -41,6 +41,29 @@ class AdminController {
             res.status(400).json({ error: error.message });
         }
     }
+    static updateMembership(req, res) {
+        try {
+            const { id } = req.params;
+            const result = admin_service_1.AdminService.updateBarberMembership(id, req.body);
+            events_1.eventBus.emit('dashboard:refresh');
+            res.json(result);
+        }
+        catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+    static getMembershipMetrics(req, res) {
+        try {
+            const stats = admin_service_1.AdminService.getAdminStats();
+            res.json({
+                memberships: stats.memberships,
+                barbers: admin_service_1.AdminService.listBarbers()
+            });
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message || 'Error obteniendo métricas de membresías' });
+        }
+    }
     static deleteBarber(req, res) {
         try {
             const { id } = req.params;

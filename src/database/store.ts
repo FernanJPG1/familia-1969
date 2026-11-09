@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { 
-  Tenant, 
+  Tenant,
+  MembershipPlan,
+  MembershipStatus,
+  BarberMembership, 
   Barber, 
   Service, 
   Client, 
@@ -18,6 +21,7 @@ import { DateTimeUtils } from '../core/utils/datetime.utils';
 import { globalMutex } from '../core/utils/mutex';
 import { APP_CONSTANTS } from '../config/constants';
 import { CryptoUtils } from '../core/utils/crypto.utils';
+import { MembershipUtils, PLAN_PRICING } from '../core/utils/membership.utils';
 
 const isVercel = Boolean(process.env.VERCEL);
 const DATA_DIR = isVercel ? '/tmp/data' : path.resolve(process.cwd(), 'data');
@@ -541,6 +545,14 @@ export class DataStore {
         barberId: 'barber-1',
         colorTag: '#3B82F6',
         commissionPercentage: 100,
+        membership: {
+          plan: 'mensual',
+          startDate: new Date().toISOString(),
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          price: 50000,
+          paymentMethod: 'Nequi / Transferencia',
+          notes: 'Membresía activa de Barbero Principal.'
+        },
         tenantId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -563,6 +575,16 @@ export class DataStore {
       }
       if (!u.colorTag) {
         u.colorTag = '#3B82F6';
+      }
+      if (u.role === 'barber' && !u.membership) {
+        u.membership = {
+          plan: 'mensual',
+          startDate: u.createdAt || new Date().toISOString(),
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          price: 50000,
+          paymentMethod: 'Nequi / Transferencia',
+          notes: 'Membresía asignada automáticamente.'
+        };
       }
       if (u.role === 'barber' && u.isActive && u.status === 'active') {
         this.syncUserToBarber(u, false);
@@ -657,6 +679,48 @@ export class DataStore {
     return true;
   }
 
+    public updateBarberMembership(userId: string, data: {
+    plan?: MembershipPlan;
+    addDays?: number;
+    expiresAt?: string;
+    price?: number;
+    paymentMethod?: string;
+    notes?: string;
+    autoRenew?: boolean;
+  }): { user: User; membership: BarberMembership } | undefined {
+    const user = this.findUserById(userId);
+    if (!user) return undefined;
+
+    const currentEvaluated = MembershipUtils.evaluate(user.membership, user.status);
+    let newExpiresAt = currentEvaluated.expiresAt;
+
+    if (typeof data.addDays === 'number' && data.addDays > 0) {
+      newExpiresAt = MembershipUtils.calculateNewExpiry(user.membership?.expiresAt, data.addDays);
+    } else if (data.expiresAt) {
+      newExpiresAt = new Date(data.expiresAt).toISOString();
+    }
+
+    const plan: MembershipPlan = data.plan || user.membership?.plan || 'mensual';
+    const price = typeof data.price === 'number' ? data.price : (PLAN_PRICING[plan]?.price ?? 50000);
+
+    user.membership = {
+      plan,
+      startDate: user.membership?.startDate || new Date().toISOString(),
+      expiresAt: newExpiresAt,
+      price,
+      autoRenew: typeof data.autoRenew === 'boolean' ? data.autoRenew : (user.membership?.autoRenew ?? false),
+      lastPaymentDate: new Date().toISOString(),
+      paymentMethod: data.paymentMethod || user.membership?.paymentMethod || 'Nequi / Transferencia',
+      notes: typeof data.notes === 'string' ? data.notes : (user.membership?.notes || '')
+    };
+
+    user.updatedAt = new Date().toISOString();
+    this.persist();
+
+    const evaluated = MembershipUtils.evaluate(user.membership, user.status);
+    return { user, membership: evaluated };
+  }
+
   public getAllBarbersWithStats(): AdminBarberItem[] {
     return this.users
       .filter(u => u.role === 'barber')
@@ -666,6 +730,8 @@ export class DataStore {
         const earnings = appts
           .filter(a => a.status === 'completed' || a.status === 'confirmed')
           .reduce((sum, a) => sum + (a.totalPrice || 0), 0);
+
+        const membership = MembershipUtils.evaluate(u.membership, u.status);
 
         return {
           id: u.id,
@@ -682,6 +748,7 @@ export class DataStore {
           totalEarnings: earnings,
           createdAt: u.createdAt,
           approvedAt: u.approvedAt || null,
+          membership,
         };
       });
   }

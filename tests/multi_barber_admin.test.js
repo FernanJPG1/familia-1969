@@ -20,13 +20,14 @@ async function runTests() {
       }
       const adminToken = adminLoginData.token;
 
+      const carlosEmail = `carlos.mendoza.${Date.now()}@familia1969.com`;
       console.log('\n=== TEST 2: Register New Barber (Carlos Barber) ===');
       const barberRegRes = await fetch('http://localhost:3098/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: 'Carlos Mendoza',
-          email: 'carlos.mendoza@familia1969.com',
+          email: carlosEmail,
           password: 'ClaveCarlos1969*',
           phone: '+57 315 777 8899'
         })
@@ -44,7 +45,7 @@ async function runTests() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: 'carlos.mendoza@familia1969.com',
+          email: carlosEmail,
           password: 'ClaveCarlos1969*'
         })
       });
@@ -61,7 +62,7 @@ async function runTests() {
       });
       const listData = await listRes.json();
       console.log('Total barbers in admin list:', listData.barbers?.length);
-      const foundCarlos = listData.barbers.find(b => b.email === 'carlos.mendoza@familia1969.com');
+      const foundCarlos = listData.barbers.find(b => b.email === carlosEmail);
       console.log('Found Carlos in Admin Panel:', Boolean(foundCarlos), 'WhatsApp:', foundCarlos?.phone, 'Status:', foundCarlos?.status);
       if (!foundCarlos || foundCarlos.status !== 'pending') {
         throw new Error('Carlos not found in pending state in admin panel');
@@ -87,7 +88,7 @@ async function runTests() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: 'carlos.mendoza@familia1969.com',
+          email: carlosEmail,
           password: 'ClaveCarlos1969*'
         })
       });

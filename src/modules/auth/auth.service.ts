@@ -1,6 +1,7 @@
 import { store } from '../../database/store';
 import { CryptoUtils } from '../../core/utils/crypto.utils';
 import { User, UserSafeProfile, AuthResponse } from '../../core/types';
+import { MembershipUtils } from '../../core/utils/membership.utils';
 
 const BARBER_PALETTE = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#06B6D4', '#14B8A6'];
 
@@ -49,6 +50,14 @@ export class AuthService {
       isActive: false,
       colorTag,
       commissionPercentage: 100,
+      membership: {
+        plan: 'trial',
+        startDate: now,
+        expiresAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        price: 0,
+        paymentMethod: 'Prueba Gratuita',
+        notes: 'Período de prueba inicial de 15 días asignado al registrarse.'
+      },
       tenantId,
       createdAt: now,
       updatedAt: now,
@@ -122,6 +131,8 @@ export class AuthService {
       tenantId: user.tenantId
     });
 
+    const membership = user.role === 'barber' ? MembershipUtils.evaluate(user.membership, user.status) : undefined;
+
     return {
       user: {
         id: user.id,
@@ -133,6 +144,7 @@ export class AuthService {
         isActive: user.isActive,
         colorTag: user.colorTag,
         commissionPercentage: user.commissionPercentage,
+        membership,
         tenantId: user.tenantId
       },
       token
@@ -148,6 +160,8 @@ export class AuthService {
       throw new Error('Usuario no encontrado.');
     }
 
+    const membership = user.role === 'barber' ? MembershipUtils.evaluate(user.membership, user.status) : undefined;
+
     return {
       id: user.id,
       email: user.email,
@@ -158,6 +172,7 @@ export class AuthService {
       isActive: user.isActive,
       colorTag: user.colorTag,
       commissionPercentage: user.commissionPercentage,
+      membership,
       tenantId: user.tenantId
     };
   }

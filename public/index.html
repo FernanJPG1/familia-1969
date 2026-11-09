@@ -3350,6 +3350,8 @@
               <span id="topbar-barber-avatar-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
               <span id="topbar-barber-name" style="font-size: 12px; font-weight: 800; color: #F8FAFC;">Barbero</span>
             </div>
+            <!-- Badge de Membresía del Barbero -->
+            <div id="barber-membership-badge" style="display: none; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; font-family: monospace;"></div>
             <button class="desktop-btn desktop-btn-surface" onclick="openQuickPhoneModal()" title="Clic para cambiar mi WhatsApp de atención" style="background: rgba(37, 99, 235, 0.18); border-color: #3B82F6; color: #FFF;">
               <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 15px;"></i>
               <span id="topbar-phone-display" style="font-weight: 700; font-family: monospace;">+57 ...</span>
@@ -6136,6 +6138,136 @@
       } catch (e) {}
     }
 
+    
+    // =========================================================================
+    // GESTIÓN Y MEDICIÓN DE MEMBRESÍAS DE SOFTWARE (ADMIN CONTROL)
+    // =========================================================================
+    const PLAN_DEFAULT_PRICES = {
+      trial: 0,
+      mensual: 50000,
+      trimestral: 135000,
+      semestral: 250000,
+      anual: 480000
+    };
+
+    function openRenewMembershipModal(barberId, encodedName, currentPlan, daysRemaining, expiresAt, price, notes) {
+      const barberName = decodeURIComponent(encodedName || 'Barbero');
+      const modal = document.getElementById('modal-renew-membership');
+      const inputId = document.getElementById('renew-barber-id');
+      const subTitle = document.getElementById('renew-barber-subtitle');
+      const badge = document.getElementById('renew-current-status-badge');
+      const selectPlan = document.getElementById('renew-plan-select');
+      const inputExpiry = document.getElementById('renew-expires-at');
+      const inputPrice = document.getElementById('renew-price');
+      const inputNotes = document.getElementById('renew-notes');
+
+      if (inputId) inputId.value = barberId;
+      if (subTitle) subTitle.textContent = `Barbero: ${barberName}`;
+
+      if (badge) {
+        if (daysRemaining <= 0) {
+          badge.innerHTML = '<span style="color: #F87171;">🔴 VENCIDA (0 días restantes)</span>';
+        } else if (daysRemaining <= 7) {
+          badge.innerHTML = `<span style="color: #F59E0B;">🟡 Vence pronto • Quedan ${daysRemaining} días</span>`;
+        } else {
+          badge.innerHTML = `<span style="color: #34D399;">🟢 Activa • Quedan ${daysRemaining} días</span>`;
+        }
+      }
+
+      if (selectPlan) selectPlan.value = currentPlan || 'mensual';
+      
+      // Fecha límite sugerida (+30 días si está vacía o vencida)
+      if (inputExpiry) {
+        if (expiresAt && new Date(expiresAt).getTime() > Date.now()) {
+          inputExpiry.value = new Date(expiresAt).toISOString().split('T')[0];
+        } else {
+          const future = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+          inputExpiry.value = future.toISOString().split('T')[0];
+        }
+      }
+
+      if (inputPrice) inputPrice.value = price || PLAN_DEFAULT_PRICES[currentPlan || 'mensual'] || 50000;
+      if (inputNotes) inputNotes.value = notes || '';
+
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeRenewMembershipModal() {
+      const modal = document.getElementById('modal-renew-membership');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function onPlanSelectChanged() {
+      const selectPlan = document.getElementById('renew-plan-select');
+      const inputPrice = document.getElementById('renew-price');
+      if (selectPlan && inputPrice) {
+        const plan = selectPlan.value;
+        if (PLAN_DEFAULT_PRICES[plan] !== undefined) {
+          inputPrice.value = PLAN_DEFAULT_PRICES[plan];
+        }
+      }
+    }
+
+    function quickAddDaysToRenew(addDays, plan, price) {
+      const selectPlan = document.getElementById('renew-plan-select');
+      const inputPrice = document.getElementById('renew-price');
+      const inputExpiry = document.getElementById('renew-expires-at');
+
+      if (selectPlan) selectPlan.value = plan;
+      if (inputPrice) inputPrice.value = price;
+
+      const baseDate = new Date();
+      baseDate.setDate(baseDate.getDate() + addDays);
+      if (inputExpiry) {
+        inputExpiry.value = baseDate.toISOString().split('T')[0];
+      }
+
+      showMobileToast(`⏳ Fecha calculada para +${addDays} días`);
+    }
+
+    async function submitRenewMembership(e) {
+      e.preventDefault();
+      const barberId = document.getElementById('renew-barber-id').value;
+      const plan = document.getElementById('renew-plan-select').value;
+      const expiresAt = document.getElementById('renew-expires-at').value;
+      const price = parseFloat(document.getElementById('renew-price').value || '0');
+      const paymentMethod = document.getElementById('renew-payment-method').value;
+      const notes = document.getElementById('renew-notes').value;
+      const btn = document.getElementById('btn-submit-renew');
+
+      if (!barberId) return alert('Error: Barbero no especificado.');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Guardando...';
+      }
+
+      try {
+        const res = await fetch(`/api/admin/barbers/${barberId}/membership`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + currentAuthToken
+          },
+          body: JSON.stringify({ plan, expiresAt, price, paymentMethod, notes })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al actualizar la membresía.');
+
+        showMobileToast(`✓ ${data.message || 'Membresía actualizada con éxito'}`);
+        closeRenewMembershipModal();
+        loadAdminBarbersList();
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Guardar y Renovar Membresía';
+        }
+      }
+    }
+
     async function loadAdminBarbersList() {
       if (!currentAuthToken) return;
       try {
@@ -6160,7 +6292,18 @@
           if (kpiTotal) kpiTotal.textContent = sData.totalBarbers || 0;
           if (kpiActive) kpiActive.textContent = sData.activeBarbers || 0;
           if (kpiPending) kpiPending.textContent = sData.pendingBarbers || 0;
-          if (kpiRevenue) kpiRevenue.textContent = `$${(sData.totalRevenue || 0).toLocaleString('es-CO')}`;
+
+          // Métricas de Medición de Membresías
+          const kpiMemActive = document.getElementById('admin-kpi-memberships-active');
+          const kpiMemExp = document.getElementById('admin-kpi-memberships-expiring');
+          const kpiMRR = document.getElementById('admin-kpi-mrr');
+
+          if (sData.memberships) {
+            if (kpiMemActive) kpiMemActive.textContent = sData.memberships.active || 0;
+            const expCount = (sData.memberships.expiringSoon || 0) + (sData.memberships.expired || 0);
+            if (kpiMemExp) kpiMemExp.textContent = expCount;
+            if (kpiMRR) kpiMRR.textContent = `$${(sData.memberships.monthlyRecurringRevenue || 0).toLocaleString('es-CO')}`;
+          }
 
           const badge = document.getElementById('admin-pending-badge');
           if (badge) {
@@ -6206,6 +6349,8 @@
         list = allAdminBarbers.filter(b => b.status === 'pending' || !b.isActive);
       } else if (currentAdminFilter === 'active') {
         list = allAdminBarbers.filter(b => b.isActive && b.status === 'active');
+      } else if (currentAdminFilter === 'expiring') {
+        list = allAdminBarbers.filter(b => b.membership && (b.membership.isExpired || b.membership.isExpiringSoon));
       }
 
       if (list.length === 0) {
@@ -6248,9 +6393,39 @@
               </div>
             </div>
 
-            <!-- WhatsApp Oficial & Acciones -->
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <!-- Botón Contactar WhatsApp Oficial -->
+            <!-- WhatsApp Oficial, Membresía & Acciones -->
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+              
+              <!-- Badge de Vigencia de Membresía del Software -->
+              <div>
+                ${(() => {
+                  if (!b.membership) return '<span style="font-size: 11px; color: #94A3B8;">Sin membresía asignada</span>';
+                  const days = b.membership.daysRemaining || 0;
+                  const expDate = b.membership.expiresAt ? new Date(b.membership.expiresAt).toLocaleDateString('es-CO') : 'N/A';
+                  const planUpper = (b.membership.plan || 'MENSUAL').toUpperCase();
+
+                  if (b.membership.isExpired) {
+                    return `<span style="background: rgba(239, 68, 68, 0.18); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                      <i class="fa-solid fa-circle-xmark"></i> MEMBRESÍA VENCIDA
+                    </span>`;
+                  } else if (b.membership.isExpiringSoon) {
+                    return `<span style="background: rgba(245, 158, 11, 0.18); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                      <i class="fa-solid fa-triangle-exclamation"></i> ${planUpper} • Quedan ${days} días (Vence ${expDate})
+                    </span>`;
+                  } else {
+                    return `<span style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                      <i class="fa-solid fa-clock"></i> ${planUpper} • Quedan ${days} días (Vence ${expDate})
+                    </span>`;
+                  }
+                })()}
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <!-- Botón Gestionar Tiempo / Membresía -->
+                <button onclick="openRenewMembershipModal('${b.id}', '${encodeURIComponent(b.name)}', '${b.membership?.plan || 'mensual'}', ${b.membership?.daysRemaining || 0}, '${b.membership?.expiresAt || ''}', ${b.membership?.price || 50000}, '${encodeURIComponent(b.membership?.notes || '')}')" class="desktop-btn desktop-btn-surface" style="border-color: #38BDF8; color: #FFF; background: rgba(56, 189, 248, 0.12); font-size: 11.5px; padding: 6px 12px;" title="Gestionar tiempo y vigencia de la suscripción">
+                  <i class="fa-solid fa-clock-rotate-left" style="color: #38BDF8;"></i> Tiempo / Membresía
+                </button>
+                <!-- Botón Contactar WhatsApp Oficial -->
               <a href="${waLink}" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: rgba(37, 211, 102, 0.12); border: 1px solid rgba(37, 211, 102, 0.4); border-radius: 10px; color: #25D366; font-size: 12px; font-weight: 700; transition: all 0.2s;">
                 <i class="fa-brands fa-whatsapp" style="font-size: 15px;"></i>
                 <span>${b.phone || 'Sin WhatsApp'}</span>
@@ -6680,32 +6855,41 @@
         <button onclick="closeAdminPanelModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 28px; cursor: pointer;">&times;</button>
       </div>
 
-      <!-- KPIs Bar -->
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 18px 28px; background: rgba(6, 9, 18, 0.6); border-bottom: 1px solid rgba(255,255,255,0.06);">
-        <div style="background: rgba(14, 23, 44, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Total Barberos</div>
-          <div id="admin-kpi-total" style="font-size: 22px; font-weight: 900; color: #FFF; margin-top: 4px;">0</div>
+      <!-- KPIs Bar: Barberos & Medición de Membresías de Software -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 10px; padding: 16px 28px; background: rgba(6, 9, 18, 0.6); border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <div style="background: rgba(14, 23, 44, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Barberos</div>
+          <div id="admin-kpi-total" style="font-size: 20px; font-weight: 900; color: #FFF; margin-top: 3px;">0</div>
         </div>
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 12px 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: #10B981; text-transform: uppercase;">Activos en Agenda</div>
-          <div id="admin-kpi-active" style="font-size: 22px; font-weight: 900; color: #10B981; margin-top: 4px;">0</div>
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 10px 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: #10B981; text-transform: uppercase;">En Agenda</div>
+          <div id="admin-kpi-active" style="font-size: 20px; font-weight: 900; color: #10B981; margin-top: 3px;">0</div>
         </div>
-        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: #F59E0B; text-transform: uppercase;">Por Aprobar</div>
-          <div id="admin-kpi-pending" style="font-size: 22px; font-weight: 900; color: #F59E0B; margin-top: 4px;">0</div>
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 10px 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: #F59E0B; text-transform: uppercase;">Por Aprobar</div>
+          <div id="admin-kpi-pending" style="font-size: 20px; font-weight: 900; color: #F59E0B; margin-top: 3px;">0</div>
         </div>
-        <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 12px 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: #38BDF8; text-transform: uppercase;">Facturación Total</div>
-          <div id="admin-kpi-revenue" style="font-size: 22px; font-weight: 900; color: #38BDF8; margin-top: 4px;">$0</div>
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 10px 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: #38BDF8; text-transform: uppercase;">Membresías OK</div>
+          <div id="admin-kpi-memberships-active" style="font-size: 20px; font-weight: 900; color: #38BDF8; margin-top: 3px;">0</div>
+        </div>
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 10px 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: #F87171; text-transform: uppercase;">Vencen / Vencidas</div>
+          <div id="admin-kpi-memberships-expiring" style="font-size: 20px; font-weight: 900; color: #F87171; margin-top: 3px;">0</div>
+        </div>
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 10px 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: #F59E0B; text-transform: uppercase;">Software MRR</div>
+          <div id="admin-kpi-mrr" style="font-size: 18px; font-weight: 900; color: #F59E0B; margin-top: 3px;">$0</div>
         </div>
       </div>
 
       <!-- Filter Controls & Toolbar -->
       <div style="padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06);">
-        <div style="display: flex; gap: 8px;">
-          <button id="admin-tab-all" onclick="filterAdminBarbers('all')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 14px; border-color: #3B82F6; color: #FFF;">Todos</button>
-          <button id="admin-tab-pending" onclick="filterAdminBarbers('pending')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 14px; border-color: rgba(255,255,255,0.1); color: #94A3B8;">🟡 Pendientes</button>
-          <button id="admin-tab-active" onclick="filterAdminBarbers('active')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 14px; border-color: rgba(255,255,255,0.1); color: #94A3B8;">🟢 Activos</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="admin-tab-all" onclick="filterAdminBarbers('all')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 12px; border-color: #3B82F6; color: #FFF;">Todos</button>
+          <button id="admin-tab-pending" onclick="filterAdminBarbers('pending')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 12px; border-color: rgba(255,255,255,0.1); color: #94A3B8;">🟡 Pendientes</button>
+          <button id="admin-tab-active" onclick="filterAdminBarbers('active')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 12px; border-color: rgba(255,255,255,0.1); color: #94A3B8;">🟢 Activos</button>
+          <button id="admin-tab-expiring" onclick="filterAdminBarbers('expiring')" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 12px; border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;" title="Membresías por vencer en menos de 7 días o ya vencidas">⚠️ Revisión Membresías</button>
         </div>
         <button onclick="loadAdminBarbersList()" class="desktop-btn desktop-btn-surface" style="font-size: 12px; padding: 6px 14px;">
           <i class="fa-solid fa-arrows-rotate"></i> Actualizar
@@ -6716,6 +6900,114 @@
       <div id="admin-barbers-container" style="padding: 20px 28px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px;">
         <div style="text-align: center; color: #94A3B8; padding: 30px;">Cargando lista de barberos...</div>
       </div>
+
+    </div>
+  </div>
+
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: GESTIÓN DE TIEMPO Y RENOVACIÓN DE MEMBRESÍA DE SOFTWARE          -->
+  <!-- ====================================================================== -->
+  <div id="modal-renew-membership" class="valmont-modal-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); z-index: 10001; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: #090E1D; border: 1.5px solid rgba(56, 189, 248, 0.5); border-radius: 22px; width: 100%; max-width: 520px; box-shadow: 0 30px 80px rgba(0,0,0,0.9); overflow: hidden;">
+      
+      <!-- Header -->
+      <div style="padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; background: radial-gradient(circle at top right, rgba(56,189,248,0.18) 0%, rgba(9,14,29,0.95) 70%, transparent 100%);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #060912; border: 2px solid #38BDF8; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">
+            <i class="fa-solid fa-clock-rotate-left" style="color: #38BDF8; font-size: 16px;"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800; color: #FFF; font-family: 'Outfit', sans-serif;">Gestión de Membresía de Software</h3>
+            <p id="renew-barber-subtitle" style="font-size: 12px; color: #94A3B8;">Barbero: Cargando...</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRenewMembershipModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 26px; cursor: pointer;">&times;</button>
+      </div>
+
+      <!-- Formulario -->
+      <form id="form-renew-membership" onsubmit="submitRenewMembership(event)" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="renew-barber-id" value="">
+
+        <!-- Estado Actual -->
+        <div style="background: rgba(14, 23, 44, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">Estado y Tiempo Actual:</span>
+          <span id="renew-current-status-badge" style="font-size: 12px; font-weight: 800; color: #34D399;">🟢 Activa • Quedan 30 días</span>
+        </div>
+
+        <!-- Botones Rápidos de Tiempo (+30d, +90d, +180d, +365d) -->
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #38BDF8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            <i class="fa-solid fa-bolt"></i> Extensión Rápida de Tiempo:
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            <button type="button" onclick="quickAddDaysToRenew(30, 'mensual', 50000)" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 8px 4px; border-color: rgba(56,189,248,0.4); text-align: center;">
+              <strong>+30 Días</strong><br><span style="font-size: 9px; opacity: 0.8;">1 Mes</span>
+            </button>
+            <button type="button" onclick="quickAddDaysToRenew(90, 'trimestral', 135000)" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 8px 4px; border-color: rgba(56,189,248,0.4); text-align: center;">
+              <strong>+90 Días</strong><br><span style="font-size: 9px; opacity: 0.8;">3 Meses</span>
+            </button>
+            <button type="button" onclick="quickAddDaysToRenew(180, 'semestral', 250000)" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 8px 4px; border-color: rgba(56,189,248,0.4); text-align: center;">
+              <strong>+180 Días</strong><br><span style="font-size: 9px; opacity: 0.8;">6 Meses</span>
+            </button>
+            <button type="button" onclick="quickAddDaysToRenew(365, 'anual', 480000)" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 8px 4px; border-color: #F59E0B; color: #F59E0B; text-align: center;">
+              <strong>+1 Año</strong><br><span style="font-size: 9px; opacity: 0.8;">Plan VIP</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Plan y Fecha Límite -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Plan de Software:</label>
+            <select id="renew-plan-select" onchange="onPlanSelectChanged()" class="input-base" style="width: 100%; background: #060912; border: 1px solid rgba(255,255,255,0.15); color: #FFF; padding: 10px; border-radius: 10px; font-size: 13px;">
+              <option value="trial">Prueba Gratuita (Trial 15d)</option>
+              <option value="mensual">Plan Mensual ($50.000)</option>
+              <option value="trimestral">Plan Trimestral ($135.000)</option>
+              <option value="semestral">Plan Semestral ($250.000)</option>
+              <option value="anual">Plan Anual VIP ($480.000)</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Fecha de Vencimiento:</label>
+            <input type="date" id="renew-expires-at" required class="input-base" style="width: 100%; background: #060912; border: 1px solid rgba(255,255,255,0.15); color: #FFF; padding: 10px; border-radius: 10px; font-size: 13px;">
+          </div>
+        </div>
+
+        <!-- Tarifa Cobrada y Método de Pago -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Tarifa Cobrada (COP):</label>
+            <input type="number" id="renew-price" min="0" step="1000" value="50000" class="input-base" style="width: 100%; background: #060912; border: 1px solid rgba(255,255,255,0.15); color: #38BDF8; font-weight: 800; padding: 10px; border-radius: 10px; font-size: 13px;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Método de Pago:</label>
+            <select id="renew-payment-method" class="input-base" style="width: 100%; background: #060912; border: 1px solid rgba(255,255,255,0.15); color: #FFF; padding: 10px; border-radius: 10px; font-size: 13px;">
+              <option value="Nequi">Nequi</option>
+              <option value="Daviplata">Daviplata</option>
+              <option value="Bancolombia">Bancolombia</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Cortesía / Trial">Cortesía / Trial</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notas Administrativas -->
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Notas del Administrador:</label>
+          <input type="text" id="renew-notes" placeholder="Ej: Renovación confirmada comprobante Nequi #8492" class="input-base" style="width: 100%; background: #060912; border: 1px solid rgba(255,255,255,0.15); color: #FFF; padding: 10px; border-radius: 10px; font-size: 13px;">
+        </div>
+
+        <!-- Botones de Acción -->
+        <div style="display: flex; gap: 10px; margin-top: 8px;">
+          <button type="button" onclick="closeRenewMembershipModal()" class="desktop-btn desktop-btn-surface" style="flex: 1; padding: 12px;">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-submit-renew" class="desktop-btn" style="flex: 2; padding: 12px; background: linear-gradient(135deg, #2563EB 0%, #38BDF8 100%); color: #FFF; font-weight: 800; border: none; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);">
+            <i class="fa-solid fa-check"></i> Guardar y Renovar Membresía
+          </button>
+        </div>
+      </form>
 
     </div>
   </div>
