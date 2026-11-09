@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-11-06T05:51:22.651Z",
+  "savedAt": "2026-11-09T02:13:16.020Z",
   "settings": {
     "shopName": "FAMILIA 1969",
     "barberName": "Jensy Gomez",
@@ -44,11 +44,33 @@
       "tenantId": "tenant-demo-1",
       "name": "Jensy Gomez",
       "phone": "+57 312 999 0011",
-      "colorTag": "#F59E0B",
+      "colorTag": "#3B82F6",
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-04T00:12:10.280Z",
-      "updatedAt": "2026-11-06T05:51:22.649Z"
+      "updatedAt": "2026-11-09T02:13:15.640Z"
+    },
+    {
+      "id": "barber-usr-1793944282588",
+      "tenantId": "tenant-demo-1",
+      "name": "Jensy Gomez",
+      "phone": "+57 312 999 0011",
+      "colorTag": "#3B82F6",
+      "commissionPercentage": 100,
+      "isActive": true,
+      "createdAt": "2026-11-09T02:13:15.640Z",
+      "updatedAt": "2026-11-09T02:13:15.640Z"
+    },
+    {
+      "id": "barber-usr-1794190395916",
+      "tenantId": "tenant-demo-1",
+      "name": "Carlos Mendoza",
+      "phone": "+57 320 888 7766",
+      "colorTag": "#14B8A6",
+      "commissionPercentage": 100,
+      "isActive": true,
+      "createdAt": "2026-11-09T02:13:15.962Z",
+      "updatedAt": "2026-11-09T02:13:16.020Z"
     }
   ],
   "services": [
@@ -296,7 +318,59 @@
       "role": "barber",
       "tenantId": "tenant-demo-1",
       "createdAt": "2026-11-06T05:51:22.588Z",
-      "updatedAt": "2026-11-06T05:51:22.650Z"
+      "updatedAt": "2026-11-06T05:51:22.650Z",
+      "status": "active",
+      "isActive": true,
+      "colorTag": "#3B82F6",
+      "barberId": "barber-usr-1793944282588"
+    },
+    {
+      "id": "usr-admin-master",
+      "email": "admin@familia1969.com",
+      "passwordHash": "v2:2070190259b9551de12f8658aeeb38d4:e9f05eb95bfae266970925788c39e21985ce46a874970b244b7dfa2a720d71fe",
+      "name": "Administrador General",
+      "phone": "+57 311 111 2233",
+      "role": "admin",
+      "status": "active",
+      "isActive": true,
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T02:13:15.621Z",
+      "updatedAt": "2026-11-09T02:13:15.621Z",
+      "colorTag": "#3B82F6"
+    },
+    {
+      "id": "usr-barber-master",
+      "email": "barbero@familia1969.com",
+      "passwordHash": "v2:348edafd7aef79c571daa60654019c7b:584500fc97c010abe14f53eed9edd2a4b062213b62663df34b9ce2ea2d6efad0",
+      "name": "Jensy Gomez",
+      "phone": "+57 312 999 0011",
+      "role": "barber",
+      "status": "active",
+      "isActive": true,
+      "barberId": "barber-1",
+      "colorTag": "#3B82F6",
+      "commissionPercentage": 100,
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T02:13:15.640Z",
+      "updatedAt": "2026-11-09T02:13:15.640Z"
+    },
+    {
+      "id": "usr-1794190395916",
+      "email": "carlos.mendoza@familia1969.com",
+      "passwordHash": "v2:e9e6822e8c902998bac15d729650e7af:94a4b68c6c13db89e171848c27532a33a5c5750527085e5b757d64fa15797f7a",
+      "name": "Carlos Mendoza",
+      "phone": "+57 320 888 7766",
+      "role": "barber",
+      "status": "active",
+      "isActive": true,
+      "colorTag": "#14B8A6",
+      "commissionPercentage": 100,
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T02:13:15.916Z",
+      "updatedAt": "2026-11-09T02:13:16.020Z",
+      "approvedAt": "2026-11-09T02:13:15.962Z",
+      "approvedBy": "admin@familia1969.com",
+      "barberId": "barber-usr-1794190395916"
     }
   ]
 }
