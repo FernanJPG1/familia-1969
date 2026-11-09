@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080C14">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2718,7 +2721,7 @@
       <div class="landing-nav-actions">
         <button onclick="openAuthModal('login')" class="landing-btn landing-btn-outline" title="Iniciar sesión con tu cuenta de Barbero o Administrador">
           <i class="fa-solid fa-lock" style="color: #38BDF8;"></i>
-          <span>Iniciar Sesión</span>
+          <span>Acceso Admin / Barbero</span>
         </button>
         <button onclick="openAuthModal('register')" class="landing-btn landing-btn-sapphire" title="Registrarte como barbero con tu propio WhatsApp">
           <i class="fa-solid fa-user-plus"></i>
@@ -2765,7 +2768,7 @@
 
         <button onclick="openAuthModal('login')" class="landing-btn landing-btn-outline landing-btn-hero-main">
           <i class="fa-solid fa-arrow-right-to-bracket"></i>
-          <span>Acceso Miembros</span>
+          <i class="fa-solid fa-crown" style="color: #F59E0B;"></i> <span>Acceso Administrador / Barbero</span>
         </button>
       </div>
 
@@ -3204,17 +3207,32 @@
       <nav class="sidebar-nav">
         <div class="sidebar-nav-heading">Módulos del Sistema</div>
 
+        <!-- Módulo Administrador: Membresías & Barberos -->
+        <div class="nav-item" id="nav-btn-memberships" onclick="switchMobileTab('memberships')" style="display: none; border-left: 3px solid #F59E0B; background: rgba(245, 158, 11, 0.08);">
+          <div class="nav-item-icon" style="color: #F59E0B;">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <span class="nav-item-text" style="color: #F59E0B; font-weight: 800;">Membresías & Barberos</span>
+          <span class="nav-badge gold" id="sidebar-memberships-badge">SaaS</span>
+        </div>
+
         <div class="nav-item active" id="nav-btn-agenda" onclick="switchMobileTab('agenda')">
           <div class="nav-item-icon">
             <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="6" cy="6" r="3"/>
-              <path d="M8.12 8.12 12 12"/>
-              <path d="M20 4 8.12 15.88"/>
-              <circle cx="6" cy="18" r="3"/>
-              <path d="M14.8 14.8 20 20"/>
+              <rect width="18" height="18" x="3" y="4" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
           </div>
-          <span class="nav-item-text">Mis Tipos de Corte</span>
+          <span class="nav-item-text">Agenda de Citas</span>
+          <span class="nav-badge emerald">En vivo</span>
+        </div>
+
+        <div class="nav-item" id="nav-btn-services" onclick="switchMobileTab('services')">
+          <div class="nav-item-icon">
+            <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>
+            </svg>
+          </div>
+          <span class="nav-item-text">Tipos de Corte</span>
           <span class="nav-badge gold" id="services-count-badge">Catálogo</span>
         </div>
 
@@ -3363,7 +3381,7 @@
 
           <!-- Controles cuando está logueado como Administrador Master -->
           <div id="admin-logged-box" style="display: none; align-items: center; gap: 6px;">
-            <button id="btn-admin-panel" class="desktop-btn" onclick="openAdminPanelModal()" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #000; font-weight: 800; border: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); cursor: pointer;">
+            <button id="btn-admin-panel" class="desktop-btn" onclick="switchMobileTab('memberships')" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #000; font-weight: 800; border: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); cursor: pointer;">
               <i class="fa-solid fa-crown" style="font-size: 13px;"></i>
               <span>Panel Admin & Barberos</span>
               <span id="admin-pending-badge" style="background: #DC2626; color: #FFF; font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 900; display: none;">0</span>
@@ -3414,6 +3432,143 @@
         <!-- ================================================================ -->
         <!-- TAB 1: AGENDA & TURNOS (DESKTOP GRID)                            -->
         <!-- ================================================================ -->
+        <!-- ================================================================ -->
+        <!-- TAB 0: CONTROL MAESTRO DE MEMBRESÍAS & BARBEROS (SAAS HUB)        -->
+        <!-- ================================================================ -->
+        <div class="desktop-tab-pane" id="tab-memberships-view" style="display: none; flex-direction: column; gap: 20px;">
+          
+          <!-- Encabezado Principal del Módulo de Membresías -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; background: linear-gradient(135deg, rgba(14, 23, 44, 0.95) 0%, rgba(11, 19, 38, 0.98) 100%); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; padding: 22px 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);">
+            <div>
+              <div style="display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; margin-bottom: 8px;">
+                <i class="fa-solid fa-crown" style="color: #F59E0B; font-size: 12px;"></i>
+                <span style="font-size: 11px; font-weight: 800; color: #F59E0B; letter-spacing: 0.5px;">CONTROL MAESTRO ADMINISTRADOR B2B SAAS</span>
+              </div>
+              <h2 style="font-size: 24px; font-weight: 900; color: #FFF; margin: 0; line-height: 1.2;">
+                Gestión de Tiempos & Medición de Membresías
+              </h2>
+              <p style="font-size: 13px; color: #94A3B8; margin: 6px 0 0 0; max-width: 680px; line-height: 1.4;">
+                Supervise y mida la vigencia del software para cada barbero, adicione tiempo (+30d, +90d, +365d), gestione renovaciones y monitoree los ingresos mensuales recurrentes (MRR) del software FAMILIA 1969.
+              </p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <button class="desktop-btn desktop-btn-surface" onclick="loadAdminMembershipsView()" style="border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; font-size: 12px;" title="Actualizar datos y métricas en vivo">
+                <i class="fa-solid fa-rotate"></i>
+                <span>Actualizar Datos</span>
+              </button>
+              <button class="desktop-btn" onclick="openAuthModal('register')" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #000; font-weight: 800; border: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); font-size: 12px;" title="Registrar un nuevo barbero en la barbería">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Nuevo Barbero</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cuadrícula de Métricas de Software (Medición de Membresías y MRR) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+            <!-- Métrica 1: Total Barberos -->
+            <div style="background: rgba(14, 23, 44, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Total Barberos</span>
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(59, 130, 246, 0.15); color: #38BDF8; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+              </div>
+              <div id="m-kpi-total-barbers" style="font-size: 26px; font-weight: 900; color: #FFF; font-family: monospace;">0</div>
+              <div style="font-size: 10.5px; color: #64748B;">Cuentas registradas</div>
+            </div>
+
+            <!-- Métrica 2: Licencias Activas -->
+            <div style="background: rgba(14, 23, 44, 0.85); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; color: #34D399; text-transform: uppercase;">Membresías OK</span>
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #34D399; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+              </div>
+              <div id="m-kpi-active-memberships" style="font-size: 26px; font-weight: 900; color: #34D399; font-family: monospace;">0</div>
+              <div style="font-size: 10.5px; color: #64748B;">Con tiempo vigente</div>
+            </div>
+
+            <!-- Métrica 3: Vencen Pronto (<= 7 días) -->
+            <div style="background: rgba(14, 23, 44, 0.85); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; color: #F59E0B; text-transform: uppercase;">Por Vencer (&le; 7d)</span>
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); color: #F59E0B; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+              </div>
+              <div id="m-kpi-expiring-memberships" style="font-size: 26px; font-weight: 900; color: #F59E0B; font-family: monospace;">0</div>
+              <div style="font-size: 10.5px; color: #F59E0B; font-weight: 600;">Cobro urgente</div>
+            </div>
+
+            <!-- Métrica 4: Vencidas / Suspendidas -->
+            <div style="background: rgba(14, 23, 44, 0.85); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; color: #F87171; text-transform: uppercase;">Vencidas / Pausa</span>
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(239, 68, 68, 0.15); color: #F87171; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+              </div>
+              <div id="m-kpi-expired-memberships" style="font-size: 26px; font-weight: 900; color: #F87171; font-family: monospace;">0</div>
+              <div style="font-size: 10.5px; color: #64748B;">Sin tiempo</div>
+            </div>
+
+            <!-- Métrica 5: Software MRR (Ingreso Mensual Recurrente) -->
+            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.14) 0%, rgba(14, 23, 44, 0.95) 100%); border: 1px solid rgba(245, 158, 11, 0.45); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 800; color: #F59E0B; text-transform: uppercase;">Software MRR</span>
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(245, 158, 11, 0.2); color: #F59E0B; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                  <i class="fa-solid fa-coins"></i>
+                </div>
+              </div>
+              <div id="m-kpi-mrr" style="font-size: 22px; font-weight: 900; color: #F59E0B; font-family: monospace;">$0</div>
+              <div style="font-size: 10.5px; color: #FDE68A;">Ingreso mensual software</div>
+            </div>
+
+            <!-- Métrica 6: Por Aprobar -->
+            <div style="background: rgba(14, 23, 44, 0.85); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; color: #A78BFA; text-transform: uppercase;">Por Aprobar</span>
+                <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(139, 92, 246, 0.15); color: #A78BFA; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                  <i class="fa-solid fa-user-clock"></i>
+                </div>
+              </div>
+              <div id="m-kpi-pending-barbers" style="font-size: 26px; font-weight: 900; color: #A78BFA; font-family: monospace;">0</div>
+              <div style="font-size: 10.5px; color: #64748B;">Nuevas solicitudes</div>
+            </div>
+          </div>
+
+          <!-- Barra de Búsqueda y Filtros de Membresías -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(14, 23, 44, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 12px 16px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <button class="desktop-btn desktop-btn-surface m-filter-btn active" data-m-filter="all" onclick="setAdminMembershipFilter('all')" style="font-size: 11.5px; height: 34px; padding: 0 12px;">
+                <span>Todos (<span id="m-filter-count-all">0</span>)</span>
+              </button>
+              <button class="desktop-btn desktop-btn-surface m-filter-btn" data-m-filter="active" onclick="setAdminMembershipFilter('active')" style="font-size: 11.5px; height: 34px; padding: 0 12px; color: #34D399;">
+                <span>🟢 Activos (<span id="m-filter-count-active">0</span>)</span>
+              </button>
+              <button class="desktop-btn desktop-btn-surface m-filter-btn" data-m-filter="expiring" onclick="setAdminMembershipFilter('expiring')" style="font-size: 11.5px; height: 34px; padding: 0 12px; color: #F59E0B;">
+                <span>⚠️ Por Vencer (<span id="m-filter-count-expiring">0</span>)</span>
+              </button>
+              <button class="desktop-btn desktop-btn-surface m-filter-btn" data-m-filter="expired" onclick="setAdminMembershipFilter('expired')" style="font-size: 11.5px; height: 34px; padding: 0 12px; color: #F87171;">
+                <span>🔴 Vencidos (<span id="m-filter-count-expired">0</span>)</span>
+              </button>
+              <button class="desktop-btn desktop-btn-surface m-filter-btn" data-m-filter="pending" onclick="setAdminMembershipFilter('pending')" style="font-size: 11.5px; height: 34px; padding: 0 12px; color: #A78BFA;">
+                <span>⏳ Pendientes (<span id="m-filter-count-pending">0</span>)</span>
+              </button>
+            </div>
+
+            <div style="position: relative; min-width: 260px; flex: 1; max-width: 360px;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748B; font-size: 12px;"></i>
+              <input type="text" id="m-search-barber" placeholder="Buscar por nombre, email o WhatsApp..." oninput="filterAdminMembershipsList()" style="width: 100%; height: 36px; padding: 0 12px 0 34px; background: rgba(6, 12, 24, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #FFF; font-size: 12px; outline: none;">
+            </div>
+          </div>
+
+          <!-- Contenedor Dinámico de Tarjetas de Barberos -->
+          <div id="admin-memberships-list-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px;"></div>
+
+        </div>
+
         <div class="desktop-tab-pane" id="tab-agenda-view">
           
           <!-- Selector de Días Superior -->
@@ -3861,6 +4016,10 @@
 
   <!-- BARRA DE NAVEGACIÓN INFERIOR MÓVIL (THUMB BAR ERGONÓMICA) -->
   <nav class="mobile-bottom-nav">
+    <div class="mobile-bottom-nav-item" id="mob-nav-memberships" onclick="switchMobileTab('memberships')" style="display: none;">
+      <div class="mob-icon-wrap" style="color: #F59E0B;"><i class="fa-solid fa-crown"></i></div>
+      <span style="color: #F59E0B; font-weight: 800;">Membresías</span>
+    </div>
     <div class="mobile-bottom-nav-item active" id="mob-nav-agenda" onclick="switchMobileTab('agenda')">
       <div class="mob-icon-wrap"><i class="fa-solid fa-calendar-day"></i></div>
       <span>Agenda</span>
@@ -4237,7 +4396,7 @@
     }
 
     function switchMobileTab(tabName) {
-      const tabs = ['agenda', 'services', 'whatsapp', 'earnings', 'settings'];
+      const tabs = ['memberships', 'agenda', 'services', 'whatsapp', 'earnings', 'settings'];
       tabs.forEach(t => {
         const view = document.getElementById(`tab-${t}-view`);
         if (view) view.style.display = t === tabName ? 'flex' : 'none';
@@ -4260,6 +4419,7 @@
       const launcher = document.getElementById('wa-floating-launcher');
       if (launcher) launcher.style.display = tabName === 'whatsapp' ? 'none' : 'flex';
 
+      if (tabName === 'memberships') loadAdminMembershipsView();
       if (tabName === 'services') loadServices();
       if (tabName === 'earnings') renderEarningsView();
       if (tabName === 'settings') loadSettings();
@@ -6011,12 +6171,14 @@
         closeAuthModal();
         showMobileToast(`✨ Bienvenido, ${data.user.name} (${data.user.role === 'admin' ? 'Administrador' : 'Barbero'})`);
         
-        // Carga de datos en segundo plano
-        loadDashboardData();
-        loadSettings();
-
+        // Carga de datos y redirección según rol
         if (data.user.role === 'admin') {
+          switchMobileTab('memberships');
           checkPendingBarbersCount();
+        } else {
+          switchMobileTab('agenda');
+          loadDashboardData();
+          loadSettings();
         }
       } catch (err) {
         alert(err.message);
@@ -6088,10 +6250,18 @@
           if (barberBox) barberBox.style.display = 'none';
           if (adminBox) adminBox.style.display = 'flex';
           if (adminPhoneDisplay) adminPhoneDisplay.textContent = currentAuthUser.phone || 'WhatsApp';
+          const navM = document.getElementById('nav-btn-memberships');
+          if (navM) navM.style.display = 'flex';
+          const mobNavM = document.getElementById('mob-nav-memberships');
+          if (mobNavM) mobNavM.style.display = 'flex';
           checkPendingBarbersCount();
         } else {
           if (adminBox) adminBox.style.display = 'none';
           if (barberBox) barberBox.style.display = 'flex';
+          const navM = document.getElementById('nav-btn-memberships');
+          if (navM) navM.style.display = 'none';
+          const mobNavM = document.getElementById('mob-nav-memberships');
+          if (mobNavM) mobNavM.style.display = 'none';
           if (barberName) barberName.textContent = currentAuthUser.name || 'Barbero';
           if (phoneDisplay) phoneDisplay.textContent = currentAuthUser.phone || '+57 ...';
           if (dot && currentAuthUser.colorTag) dot.style.background = currentAuthUser.colorTag;
@@ -6738,6 +6908,330 @@
         }
       });
     };
+  
+    // ======================================================================
+    // CONTROLADOR DE MEMBRESÍAS Y TIEMPOS DE BARBEROS (SAAS HUB)
+    // ======================================================================
+    let currentAdminMembershipFilter = 'all';
+
+    async function loadAdminMembershipsView() {
+      if (!currentAuthToken || !currentAuthUser || currentAuthUser.role !== 'admin') return;
+
+      try {
+        const [barbersRes, statsRes] = await Promise.all([
+          fetch('/api/admin/barbers', { headers: { 'Authorization': `Bearer ${currentAuthToken}` } }),
+          fetch('/api/admin/stats', { headers: { 'Authorization': `Bearer ${currentAuthToken}` } })
+        ]);
+
+        let barbers = [];
+        let stats = null;
+
+        if (barbersRes.ok) {
+          const bData = await barbersRes.json();
+          barbers = bData.barbers || [];
+          allAdminBarbers = barbers;
+        }
+
+        if (statsRes.ok) {
+          stats = await statsRes.json();
+        }
+
+        renderAdminMembershipsDashboard(barbers, stats);
+      } catch (err) {
+        console.error('Error al cargar vista de membresías:', err);
+      }
+    }
+
+    function renderAdminMembershipsDashboard(barbers, stats) {
+      // 1. Renderizar Métricas de Membresías (MRR & Licencias)
+      const mStats = (stats && stats.memberships) ? stats.memberships : {
+        total: barbers.length,
+        active: barbers.filter(b => b.membership && b.membership.status === 'active').length,
+        expiringSoon: barbers.filter(b => b.membership && b.membership.isExpiringSoon).length,
+        expired: barbers.filter(b => b.membership && b.membership.isExpired).length,
+        monthlyRecurringRevenue: 0
+      };
+
+      const kpiTotal = document.getElementById('m-kpi-total-barbers');
+      const kpiActive = document.getElementById('m-kpi-active-memberships');
+      const kpiExpiring = document.getElementById('m-kpi-expiring-memberships');
+      const kpiExpired = document.getElementById('m-kpi-expired-memberships');
+      const kpiMrr = document.getElementById('m-kpi-mrr');
+      const kpiPending = document.getElementById('m-kpi-pending-barbers');
+
+      if (kpiTotal) kpiTotal.textContent = barbers.length;
+      if (kpiActive) kpiActive.textContent = mStats.active || 0;
+      if (kpiExpiring) kpiExpiring.textContent = mStats.expiringSoon || 0;
+      if (kpiExpired) kpiExpired.textContent = mStats.expired || 0;
+      if (kpiMrr) kpiMrr.textContent = '$' + (mStats.monthlyRecurringRevenue || 0).toLocaleString('es-CO');
+      if (kpiPending) kpiPending.textContent = (stats && stats.pendingBarbers) ? stats.pendingBarbers : barbers.filter(b => b.status === 'pending').length;
+
+      // Actualizar contadores de los botones de filtro
+      const cAll = document.getElementById('m-filter-count-all');
+      const cActive = document.getElementById('m-filter-count-active');
+      const cExpiring = document.getElementById('m-filter-count-expiring');
+      const cExpired = document.getElementById('m-filter-count-expired');
+      const cPending = document.getElementById('m-filter-count-pending');
+
+      if (cAll) cAll.textContent = barbers.length;
+      if (cActive) cActive.textContent = barbers.filter(b => b.membership && b.membership.status === 'active' && !b.membership.isExpiringSoon).length;
+      if (cExpiring) cExpiring.textContent = barbers.filter(b => b.membership && b.membership.isExpiringSoon).length;
+      if (cExpired) cExpired.textContent = barbers.filter(b => b.membership && b.membership.isExpired).length;
+      if (cPending) cPending.textContent = barbers.filter(b => b.status === 'pending').length;
+
+      // 2. Renderizar Lista de Barberos Filtrada
+      filterAdminMembershipsList();
+    }
+
+    function setAdminMembershipFilter(filter) {
+      currentAdminMembershipFilter = filter;
+      document.querySelectorAll('.m-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-m-filter') === filter) {
+          btn.classList.add('active');
+          btn.style.borderColor = '#F59E0B';
+          btn.style.background = 'rgba(245, 158, 11, 0.15)';
+        } else {
+          btn.classList.remove('active');
+          btn.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+          btn.style.background = 'rgba(255, 255, 255, 0.05)';
+        }
+      });
+      filterAdminMembershipsList();
+    }
+
+    function filterAdminMembershipsList() {
+      const container = document.getElementById('admin-memberships-list-container');
+      if (!container) return;
+
+      const searchInp = document.getElementById('m-search-barber');
+      const query = (searchInp ? searchInp.value : '').toLowerCase().trim();
+
+      const filtered = allAdminBarbers.filter(b => {
+        const m = b.membership || {};
+        
+        // Filtro por Estado
+        if (currentAdminMembershipFilter === 'active' && (m.status !== 'active' || m.isExpiringSoon)) return false;
+        if (currentAdminMembershipFilter === 'expiring' && !m.isExpiringSoon) return false;
+        if (currentAdminMembershipFilter === 'expired' && !m.isExpired) return false;
+        if (currentAdminMembershipFilter === 'pending' && b.status !== 'pending') return false;
+
+        // Búsqueda por texto
+        if (query) {
+          const matchName = (b.name || '').toLowerCase().includes(query);
+          const matchEmail = (b.email || '').toLowerCase().includes(query);
+          const matchPhone = (b.phone || '').toLowerCase().includes(query);
+          if (!matchName && !matchEmail && !matchPhone) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 40px; text-align: center; background: rgba(14, 23, 44, 0.6); border: 1px dashed rgba(255,255,255,0.15); border-radius: 16px;">
+            <i class="fa-solid fa-filter-circle-xmark" style="font-size: 32px; color: #64748B; margin-bottom: 12px;"></i>
+            <h4 style="font-size: 16px; font-weight: 800; color: #FFF; margin: 0 0 6px 0;">No se encontraron barberos con este filtro</h4>
+            <p style="font-size: 12px; color: #94A3B8; margin: 0;">Prueba seleccionando otro filtro o limpiando el campo de búsqueda.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(b => {
+        const m = b.membership || {
+          plan: 'trial',
+          status: 'active',
+          daysRemaining: 15,
+          isExpired: false,
+          isExpiringSoon: false,
+          price: 0,
+          paymentMethod: 'Prueba Gratuita',
+          expiresAt: new Date(Date.now() + 15*86400000).toISOString()
+        };
+
+        const initials = (b.name || 'Barbero').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const expiryFormatted = m.expiresAt ? new Date(m.expiresAt).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Sin fecha';
+        const startFormatted = m.startDate ? new Date(m.startDate).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Inicio';
+        const cleanPhone = (b.phone || '').replace(/\D/g, '');
+
+        let statusBadgeHtml = '';
+        let progressPercent = Math.min(100, Math.max(0, Math.round((m.daysRemaining / (m.plan === 'anual' ? 365 : (m.plan === 'semestral' ? 180 : (m.plan === 'trimestral' ? 90 : 30)))) * 100)));
+        let progressColor = '#34D399';
+
+        if (m.isExpired) {
+          statusBadgeHtml = `<span style="background: rgba(239, 68, 68, 0.2); border: 1px solid #EF4444; color: #F87171; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; font-family: monospace;">🔴 VENCIDA</span>`;
+          progressColor = '#EF4444';
+          progressPercent = 0;
+        } else if (m.isExpiringSoon) {
+          statusBadgeHtml = `<span style="background: rgba(245, 158, 11, 0.2); border: 1px solid #F59E0B; color: #F59E0B; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; font-family: monospace;">⚠️ VENCE EN ${m.daysRemaining}D</span>`;
+          progressColor = '#F59E0B';
+        } else {
+          statusBadgeHtml = `<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; color: #34D399; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 800; font-family: monospace;">🟢 ${m.daysRemaining}D RESTANTES</span>`;
+        }
+
+        const planLabels = {
+          trial: 'Prueba Inicial (15 días)',
+          mensual: 'Plan Mensual (30 días)',
+          trimestral: 'Plan Trimestral (90 días)',
+          semestral: 'Plan Semestral (180 días)',
+          anual: 'Plan Anual VIP (365 días)'
+        };
+
+        const planLabel = planLabels[m.plan] || m.plan;
+
+        return `
+          <div style="background: rgba(14, 23, 44, 0.85); border: 1.5px solid ${m.isExpiringSoon ? '#F59E0B' : (m.isExpired ? '#EF4444' : 'rgba(255, 255, 255, 0.1)')}; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
+            
+            <!-- Encabezado de la Tarjeta del Barbero -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: ${b.colorTag || '#3B82F6'}; color: #FFF; font-weight: 900; font-size: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.2);">
+                  ${initials}
+                </div>
+                <div>
+                  <h4 style="font-size: 16px; font-weight: 800; color: #FFF; margin: 0; line-height: 1.2;">
+                    ${b.name} ${b.role === 'admin' ? '<span style="font-size: 10px; background: #F59E0B; color: #000; padding: 1px 6px; border-radius: 8px; font-weight: 900;">ADMIN</span>' : ''}
+                  </h4>
+                  <div style="display: flex; align-items: center; gap: 8px; margin-top: 3px;">
+                    <a href="https://wa.me/${cleanPhone}" target="_blank" style="font-size: 12px; color: #38BDF8; text-decoration: none; display: flex; align-items: center; gap: 4px;" title="Abrir WhatsApp">
+                      <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> ${b.phone || 'Sin WhatsApp'}
+                    </a>
+                    <span style="font-size: 11px; color: #64748B;">•</span>
+                    <span style="font-size: 11px; color: #94A3B8;">${b.email}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>${statusBadgeHtml}</div>
+            </div>
+
+            <!-- Bloque de Tiempo y Membresía del Barbero -->
+            <div style="background: rgba(6, 12, 24, 0.7); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11.5px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.3px;">Plan:</span>
+                <span style="font-size: 12px; font-weight: 800; color: #38BDF8;">${planLabel}</span>
+              </div>
+
+              <!-- Barra de Progreso de Tiempo de la Licencia -->
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; color: #CBD5E1;">
+                  <span>Vigencia de Acceso</span>
+                  <strong style="color: ${progressColor}; font-family: monospace;">${m.daysRemaining} Días Restantes</strong>
+                </div>
+                <div style="width: 100%; height: 7px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden;">
+                  <div style="width: ${progressPercent}%; height: 100%; background: ${progressColor}; border-radius: 10px; transition: width 0.3s ease;"></div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; color: #94A3B8; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <span style="color: #64748B;">Inicio:</span> <strong style="color: #E2E8F0;">${startFormatted}</strong>
+                </div>
+                <div style="text-align: right;">
+                  <span style="color: #64748B;">Vence:</span> <strong style="color: ${m.isExpiringSoon ? '#F59E0B' : (m.isExpired ? '#F87171' : '#E2E8F0')};">${expiryFormatted}</strong>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94A3B8;">
+                <span>Tarifa Cobrada: <strong style="color: #34D399;">$${(m.price || 0).toLocaleString('es-CO')}</strong></span>
+                <span>Pago: <strong style="color: #E2E8F0;">${m.paymentMethod || 'Nequi'}</strong></span>
+              </div>
+            </div>
+
+            <!-- Botones de Acción de Tiempo & Membresía -->
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button onclick="openRenewMembershipModal('${b.id}')" class="desktop-btn" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%); color: #FFF; font-weight: 800; border: none; font-size: 11.5px; height: 34px; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Gestionar Tiempo (+30d)</span>
+              </button>
+
+              ${b.status === 'pending' ? `
+                <button onclick="approveBarberFromMembershipView('${b.id}')" class="desktop-btn" style="background: #10B981; color: #000; font-weight: 800; border: none; font-size: 11.5px; height: 34px; padding: 0 10px;">
+                  <i class="fa-solid fa-check"></i> Aprobar
+                </button>
+              ` : `
+                <button onclick="toggleBarberStatusFromMembershipView('${b.id}', '${b.status}')" class="desktop-btn desktop-btn-surface" style="font-size: 11px; height: 34px; padding: 0 10px; color: ${b.status === 'active' ? '#F87171' : '#34D399'};" title="${b.status === 'active' ? 'Pausar barbero en agenda' : 'Activar barbero en agenda'}">
+                  <i class="fa-solid ${b.status === 'active' ? 'fa-pause' : 'fa-play'}"></i>
+                </button>
+              `}
+
+              <button onclick="sendBarberMembershipWhatsAppPrompt('${cleanPhone}', '${b.name}', ${m.daysRemaining}, '${planLabel}', '${expiryFormatted}')" class="desktop-btn desktop-btn-surface" style="font-size: 11px; height: 34px; padding: 0 10px; color: #25D366;" title="Enviar recordatorio por WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i>
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function approveBarberFromMembershipView(userId) {
+      if (!currentAuthToken) return;
+      try {
+        const res = await fetch(`/api/admin/barbers/${userId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentAuthToken}`
+          },
+          body: JSON.stringify({ status: 'active' })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showMobileToast('✓ Barbero activado con éxito en agenda');
+          loadAdminMembershipsView();
+        } else {
+          alert(data.error || 'Error al activar barbero');
+        }
+      } catch (e) {
+        alert('Error de conexión');
+      }
+    }
+
+    async function toggleBarberStatusFromMembershipView(userId, currentStatus) {
+      if (!currentAuthToken) return;
+      const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+      const actionName = newStatus === 'active' ? 'activar' : 'pausar';
+      
+      if (!confirm(`¿Seguro que deseas ${actionName} a este barbero en la agenda pública?`)) return;
+
+      try {
+        const res = await fetch(`/api/admin/barbers/${userId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentAuthToken}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showMobileToast(`✓ Barbero ${newStatus === 'active' ? 'activado' : 'pausado'} con éxito`);
+          loadAdminMembershipsView();
+        } else {
+          alert(data.error || 'Error al cambiar estado');
+        }
+      } catch (e) {
+        alert('Error de conexión');
+      }
+    }
+
+    function sendBarberMembershipWhatsAppPrompt(phone, name, daysRemaining, planName, expiryDate) {
+      if (!phone) {
+        alert('El barbero no tiene un teléfono de WhatsApp configurado');
+        return;
+      }
+      const message = `Hola ${name}, te saludamos de la administración de FAMILIA 1969. Queremos informarte sobre el estado de tu licencia de software:
+
+• Plan: ${planName}
+• Días Restantes: ${daysRemaining} días
+• Vencimiento: ${expiryDate}
+
+Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate con la administración.`;
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+  
   </script>
   <!-- ====================================================================== -->
   <!-- MODAL: LOGIN Y REGISTRO DE BARBERO CON SEGURIDAD Y PRIVACIDAD          -->
