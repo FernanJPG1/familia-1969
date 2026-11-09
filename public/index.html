@@ -3654,7 +3654,7 @@
           <div class="nav-item-icon" style="color: #F59E0B;">
             <i class="fa-solid fa-crown"></i>
           </div>
-          <span class="nav-item-text" style="color: #F59E0B; font-weight: 800;">Membresías & Barberos</span>
+          <span class="nav-item-text" style="color: #F59E0B; font-weight: 800;">Registros</span>
           <span class="nav-badge gold" id="sidebar-memberships-badge">SaaS</span>
         </div>
 
@@ -3690,14 +3690,14 @@
           <div class="nav-item-icon">
             <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/><path d="M16 3H4a2 2 0 0 0-2 2v2"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/></svg>
           </div>
-          <span class="nav-item-text">Caja & Ganancias</span>
+          <span class="nav-item-text">Balance</span>
         </div>
 
         <div class="nav-item" id="nav-btn-settings" onclick="switchMobileTab('settings')">
           <div class="nav-item-icon">
             <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
           </div>
-          <span class="nav-item-text">Configuración Total</span>
+          <span class="nav-item-text">Configur</span>
         </div>
       
         <div class="nav-item" onclick="showLandingView()" title="Conocer más sobre el Club y Sistema">
@@ -3736,6 +3736,56 @@
       
       <!-- Topbar Desktop -->
       <header class="desktop-topbar">
+        <!-- HEADER EXCLUSIVO ADMINISTRADOR (SEGÚN BOCETO OFICIAL: REGISTROS, ACTIVOS, SIMULADOR, CERRAR) -->
+        <div id="admin-header-bar" style="display: none; width: 100%; align-items: center; justify-content: space-between; gap: 14px;">
+          <!-- Izquierda: Menú móvil + Marca FAMILIA 1969 + Píldora de Registros / Activos -->
+          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <button class="mobile-menu-btn" onclick="toggleMobileSidebar(true)" aria-label="Abrir Menú Lateral">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="mobile-brand-pill" style="display: flex; align-items: center; gap: 8px;">
+              <div class="brand-logo-icon" style="width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5); padding: 1px;">
+                <img src="/assets/brand/familia1969-badge-blue.png" alt="FAMILIA 1969" style="width: 100%; height: 100%; object-fit: contain;">
+              </div>
+              <div>
+                <div style="font-weight: 900; font-size: 13px; color: #FFF; font-family: 'Outfit', sans-serif; letter-spacing: 1px; line-height: 1.1;">FAMILIA 1969</div>
+                <div style="font-size: 8px; color: #F59E0B; font-weight: 800; letter-spacing: 1.5px;">ADMIN PANEL</div>
+              </div>
+            </div>
+
+            <!-- Píldora Central Exacta al Boceto: [ Regis: 20  Act: 18 ] -->
+            <div id="admin-topbar-metrics-pill" style="display: flex; align-items: center; gap: 12px; padding: 6px 16px; background: rgba(14, 23, 44, 0.95); border: 1.5px solid rgba(56, 189, 248, 0.45); border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Registros:</span>
+                <span id="admin-header-total-reg" style="font-size: 15px; font-weight: 900; color: #FFF; font-family: monospace;">0</span>
+              </div>
+              <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.2);"></div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 12px; font-weight: 700; color: #34D399; text-transform: uppercase;">Activos:</span>
+                <span id="admin-header-total-act" style="font-size: 15px; font-weight: 900; color: #34D399; font-family: monospace;">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Derecha: Botón del Simulador + Botón de Cerrar (Exacto al Boceto) -->
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="desktop-btn desktop-btn-surface" onclick="switchMobileTab('whatsapp')" style="background: rgba(37, 99, 235, 0.18); border-color: #3B82F6; color: #FFF; font-weight: 800; font-size: 12.5px; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px;" title="Abrir Simulador del Bot WhatsApp 24/7">
+              <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 16px;"></i>
+              <span>Simulador</span>
+              <span class="pulse-dot" style="margin-left: 2px;"></span>
+            </button>
+
+            <button class="desktop-btn desktop-btn-surface" onclick="logoutBarber()" style="border-color: rgba(239, 68, 68, 0.4); color: #EF4444; font-weight: 800; font-size: 12.5px; display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px;" title="Cerrar Sesión del Administrador">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Cerrar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- HEADER DEL BARBERO / CLIENTE GENERAL -->
+        <div id="barber-header-bar" style="display: flex; width: 100%; align-items: center; justify-content: space-between;">
+
         <!-- Grupo Izquierdo: Botón Menú + Marca Móvil + Navegador de Fechas -->
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="mobile-menu-btn" onclick="toggleMobileSidebar(true)" aria-label="Abrir Menú Lateral">
@@ -3866,7 +3916,9 @@
             <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
           </button>
         </div>
-      </header>
+      
+        </div>
+</header>
 
       <!-- Espacio de Contenido (Paneles de cada Tab) -->
       <section class="desktop-workspace">
@@ -6684,6 +6736,11 @@
     }
 
     function updateAuthUI() {
+      const adminHeader = document.getElementById('admin-header-bar');
+      const barberHeader = document.getElementById('barber-header-bar');
+      const regCountEl = document.getElementById('admin-header-total-reg');
+      const actCountEl = document.getElementById('admin-header-total-act');
+
       const loginBtn = document.getElementById('btn-barber-login');
       const barberBox = document.getElementById('barber-logged-box');
       const adminBox = document.getElementById('admin-logged-box');
@@ -6696,6 +6753,9 @@
         if (loginBtn) loginBtn.style.display = 'none';
 
         if (currentAuthUser.role === 'admin') {
+          if (adminHeader) adminHeader.style.display = 'flex';
+          if (barberHeader) barberHeader.style.display = 'none';
+          updateAdminHeaderStats();
           if (barberBox) barberBox.style.display = 'none';
           if (adminBox) adminBox.style.display = 'flex';
           if (adminPhoneDisplay) adminPhoneDisplay.textContent = currentAuthUser.phone || 'WhatsApp';
@@ -7365,6 +7425,25 @@
     // ======================================================================
     let currentAdminMembershipFilter = 'all';
 
+    
+    async function updateAdminHeaderStats() {
+      if (!currentAuthToken || !currentAuthUser || currentAuthUser.role !== 'admin') return;
+      try {
+        const res = await fetch('/api/admin/stats', {
+          headers: { 'Authorization': `Bearer ${currentAuthToken}` }
+        });
+        if (res.ok) {
+          const stats = await res.json();
+          const regCountEl = document.getElementById('admin-header-total-reg');
+          const actCountEl = document.getElementById('admin-header-total-act');
+          if (regCountEl) regCountEl.textContent = stats.totalBarbers || 0;
+          if (actCountEl) actCountEl.textContent = stats.activeBarbers || 0;
+        }
+      } catch (e) {
+        console.error('Error fetching admin header stats:', e);
+      }
+    }
+  
     async function loadAdminMembershipsView() {
       if (!currentAuthToken || !currentAuthUser || currentAuthUser.role !== 'admin') return;
 
