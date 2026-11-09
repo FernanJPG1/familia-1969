@@ -4719,7 +4719,6 @@
         // ======================================================================
     // GESTIÓN DE AUTENTICACIÓN, PRIVACIDAD Y TELÉFONO DE WHATSAPP
     // ======================================================================
-    let currentAuthUser = null;
     let currentAuthToken = localStorage.getItem('fam1969_token') || null;
     let currentAuthUser = null;
     try {
@@ -5153,40 +5152,8 @@
       }
     }
 
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (currentAuthToken) headers['Authorization'] = 'Bearer ' + currentAuthToken;
 
-        const authHeaders = currentAuthToken ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + currentAuthToken } : { 'Content-Type': 'application/json' };
-        const res = await fetch('/api/settings', {
-          headers: authHeaders,
-          method: 'PUT',
-          headers,
-          body: JSON.stringify({ phone: newPhone })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Error al guardar el teléfono');
-
-        if (currentAuthUser) {
-          currentAuthUser.phone = newPhone;
-          localStorage.setItem('fam1969_user', JSON.stringify(currentAuthUser));
-        }
-        if (currentSettings) {
-          currentSettings.phone = newPhone;
-        }
-
-        updateAuthUI();
-        closeQuickPhoneModal();
-        showMobileToast(`✅ WhatsApp actualizado con éxito: ${newPhone}`);
-        loadDashboardData();
-        loadSettings();
-      } catch (err) {
-        alert('Para cambiar el número oficial del barbero debes iniciar sesión: ' + err.message);
-        openAuthModal('login');
-      }
-    }
-
-    async function checkAuthOnLoad() {
+        async function checkAuthOnLoad() {
       const savedUser = localStorage.getItem('fam1969_user');
       if (savedUser) {
         try {
