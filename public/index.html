@@ -3654,7 +3654,7 @@
           <div class="nav-item-icon" style="color: #F59E0B;">
             <i class="fa-solid fa-crown"></i>
           </div>
-          <span class="nav-item-text" style="color: #F59E0B; font-weight: 800;">Registros</span>
+          <span class="nav-item-text" style="color: #F59E0B; font-weight: 800;">Membresías & Barberos</span>
           <span class="nav-badge gold" id="sidebar-memberships-badge">SaaS</span>
         </div>
 
@@ -3674,7 +3674,7 @@
               <circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>
             </svg>
           </div>
-          <span class="nav-item-text">Tipos de Corte</span>
+          <span class="nav-item-text">Mis Tipos de Corte</span>
           <span class="nav-badge gold" id="services-count-badge">Catálogo</span>
         </div>
 
@@ -3690,14 +3690,14 @@
           <div class="nav-item-icon">
             <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/><path d="M16 3H4a2 2 0 0 0-2 2v2"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/></svg>
           </div>
-          <span class="nav-item-text">Balance</span>
+          <span class="nav-item-text">Caja & Ganancias</span>
         </div>
 
         <div class="nav-item" id="nav-btn-settings" onclick="switchMobileTab('settings')">
           <div class="nav-item-icon">
             <svg class="v-icon v-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
           </div>
-          <span class="nav-item-text">Configur</span>
+          <span class="nav-item-text">Configuración Total</span>
         </div>
       
         <div class="nav-item" onclick="showLandingView()" title="Conocer más sobre el Club y Sistema">
@@ -6908,6 +6908,9 @@
           if (mobNavM) mobNavM.style.display = 'flex';
           checkPendingBarbersCount();
         } else {
+          // PARA BARBEROS: El header y todo exactamente como estaba anteriormente
+          if (adminHeader) adminHeader.style.display = 'none';
+          if (barberHeader) barberHeader.style.display = 'flex';
           if (adminBox) adminBox.style.display = 'none';
           if (barberBox) barberBox.style.display = 'flex';
           const navM = document.getElementById('nav-btn-memberships');
@@ -6919,9 +6922,16 @@
           if (dot && currentAuthUser.colorTag) dot.style.background = currentAuthUser.colorTag;
         }
       } else {
+        // NO AUTENTICADO: Header tradicional del barbero / público general
+        if (adminHeader) adminHeader.style.display = 'none';
+        if (barberHeader) barberHeader.style.display = 'flex';
         if (loginBtn) loginBtn.style.display = 'flex';
         if (barberBox) barberBox.style.display = 'none';
         if (adminBox) adminBox.style.display = 'none';
+        const navM = document.getElementById('nav-btn-memberships');
+        if (navM) navM.style.display = 'none';
+        const mobNavM = document.getElementById('mob-nav-memberships');
+        if (mobNavM) mobNavM.style.display = 'none';
       }
     }
 
@@ -7402,6 +7412,9 @@
       if (typeof loadDashboardData === 'function') {
         loadDashboardData();
       }
+      if (typeof updateAuthUI === 'function') {
+        updateAuthUI();
+      }
       if (typeof loadActiveBarbersSelector === 'function') {
         loadActiveBarbersSelector();
       }
@@ -7494,9 +7507,10 @@
         try {
           currentAuthUser = JSON.parse(savedUser);
           currentAuthToken = token;
-          showAppView();
           if (currentAuthUser.role === 'admin') {
-            switchMobileTab('memberships');
+            showAdminView();
+          } else {
+            showAppView();
           }
         } catch {
           showLandingView();
