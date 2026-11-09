@@ -521,6 +521,9 @@ export class DataStore {
       admin.role = 'admin';
       admin.status = 'active';
       admin.isActive = true;
+      if (!admin.passwordHash.startsWith('v2:')) {
+        admin.passwordHash = CryptoUtils.hashPassword('FamiliaAdmin1969*');
+      }
     }
 
     const masterBarberEmail = 'barbero@familia1969.com';
@@ -547,6 +550,9 @@ export class DataStore {
       masterBarber.status = 'active';
       masterBarber.isActive = true;
       if (!masterBarber.barberId) masterBarber.barberId = 'barber-1';
+      if (!masterBarber.passwordHash.startsWith('v2:')) {
+        masterBarber.passwordHash = CryptoUtils.hashPassword('Familia1969*');
+      }
     }
 
     // Sanitize any existing user

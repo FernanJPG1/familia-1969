@@ -8,26 +8,46 @@ const crypto_1 = __importDefault(require("crypto"));
 const JWT_SECRET = process.env.JWT_SECRET || 'fam_1969_super_secure_vault_secret_key_2026';
 class CryptoUtils {
     /**
-     * Hashea una contraseña usando scrypt con salt aleatorio de 16 bytes.
-     * Formato resultante: salt:hash
+     * Hashea una contraseña usando scrypt ultra-rápido optimizado para entornos serverless y baja latencia.
+     * Formato: v2:salt:hash (o salt:hash para compatibilidad)
      */
     static hashPassword(password) {
         const salt = crypto_1.default.randomBytes(16).toString('hex');
-        const derivedKey = crypto_1.default.scryptSync(password, salt, 64);
-        return `${salt}:${derivedKey.toString('hex')}`;
+        const derivedKey = crypto_1.default.scryptSync(password, salt, 32, { N: 4096, r: 8, p: 1 });
+        return `v2:${salt}:${derivedKey.toString('hex')}`;
     }
     /**
-     * Verifica de forma segura (immune a timing attacks) si la contraseña coincide con el hash.
+     * Verifica de forma segura (inmune a timing attacks) si la contraseña coincide con el hash.
+     * Soporta tanto el formato rápido v2 como el formato legacy.
      */
     static verifyPassword(password, combined) {
-        if (!combined || !combined.includes(':'))
+        if (!combined)
             return false;
-        const [salt, key] = combined.split(':');
-        const derivedKey = crypto_1.default.scryptSync(password, salt, 64);
-        const keyBuffer = Buffer.from(key, 'hex');
-        if (keyBuffer.length !== derivedKey.length)
+        try {
+            if (combined.startsWith('v2:')) {
+                const parts = combined.split(':');
+                const salt = parts[1];
+                const key = parts[2];
+                const derivedKey = crypto_1.default.scryptSync(password, salt, 32, { N: 4096, r: 8, p: 1 });
+                const keyBuffer = Buffer.from(key, 'hex');
+                if (keyBuffer.length !== derivedKey.length)
+                    return false;
+                return crypto_1.default.timingSafeEqual(keyBuffer, derivedKey);
+            }
+            // Legacy fallback
+            if (combined.includes(':')) {
+                const [salt, key] = combined.split(':');
+                const derivedKey = crypto_1.default.scryptSync(password, salt, 64);
+                const keyBuffer = Buffer.from(key, 'hex');
+                if (keyBuffer.length !== derivedKey.length)
+                    return false;
+                return crypto_1.default.timingSafeEqual(keyBuffer, derivedKey);
+            }
+        }
+        catch {
             return false;
-        return crypto_1.default.timingSafeEqual(keyBuffer, derivedKey);
+        }
+        return false;
     }
     /**
      * Genera un token de sesión firmado con HMAC-SHA256 y expiración.
@@ -74,3 +94,4 @@ class CryptoUtils {
     }
 }
 exports.CryptoUtils = CryptoUtils;
+exports.default = CryptoUtils;

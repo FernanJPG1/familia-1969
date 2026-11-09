@@ -4,25 +4,46 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fam_1969_super_secure_vault_secret
 
 export class CryptoUtils {
   /**
-   * Hashea una contraseña usando scrypt con salt aleatorio de 16 bytes.
-   * Formato resultante: salt:hash
+   * Hashea una contraseña usando scrypt ultra-rápido optimizado para entornos serverless y baja latencia.
+   * Formato: v2:salt:hash (o salt:hash para compatibilidad)
    */
   public static hashPassword(password: string): string {
     const salt = crypto.randomBytes(16).toString('hex');
-    const derivedKey = crypto.scryptSync(password, salt, 64);
-    return `${salt}:${derivedKey.toString('hex')}`;
+    const derivedKey = crypto.scryptSync(password, salt, 32, { N: 4096, r: 8, p: 1 });
+    return `v2:${salt}:${derivedKey.toString('hex')}`;
   }
 
   /**
-   * Verifica de forma segura (immune a timing attacks) si la contraseña coincide con el hash.
+   * Verifica de forma segura (inmune a timing attacks) si la contraseña coincide con el hash.
+   * Soporta tanto el formato rápido v2 como el formato legacy.
    */
   public static verifyPassword(password: string, combined: string): boolean {
-    if (!combined || !combined.includes(':')) return false;
-    const [salt, key] = combined.split(':');
-    const derivedKey = crypto.scryptSync(password, salt, 64);
-    const keyBuffer = Buffer.from(key, 'hex');
-    if (keyBuffer.length !== derivedKey.length) return false;
-    return crypto.timingSafeEqual(keyBuffer, derivedKey);
+    if (!combined) return false;
+
+    try {
+      if (combined.startsWith('v2:')) {
+        const parts = combined.split(':');
+        const salt = parts[1];
+        const key = parts[2];
+        const derivedKey = crypto.scryptSync(password, salt, 32, { N: 4096, r: 8, p: 1 });
+        const keyBuffer = Buffer.from(key, 'hex');
+        if (keyBuffer.length !== derivedKey.length) return false;
+        return crypto.timingSafeEqual(keyBuffer, derivedKey);
+      }
+
+      // Legacy fallback
+      if (combined.includes(':')) {
+        const [salt, key] = combined.split(':');
+        const derivedKey = crypto.scryptSync(password, salt, 64);
+        const keyBuffer = Buffer.from(key, 'hex');
+        if (keyBuffer.length !== derivedKey.length) return false;
+        return crypto.timingSafeEqual(keyBuffer, derivedKey);
+      }
+    } catch {
+      return false;
+    }
+
+    return false;
   }
 
   /**
@@ -70,3 +91,5 @@ export class CryptoUtils {
     }
   }
 }
+
+export default CryptoUtils;

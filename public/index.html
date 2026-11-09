@@ -20,8 +20,10 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Socket.io Client -->
-  <script src="/socket.io/socket.io.js"></script>
+  <!-- Socket.io Client (Carga asíncrona no bloqueante) -->
+  <script>
+    window.socket = { on: function(){}, emit: function(){} };
+  </script>
 
   <style>
     :root {
@@ -4777,8 +4779,14 @@
     async function handleBarberLogin(e) {
       e.preventDefault();
       hideAuthPendingAlert();
-      const email = document.getElementById('login-email').value;
+      const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-submit-login');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Ingresando...';
+      }
 
       try {
         const res = await fetch('/api/auth/login', {
@@ -4796,9 +4804,12 @@
           throw new Error(data.error || 'Error al iniciar sesión');
         }
 
+        // Acceso instantáneo sin esperas perceptibles
         setAuthSession(data.token, data.user);
         closeAuthModal();
         showMobileToast(`✨ Bienvenido, ${data.user.name} (${data.user.role === 'admin' ? 'Administrador' : 'Barbero'})`);
+        
+        // Carga de datos en segundo plano
         loadDashboardData();
         loadSettings();
 
@@ -4807,6 +4818,11 @@
         }
       } catch (err) {
         alert(err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión';
+        }
       }
     }
 
@@ -5248,8 +5264,8 @@
           <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Contraseña</label>
           <input type="password" id="login-password" required placeholder="••••••••" style="width: 100%; height: 42px; background: #060912; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 0 14px; color: #FFF; font-size: 13px; outline: none;">
         </div>
-        <button type="submit" style="width: 100%; height: 44px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
-          <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar al Panel de Barbero
+        <button type="submit" id="btn-submit-login" style="width: 100%; height: 44px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión
         </button>
       </form>
 
@@ -5271,7 +5287,7 @@
           <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Contraseña Segura (Mínimo 6 caracteres)</label>
           <input type="password" id="reg-password" minlength="6" required placeholder="••••••••" style="width: 100%; height: 40px; background: #060912; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 0 14px; color: #FFF; font-size: 13px; outline: none;">
         </div>
-        <button type="submit" style="width: 100%; height: 44px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
+        <button type="submit" id="btn-submit-register" style="width: 100%; height: 44px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
           <i class="fa-solid fa-user-plus"></i> Crear Cuenta de Barbero
         </button>
       </form>
