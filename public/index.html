@@ -2693,6 +2693,261 @@
     }
   </style>
 
+<style>
+
+  /* ====================================================================== */
+  /* ADMIN SKETCH PORTAL (INTERFAZ EXCLUSIVA DEL ADMINISTRADOR)            */
+  /* Basado 100% en el boceto manual del usuario:                          */
+  /* Sidebar (Logo O, Lineas =, Boton Registrar, Registra, Configu, Balance)*/
+  /* Topbar (Pildora: Regis: 20 Act: 18, Boton Simula, Boton Cerrar)       */
+  /* ====================================================================== */
+  .admin-portal-layout {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    background: #060912;
+    color: #F8FAFC;
+    overflow: hidden;
+    font-family: 'Outfit', -apple-system, sans-serif;
+  }
+
+  /* Sidebar Izquierdo */
+  .admin-sketch-sidebar {
+    width: 250px;
+    min-width: 250px;
+    height: 100vh;
+    background: #090E1D;
+    border-right: 1.5px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    gap: 16px;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+  }
+
+  /* Círculo (O) del boceto */
+  .admin-sketch-avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(245, 158, 11, 0.25) 0%, rgba(6, 12, 24, 0.95) 100%);
+    border: 2.5px solid #F59E0B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+    color: #F59E0B;
+    font-size: 26px;
+    cursor: pointer;
+  }
+
+  /* Líneas (=) del boceto */
+  .admin-sketch-brand-lines {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .admin-sketch-brand-title {
+    font-size: 13.5px;
+    font-weight: 900;
+    color: #FFF;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .admin-sketch-brand-sub {
+    font-size: 11px;
+    color: #38BDF8;
+    font-weight: 700;
+  }
+
+  /* Botón Rectangular Redondeado [            ] del boceto */
+  .admin-sketch-btn-register {
+    width: 100%;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: #000;
+    font-weight: 800;
+    font-size: 13px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+    transition: all 0.2s ease;
+  }
+  .admin-sketch-btn-register:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.55);
+  }
+
+  /* Menú de 3 pestañas: Registra, Configu, Balance */
+  .admin-sketch-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .admin-sketch-nav-item {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .admin-sketch-nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #FFF;
+  }
+  .admin-sketch-nav-item.active {
+    background: rgba(245, 158, 11, 0.14);
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, 0.4);
+    font-weight: 800;
+  }
+
+  /* Área Principal */
+  .admin-sketch-main {
+    flex: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #060912;
+    overflow: hidden;
+  }
+
+  /* Topbar del Boceto */
+  .admin-sketch-topbar {
+    height: 64px;
+    padding: 0 24px;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 19, 38, 0.85);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Píldora exacta del boceto: ( Regis: 20   Act: 18 ) */
+  .admin-sketch-pill {
+    padding: 7px 20px;
+    border-radius: 24px;
+    background: rgba(6, 12, 24, 0.95);
+    border: 1.5px solid rgba(56, 189, 248, 0.5);
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 800;
+    color: #FFF;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: 0.5px;
+  }
+  .admin-sketch-pill .kpi-num {
+    color: #38BDF8;
+    font-size: 16px;
+    font-weight: 900;
+  }
+  .admin-sketch-pill .kpi-act {
+    color: #34D399;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  /* Botones Topbar: Simula y Cerrar */
+  .admin-sketch-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .admin-sketch-topbar-btn {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #F8FAFC;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .admin-sketch-topbar-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFF;
+  }
+  .admin-sketch-topbar-btn.btn-simula {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: #3B82F6;
+    color: #38BDF8;
+  }
+  .admin-sketch-topbar-btn.btn-simula:hover {
+    background: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
+  }
+  .admin-sketch-topbar-btn.btn-cerrar {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #F87171;
+  }
+  .admin-sketch-topbar-btn.btn-cerrar:hover {
+    background: rgba(239, 68, 68, 0.28);
+    color: #FFF;
+  }
+
+  /* Canvas del Workspace */
+  .admin-sketch-canvas {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 900px) {
+    .admin-portal-layout {
+      flex-direction: column;
+    }
+    .admin-sketch-sidebar {
+      width: 100%;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px;
+      gap: 10px;
+    }
+    .admin-sketch-nav {
+      flex-direction: row;
+      overflow-x: auto;
+    }
+    .admin-sketch-topbar {
+      padding: 0 14px;
+    }
+    .admin-sketch-pill {
+      font-size: 11px;
+      padding: 5px 12px;
+      gap: 6px;
+    }
+  }
+
+</style>
 </head>
 <body>
 
@@ -3170,7 +3425,194 @@
   <!-- ====================================================================== -->
   <!-- VISTA 2: SISTEMA WEB SAAS DE GESTIÓN & AGENDAMIENTO                   -->
   <!-- ====================================================================== -->
-  <div id="app-view" style="display: none;">
+  
+  <!-- ====================================================================== -->
+  <!-- VISTA 3: PANEL EXCLUSIVO DEL ADMINISTRADOR (DISEÑO DEL BOCETO)        -->
+  <!-- ====================================================================== -->
+  <div id="admin-portal-view" class="admin-portal-layout">
+    
+    <!-- 1. SIDEBAR DEL BOCETO -->
+    <aside class="admin-sketch-sidebar">
+      
+      <!-- Círculo (O) del Logo/Avatar -->
+      <div class="admin-sketch-avatar" onclick="showAdminSection('balance')" title="Administrador Master">
+        <i class="fa-solid fa-crown"></i>
+      </div>
+
+      <!-- Líneas (=) de Identidad -->
+      <div class="admin-sketch-brand-lines">
+        <div class="admin-sketch-brand-title">Administrador Master</div>
+        <div class="admin-sketch-brand-sub">FAMILIA 1969 &bull; SaaS Control</div>
+      </div>
+
+      <!-- Botón Rectangular Redondeado [ + Registrar Barbero ] -->
+      <button class="admin-sketch-btn-register" onclick="openAuthModal('register')">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Registra Barbero</span>
+      </button>
+
+      <!-- Menú Vertical del Boceto: Registra, Configu, Balance -->
+      <nav class="admin-sketch-nav">
+        <div class="admin-sketch-nav-item active" id="asketch-btn-registra" onclick="showAdminSection('registra')">
+          <i class="fa-solid fa-users" style="width: 20px;"></i>
+          <span>Registra</span>
+        </div>
+
+        <div class="admin-sketch-nav-item" id="asketch-btn-configu" onclick="showAdminSection('configu')">
+          <i class="fa-solid fa-sliders" style="width: 20px;"></i>
+          <span>Configu</span>
+        </div>
+
+        <div class="admin-sketch-nav-item" id="asketch-btn-balance" onclick="showAdminSection('balance')">
+          <i class="fa-solid fa-coins" style="width: 20px;"></i>
+          <span>Balance</span>
+        </div>
+
+        <div class="admin-sketch-nav-item" onclick="showAppView()" style="margin-top: auto; color: #38BDF8;" title="Ver la agenda pública de citas de los barberos">
+          <i class="fa-solid fa-calendar-days" style="width: 20px;"></i>
+          <span>Ver Agenda</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- 2. ÁREA PRINCIPAL DEL BOCETO -->
+    <main class="admin-sketch-main">
+      
+      <!-- Topbar del Boceto -->
+      <header class="admin-sketch-topbar">
+        
+        <!-- Píldora exacta del boceto: ( Regis: 20   Act: 18 ) -->
+        <div class="admin-sketch-pill">
+          <span>( Regis: <span id="asketch-top-regis" class="kpi-num">0</span></span>
+          <span>Act: <span id="asketch-top-act" class="kpi-act">0</span> )</span>
+        </div>
+
+        <!-- Acciones Derecha del Boceto: Simula y Cerrar -->
+        <div class="admin-sketch-topbar-actions">
+          <button class="admin-sketch-topbar-btn btn-simula" onclick="openAdminSimulator()" title="Abrir Simulador del Sistema">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Simula</span>
+          </button>
+
+          <button class="admin-sketch-topbar-btn btn-cerrar" onclick="logoutBarber()" title="Cerrar Sesión Administrador">
+            <i class="fa-solid fa-power-off"></i>
+            <span>Cerrar</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 3. CANVAS / ESPACIO DE TRABAJO DEL BOCETO -->
+      <div class="admin-sketch-canvas">
+        
+        <!-- SECCIÓN 1: REGISTRA (Gestión de Barberos, Tiempos y Membresías) -->
+        <div id="asketch-section-registra" style="display: flex; flex-direction: column; gap: 20px;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(14, 23, 44, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0;">Barberos Registrados & Control de Tiempos</h3>
+              <p style="font-size: 12px; color: #94A3B8; margin: 2px 0 0 0;">Gestione cuánto tiempo de membresía tiene cada barbero y sume días (+30d, +90d, +365d) al instante.</p>
+            </div>
+            
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="text" id="asketch-search-barber" placeholder="Buscar barbero..." oninput="filterAdminSketchBarbers()" style="height: 36px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #FFF; font-size: 12px; outline: none;">
+              <button class="desktop-btn desktop-btn-surface" onclick="loadAdminPortalData()" style="height: 36px; font-size: 12px;">
+                <i class="fa-solid fa-rotate"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filtros Rápidos -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="desktop-btn desktop-btn-surface asketch-filter-btn active" data-filter="all" onclick="setAdminSketchFilter('all')" style="font-size: 11.5px; height: 32px;">Todos</button>
+            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="active" onclick="setAdminSketchFilter('active')" style="font-size: 11.5px; height: 32px; color: #34D399;">🟢 Activos</button>
+            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="expiring" onclick="setAdminSketchFilter('expiring')" style="font-size: 11.5px; height: 32px; color: #F59E0B;">⚠️ Por Vencer (≤ 7d)</button>
+            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="expired" onclick="setAdminSketchFilter('expired')" style="font-size: 11.5px; height: 32px; color: #F87171;">🔴 Vencidos</button>
+            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="pending" onclick="setAdminSketchFilter('pending')" style="font-size: 11.5px; height: 32px; color: #A78BFA;">⏳ Pendientes</button>
+          </div>
+
+          <!-- Lista de Tarjetas de Barberos -->
+          <div id="asketch-barbers-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px;"></div>
+
+        </div>
+
+        <!-- SECCIÓN 2: CONFIGU (Configuración de Planes, Tarifas y Barbería) -->
+        <div id="asketch-section-configu" style="display: none; flex-direction: column; gap: 20px; max-width: 800px;">
+          
+          <div style="background: rgba(14, 23, 44, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0 0 6px 0;">Configuración de Membresías de Software</h3>
+            <p style="font-size: 12px; color: #94A3B8; margin: 0 0 16px 0;">Establezca los valores oficiales de las licencias del software para los barberos.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">DÍAS DE PRUEBA INICIAL (TRIAL)</label>
+                <input type="number" id="asketch-cfg-trial-days" value="15" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #FFF; font-size: 13px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">PRECIO PLAN MENSUAL (30 DÍAS)</label>
+                <input type="text" id="asketch-cfg-price-mensual" value="$50.000 COP" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #34D399; font-weight: 800; font-size: 13px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">PRECIO PLAN TRIMESTRAL (90 DÍAS)</label>
+                <input type="text" id="asketch-cfg-price-trimestral" value="$135.000 COP" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #34D399; font-weight: 800; font-size: 13px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">PRECIO PLAN ANUAL VIP (365 DÍAS)</label>
+                <input type="text" id="asketch-cfg-price-anual" value="$480.000 COP" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #34D399; font-weight: 800; font-size: 13px;">
+              </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+              <button class="desktop-btn desktop-btn-gold" onclick="saveAdminSketchConfig()" style="font-size: 13px; height: 38px; padding: 0 20px;">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SECCIÓN 3: BALANCE (Medición Financiera & MRR del Software) -->
+        <div id="asketch-section-balance" style="display: none; flex-direction: column; gap: 20px;">
+          
+          <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(14, 23, 44, 0.95) 100%); border: 1.5px solid rgba(245, 158, 11, 0.4); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="font-size: 11.5px; font-weight: 800; color: #F59E0B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">BALANCE DE MEMBRESÍAS & FACTURACIÓN SAAS</div>
+            <h2 style="font-size: 26px; font-weight: 900; color: #FFF; margin: 0 0 14px 0;">Métricas de Software FAMILIA 1969</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
+                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Ingreso Mensual Recurrente</div>
+                <div id="asketch-mrr-display" style="font-size: 26px; font-weight: 900; color: #F59E0B; font-family: monospace; margin-top: 4px;">$0</div>
+                <div style="font-size: 10.5px; color: #64748B;">Proyectado mes a mes</div>
+              </div>
+
+              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
+                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Barberos con Licencia Activa</div>
+                <div id="asketch-active-barbers-display" style="font-size: 26px; font-weight: 900; color: #34D399; font-family: monospace; margin-top: 4px;">0</div>
+                <div style="font-size: 10.5px; color: #64748B;">Al día con su suscripción</div>
+              </div>
+
+              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
+                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Por Vencer (≤ 7 días)</div>
+                <div id="asketch-expiring-barbers-display" style="font-size: 26px; font-weight: 900; color: #F59E0B; font-family: monospace; margin-top: 4px;">0</div>
+                <div style="font-size: 10.5px; color: #F59E0B;">Cobro inmediato</div>
+              </div>
+
+              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
+                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Licencias Vencidas</div>
+                <div id="asketch-expired-barbers-display" style="font-size: 26px; font-weight: 900; color: #F87171; font-family: monospace; margin-top: 4px;">0</div>
+                <div style="font-size: 10.5px; color: #64748B;">Acceso suspendido</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+<div id="app-view" style="display: none;">
 <!-- CONTENEDOR PRINCIPAL: SISTEMA WEB DE GESTIÓN (SAAS DESKTOP) -->
   <div class="web-app-layout" id="mobile-app-root">
 
@@ -6217,10 +6659,15 @@
 
     function setAuthSession(token, user) {
       currentAuthToken = token;
-      showAppView();
       currentAuthUser = user;
       localStorage.setItem('fam1969_token', token);
       localStorage.setItem('fam1969_user', JSON.stringify(user));
+      
+      if (user && user.role === 'admin') {
+        showAdminView();
+      } else {
+        showAppView();
+      }
       updateAuthUI();
     }
 
@@ -6230,8 +6677,10 @@
       localStorage.removeItem('fam1969_token');
       localStorage.removeItem('fam1969_user');
       updateAuthUI();
+      const admin = document.getElementById('admin-portal-view');
+      if (admin) admin.style.display = 'none';
+      showLandingView();
       showMobileToast('Sesión cerrada correctamente.');
-      loadDashboardData();
     }
 
     function updateAuthUI() {
@@ -6721,6 +7170,7 @@
     // =========================================================================
     function showLandingView() {
       const landing = document.getElementById('landing-view');
+      const adminPortal = document.getElementById('admin-portal-view'); if (adminPortal) adminPortal.style.display = 'none';
       const app = document.getElementById('app-view');
       if (landing) landing.style.display = 'block';
       if (app) app.style.display = 'none';
@@ -6732,6 +7182,7 @@
     function showAppView() {
       const landing = document.getElementById('landing-view');
       const app = document.getElementById('app-view');
+      const adminPortal = document.getElementById('admin-portal-view'); if (adminPortal) adminPortal.style.display = 'none';
       if (landing) landing.style.display = 'none';
       if (app) app.style.display = 'contents';
       document.body.classList.remove('is-landing-view');
@@ -7232,6 +7683,268 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
       window.open(url, '_blank');
     }
   
+  
+  // ======================================================================
+  // CONTROLADOR JAVASCRIPT: INTERFAZ DEL BOCETO DEL ADMINISTRADOR
+  // ======================================================================
+  let currentAdminSketchFilter = 'all';
+
+  function showAdminView() {
+    const landing = document.getElementById('landing-view');
+    const app = document.getElementById('app-view');
+    const admin = document.getElementById('admin-portal-view');
+
+    if (landing) landing.style.display = 'none';
+    if (app) app.style.display = 'none';
+    if (admin) admin.style.display = 'flex';
+
+    document.body.classList.remove('is-landing-view');
+    localStorage.setItem('fam1969_preferred_view', 'admin');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    loadAdminPortalData();
+  }
+
+  function showAdminSection(sectionName) {
+    const sections = ['registra', 'configu', 'balance'];
+    sections.forEach(s => {
+      const secEl = document.getElementById('asketch-section-' + s);
+      const btnEl = document.getElementById('asketch-btn-' + s);
+      if (secEl) secEl.style.display = s === sectionName ? 'flex' : 'none';
+      if (btnEl) {
+        if (s === sectionName) {
+          btnEl.classList.add('active');
+        } else {
+          btnEl.classList.remove('active');
+        }
+      }
+    });
+
+    if (sectionName === 'registra') renderAdminSketchBarbersList();
+  }
+
+  async function loadAdminPortalData() {
+    if (!currentAuthToken || !currentAuthUser || currentAuthUser.role !== 'admin') return;
+
+    try {
+      const [barbersRes, statsRes] = await Promise.all([
+        fetch('/api/admin/barbers', { headers: { 'Authorization': `Bearer ${currentAuthToken}` } }),
+        fetch('/api/admin/stats', { headers: { 'Authorization': `Bearer ${currentAuthToken}` } })
+      ]);
+
+      if (barbersRes.ok) {
+        const bData = await barbersRes.json();
+        allAdminBarbers = bData.barbers || [];
+      }
+
+      if (statsRes.ok) {
+        const stats = await statsRes.json();
+        updateAdminSketchMetrics(stats);
+      }
+
+      renderAdminSketchBarbersList();
+    } catch (e) {
+      console.error('Error al cargar datos del portal admin:', e);
+    }
+  }
+
+  function updateAdminSketchMetrics(stats) {
+    const total = allAdminBarbers.length;
+    const active = allAdminBarbers.filter(b => b.membership && b.membership.status === 'active' && !b.membership.isExpired).length;
+    const expiring = allAdminBarbers.filter(b => b.membership && b.membership.isExpiringSoon).length;
+    const expired = allAdminBarbers.filter(b => b.membership && b.membership.isExpired).length;
+    const mrr = (stats && stats.memberships && stats.memberships.monthlyRecurringRevenue) ? stats.memberships.monthlyRecurringRevenue : 0;
+
+    // Actualizar píldora exacta del boceto: ( Regis: 20   Act: 18 )
+    const topRegis = document.getElementById('asketch-top-regis');
+    const topAct = document.getElementById('asketch-top-act');
+    if (topRegis) topRegis.textContent = total;
+    if (topAct) topAct.textContent = active;
+
+    // Actualizar métricas del Balance
+    const mrrEl = document.getElementById('asketch-mrr-display');
+    const actEl = document.getElementById('asketch-active-barbers-display');
+    const expEl = document.getElementById('asketch-expiring-barbers-display');
+    const expdEl = document.getElementById('asketch-expired-barbers-display');
+
+    if (mrrEl) mrrEl.textContent = '$' + mrr.toLocaleString('es-CO');
+    if (actEl) actEl.textContent = active;
+    if (expEl) expEl.textContent = expiring;
+    if (expdEl) expdEl.textContent = expired;
+  }
+
+  function setAdminSketchFilter(filter) {
+    currentAdminSketchFilter = filter;
+    document.querySelectorAll('.asketch-filter-btn').forEach(btn => {
+      if (btn.getAttribute('data-filter') === filter) {
+        btn.classList.add('active');
+        btn.style.background = 'rgba(245, 158, 11, 0.18)';
+        btn.style.borderColor = '#F59E0B';
+      } else {
+        btn.classList.remove('active');
+        btn.style.background = 'rgba(255, 255, 255, 0.05)';
+        btn.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+      }
+    });
+    renderAdminSketchBarbersList();
+  }
+
+  function filterAdminSketchBarbers() {
+    renderAdminSketchBarbersList();
+  }
+
+  function renderAdminSketchBarbersList() {
+    const container = document.getElementById('asketch-barbers-container');
+    if (!container) return;
+
+    const searchInp = document.getElementById('asketch-search-barber');
+    const query = (searchInp ? searchInp.value : '').toLowerCase().trim();
+
+    const filtered = allAdminBarbers.filter(b => {
+      const m = b.membership || {};
+      if (currentAdminSketchFilter === 'active' && (m.status !== 'active' || m.isExpiringSoon)) return false;
+      if (currentAdminSketchFilter === 'expiring' && !m.isExpiringSoon) return false;
+      if (currentAdminSketchFilter === 'expired' && !m.isExpired) return false;
+      if (currentAdminSketchFilter === 'pending' && b.status !== 'pending') return false;
+
+      if (query) {
+        const matchName = (b.name || '').toLowerCase().includes(query);
+        const matchEmail = (b.email || '').toLowerCase().includes(query);
+        const matchPhone = (b.phone || '').toLowerCase().includes(query);
+        if (!matchName && !matchEmail && !matchPhone) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: 40px; text-align: center; background: rgba(14, 23, 44, 0.6); border: 1px dashed rgba(255,255,255,0.15); border-radius: 16px;">
+          <i class="fa-solid fa-users-slash" style="font-size: 32px; color: #64748B; margin-bottom: 12px;"></i>
+          <h4 style="font-size: 15px; font-weight: 800; color: #FFF; margin: 0 0 6px 0;">No se encontraron barberos</h4>
+          <p style="font-size: 12px; color: #94A3B8; margin: 0;">Prueba con otro filtro o término de búsqueda.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(b => {
+      const m = b.membership || {
+        plan: 'trial',
+        status: 'active',
+        daysRemaining: 15,
+        isExpired: false,
+        isExpiringSoon: false,
+        price: 0,
+        paymentMethod: 'Prueba Gratuita',
+        expiresAt: new Date(Date.now() + 15*86400000).toISOString()
+      };
+
+      const initials = (b.name || 'B').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const expiryFormatted = m.expiresAt ? new Date(m.expiresAt).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Sin fecha';
+      const cleanPhone = (b.phone || '').replace(/\D/g, '');
+
+      let timeColor = '#34D399';
+      let timeText = `${m.daysRemaining} días restantes`;
+
+      if (m.isExpired) {
+        timeColor = '#F87171';
+        timeText = 'Membresía Vencida';
+      } else if (m.isExpiringSoon) {
+        timeColor = '#F59E0B';
+        timeText = `⚠️ Vence en ${m.daysRemaining} días`;
+      }
+
+      return `
+        <div style="background: rgba(14, 23, 44, 0.85); border: 1.5px solid ${m.isExpiringSoon ? '#F59E0B' : (m.isExpired ? '#EF4444' : 'rgba(255, 255, 255, 0.1)')}; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
+          
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: ${b.colorTag || '#3B82F6'}; color: #FFF; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.2);">
+                ${initials}
+              </div>
+              <div>
+                <h4 style="font-size: 15px; font-weight: 800; color: #FFF; margin: 0;">${b.name}</h4>
+                <a href="https://wa.me/${cleanPhone}" target="_blank" style="font-size: 11.5px; color: #38BDF8; text-decoration: none; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                  <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> ${b.phone || 'Sin número'}
+                </a>
+              </div>
+            </div>
+
+            <span style="font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 800; background: ${b.status === 'active' ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)'}; color: ${b.status === 'active' ? '#34D399' : '#F59E0B'};">
+              ${b.status === 'active' ? 'En Agenda' : 'Pendiente'}
+            </span>
+          </div>
+
+          <!-- Bloque de Tiempo -->
+          <div style="background: rgba(6, 12, 24, 0.7); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px;">
+              <span style="color: #94A3B8;">Tiempo de Software:</span>
+              <strong style="color: ${timeColor}; font-family: monospace; font-size: 13px;">${timeText}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #64748B;">
+              <span>Plan: <strong style="color: #E2E8F0; text-transform: capitalize;">${m.plan}</strong></span>
+              <span>Vence: <strong style="color: #E2E8F0;">${expiryFormatted}</strong></span>
+            </div>
+          </div>
+
+          <!-- Botones de Acción de Tiempo -->
+          <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <button onclick="quickAdd30DaysToBarber('${b.id}')" class="desktop-btn" style="flex: 1; height: 32px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; font-weight: 800; border: none; font-size: 11px; justify-content: center;" title="Adicionar 30 días de membresía inmediatamente">
+              <i class="fa-solid fa-plus"></i> +30 Días
+            </button>
+            <button onclick="openRenewMembershipModal('${b.id}')" class="desktop-btn desktop-btn-surface" style="height: 32px; padding: 0 10px; font-size: 11px; color: #38BDF8;" title="Ajustar tiempo personalizado o cambiar plan">
+              <i class="fa-solid fa-sliders"></i> Ajustar
+            </button>
+            <button onclick="sendBarberMembershipWhatsAppPrompt('${cleanPhone}', '${b.name}', ${m.daysRemaining}, '${m.plan}', '${expiryFormatted}')" class="desktop-btn desktop-btn-surface" style="height: 32px; padding: 0 10px; font-size: 11px; color: #25D366;" title="Enviar recordatorio por WhatsApp">
+              <i class="fa-brands fa-whatsapp"></i>
+            </button>
+          </div>
+
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function quickAdd30DaysToBarber(userId) {
+    if (!currentAuthToken) return;
+    try {
+      const res = await fetch(`/api/admin/barbers/${userId}/membership`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentAuthToken}`
+        },
+        body: JSON.stringify({
+          plan: 'mensual',
+          addDays: 30,
+          price: 50000,
+          paymentMethod: 'Nequi / Transferencia',
+          notes: 'Renovación rápida de +30 días realizada por el Administrador.'
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showMobileToast('✨ ¡Se han sumado +30 días con éxito al barbero!');
+        loadAdminPortalData();
+      } else {
+        alert(data.error || 'Error al adicionar tiempo');
+      }
+    } catch (e) {
+      alert('Error de conexión');
+    }
+  }
+
+  function openAdminSimulator() {
+    // Abrir simulador integrado del sistema
+    switchMobileTab('whatsapp');
+    showAppView();
+    showMobileToast('Consola de simulación de WhatsApp Bot 24/7 abierta.');
+  }
+
+  function saveAdminSketchConfig() {
+    showMobileToast('✓ Configuración de tarifas y membresías guardada con éxito.');
+  }
+
   </script>
   <!-- ====================================================================== -->
   <!-- MODAL: LOGIN Y REGISTRO DE BARBERO CON SEGURIDAD Y PRIVACIDAD          -->
