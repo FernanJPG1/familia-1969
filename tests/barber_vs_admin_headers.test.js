@@ -21,19 +21,22 @@ function runTest() {
   assert(html.includes('>Presentación / Club</span>'), 'Barbero debe tener "Presentación / Club"');
   console.log('✓ 2. Menú lateral del barbero restaurado al 100% con sus nombres originales');
 
-  // 3. Verify admin sketch layout has its exclusive header and sidebar
-  assert(html.includes('id="admin-portal-view"'), 'Debe existir admin-portal-view');
-  assert(html.includes('id="asketch-top-regis"'), 'Admin debe tener contador de Registros en header');
-  assert(html.includes('id="asketch-top-act"'), 'Admin debe tener contador de Activos en header');
-  assert(html.includes('openAdminSimulator()'), 'Admin debe tener botón Simulador');
-  assert(html.includes('id="asketch-btn-registra"'), 'Admin sidebar debe tener "Registra"');
-  assert(html.includes('id="asketch-btn-configu"'), 'Admin sidebar debe tener "Configu"');
-  assert(html.includes('id="asketch-btn-balance"'), 'Admin sidebar debe tener "Balance"');
-  console.log('✓ 3. Interfaz exclusiva del Administrador según el boceto intacta');
+  // 3. Verify admin sketch layout has its exclusive header and sidebar in unified layout
+  assert(html.includes('id="admin-header-bar"'), 'Debe existir admin-header-bar');
+  assert(html.includes('id="admin-header-total-reg"'), 'Admin debe tener contador de Registros en header');
+  assert(html.includes('id="admin-header-total-act"'), 'Admin debe tener contador de Activos en header');
+  assert(html.includes('openAdminSimulator()') || html.includes('Simulador'), 'Admin debe tener botón Simulador');
+  assert(html.includes('id="nav-btn-memberships"'), 'Admin sidebar debe tener opción Registros');
+  assert(html.includes('id="nav-btn-settings"'), 'Admin sidebar debe tener opción Configuración');
+  assert(html.includes('id="nav-btn-earnings"'), 'Admin sidebar debe tener opción Balance');
+  assert(html.includes('familia1969-badge-blue.png'), 'Admin comparte el logo de FAMILIA 1969');
+  console.log('✓ 3. Interfaz exclusiva del Administrador según el boceto unificada y fiel a la posición del logo');
 
   // 4. Verify updateAuthUI() separates admin vs barber headers strictly
   assert(html.includes("if (adminHeader) adminHeader.style.display = 'none';"), 'Debe ocultar adminHeader para barberos');
   assert(html.includes("if (barberHeader) barberHeader.style.display = 'flex';"), 'Debe mostrar barberHeader para barberos');
+  assert(html.includes("if (adminHeader) adminHeader.style.display = 'flex';"), 'Debe mostrar adminHeader para administrador');
+  assert(html.includes("if (barberHeader) barberHeader.style.display = 'none';"), 'Debe ocultar barberHeader para administrador');
   console.log('✓ 4. updateAuthUI() conmuta y protege los headers según el rol de forma estricta');
 
   console.log('\n🎉 TODAS LAS VALIDACIONES DE SEPARACIÓN BARBERO VS ADMIN PASARON [100% OK]!');

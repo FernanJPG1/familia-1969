@@ -3429,189 +3429,8 @@
   <!-- ====================================================================== -->
   <!-- VISTA 3: PANEL EXCLUSIVO DEL ADMINISTRADOR (DISEÑO DEL BOCETO)        -->
   <!-- ====================================================================== -->
-  <div id="admin-portal-view" class="admin-portal-layout">
-    
-    <!-- 1. SIDEBAR DEL BOCETO -->
-    <aside class="admin-sketch-sidebar">
-      
-      <!-- Círculo (O) del Logo/Avatar -->
-      <div class="admin-sketch-avatar" onclick="showAdminSection('balance')" title="Administrador Master">
-        <i class="fa-solid fa-crown"></i>
-      </div>
-
-      <!-- Líneas (=) de Identidad -->
-      <div class="admin-sketch-brand-lines">
-        <div class="admin-sketch-brand-title">Administrador Master</div>
-        <div class="admin-sketch-brand-sub">FAMILIA 1969 &bull; SaaS Control</div>
-      </div>
-
-      <!-- Botón Rectangular Redondeado [ + Registrar Barbero ] -->
-      <button class="admin-sketch-btn-register" onclick="openAuthModal('register')">
-        <i class="fa-solid fa-user-plus"></i>
-        <span>Registra Barbero</span>
-      </button>
-
-      <!-- Menú Vertical del Boceto: Registra, Configu, Balance -->
-      <nav class="admin-sketch-nav">
-        <div class="admin-sketch-nav-item active" id="asketch-btn-registra" onclick="showAdminSection('registra')">
-          <i class="fa-solid fa-users" style="width: 20px;"></i>
-          <span>Registra</span>
-        </div>
-
-        <div class="admin-sketch-nav-item" id="asketch-btn-configu" onclick="showAdminSection('configu')">
-          <i class="fa-solid fa-sliders" style="width: 20px;"></i>
-          <span>Configu</span>
-        </div>
-
-        <div class="admin-sketch-nav-item" id="asketch-btn-balance" onclick="showAdminSection('balance')">
-          <i class="fa-solid fa-coins" style="width: 20px;"></i>
-          <span>Balance</span>
-        </div>
-
-        <div class="admin-sketch-nav-item" onclick="openBriefSimulatorModal()" style="margin-top: auto; color: #38BDF8;" title="Ver la agenda pública de citas de los barberos">
-          <i class="fa-solid fa-calendar-days" style="width: 20px;"></i>
-          <span>Ver Agenda</span>
-        </div>
-      </nav>
-    </aside>
-
-    <!-- 2. ÁREA PRINCIPAL DEL BOCETO -->
-    <main class="admin-sketch-main">
-      
-      <!-- Topbar del Boceto -->
-      <header class="admin-sketch-topbar">
-        
-        <!-- Píldora exacta del boceto: ( Regis: 20   Act: 18 ) -->
-        <div class="admin-sketch-pill">
-          <span>( Regis: <span id="asketch-top-regis" class="kpi-num">0</span></span>
-          <span>Act: <span id="asketch-top-act" class="kpi-act">0</span> )</span>
-        </div>
-
-        <!-- Acciones Derecha del Boceto: Simula y Cerrar -->
-        <div class="admin-sketch-topbar-actions">
-          <button class="admin-sketch-topbar-btn btn-simula" onclick="openAdminSimulator()" title="Abrir Simulador del Sistema">
-            <i class="fa-solid fa-bolt"></i>
-            <span>Simula</span>
-          </button>
-
-          <button class="admin-sketch-topbar-btn btn-cerrar" onclick="logoutBarber()" title="Cerrar Sesión Administrador">
-            <i class="fa-solid fa-power-off"></i>
-            <span>Cerrar</span>
-          </button>
-        </div>
-      </header>
-
-      <!-- 3. CANVAS / ESPACIO DE TRABAJO DEL BOCETO -->
-      <div class="admin-sketch-canvas">
-        
-        <!-- SECCIÓN 1: REGISTRA (Gestión de Barberos, Tiempos y Membresías) -->
-        <div id="asketch-section-registra" style="display: flex; flex-direction: column; gap: 20px;">
-          
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(14, 23, 44, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px 20px;">
-            <div>
-              <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0;">Barberos Registrados & Control de Tiempos</h3>
-              <p style="font-size: 12px; color: #94A3B8; margin: 2px 0 0 0;">Gestione cuánto tiempo de membresía tiene cada barbero y sume días (+30d, +90d, +365d) al instante.</p>
-            </div>
-            
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <input type="text" id="asketch-search-barber" placeholder="Buscar barbero..." oninput="filterAdminSketchBarbers()" style="height: 36px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #FFF; font-size: 12px; outline: none;">
-              <button class="desktop-btn desktop-btn-surface" onclick="loadAdminPortalData()" style="height: 36px; font-size: 12px;">
-                <i class="fa-solid fa-rotate"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Filtros Rápidos -->
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="desktop-btn desktop-btn-surface asketch-filter-btn active" data-filter="all" onclick="setAdminSketchFilter('all')" style="font-size: 11.5px; height: 32px;">Todos</button>
-            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="active" onclick="setAdminSketchFilter('active')" style="font-size: 11.5px; height: 32px; color: #34D399;">🟢 Activos</button>
-            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="expiring" onclick="setAdminSketchFilter('expiring')" style="font-size: 11.5px; height: 32px; color: #F59E0B;">⚠️ Por Vencer (≤ 7d)</button>
-            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="expired" onclick="setAdminSketchFilter('expired')" style="font-size: 11.5px; height: 32px; color: #F87171;">🔴 Vencidos</button>
-            <button class="desktop-btn desktop-btn-surface asketch-filter-btn" data-filter="pending" onclick="setAdminSketchFilter('pending')" style="font-size: 11.5px; height: 32px; color: #A78BFA;">⏳ Pendientes</button>
-          </div>
-
-          <!-- Lista de Tarjetas de Barberos -->
-          <div id="asketch-barbers-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px;"></div>
-
-        </div>
-
-        <!-- SECCIÓN 2: CONFIGU (Configuración de Planes, Tarifas y Barbería) -->
-        <div id="asketch-section-configu" style="display: none; flex-direction: column; gap: 20px; max-width: 800px;">
-          
-          <div style="background: rgba(14, 23, 44, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0 0 6px 0;">Configuración de Membresías de Software</h3>
-            <p style="font-size: 12px; color: #94A3B8; margin: 0 0 16px 0;">Establezca los valores oficiales de las licencias del software para los barberos.</p>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">DÍAS DE PRUEBA INICIAL (TRIAL)</label>
-                <input type="number" id="asketch-cfg-trial-days" value="15" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #FFF; font-size: 13px;">
-              </div>
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">PRECIO PLAN MENSUAL (30 DÍAS)</label>
-                <input type="text" id="asketch-cfg-price-mensual" value="$50.000 COP" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #34D399; font-weight: 800; font-size: 13px;">
-              </div>
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">PRECIO PLAN TRIMESTRAL (90 DÍAS)</label>
-                <input type="text" id="asketch-cfg-price-trimestral" value="$135.000 COP" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #34D399; font-weight: 800; font-size: 13px;">
-              </div>
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">PRECIO PLAN ANUAL VIP (365 DÍAS)</label>
-                <input type="text" id="asketch-cfg-price-anual" value="$480.000 COP" style="width: 100%; height: 38px; padding: 0 12px; background: rgba(6,12,24,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #34D399; font-weight: 800; font-size: 13px;">
-              </div>
-            </div>
-
-            <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-              <button class="desktop-btn desktop-btn-gold" onclick="saveAdminSketchConfig()" style="font-size: 13px; height: 38px; padding: 0 20px;">
-                <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- SECCIÓN 3: BALANCE (Medición Financiera & MRR del Software) -->
-        <div id="asketch-section-balance" style="display: none; flex-direction: column; gap: 20px;">
-          
-          <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(14, 23, 44, 0.95) 100%); border: 1.5px solid rgba(245, 158, 11, 0.4); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-            <div style="font-size: 11.5px; font-weight: 800; color: #F59E0B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">BALANCE DE MEMBRESÍAS & FACTURACIÓN SAAS</div>
-            <h2 style="font-size: 26px; font-weight: 900; color: #FFF; margin: 0 0 14px 0;">Métricas de Software FAMILIA 1969</h2>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
-              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
-                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Ingreso Mensual Recurrente</div>
-                <div id="asketch-mrr-display" style="font-size: 26px; font-weight: 900; color: #F59E0B; font-family: monospace; margin-top: 4px;">$0</div>
-                <div style="font-size: 10.5px; color: #64748B;">Proyectado mes a mes</div>
-              </div>
-
-              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
-                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Barberos con Licencia Activa</div>
-                <div id="asketch-active-barbers-display" style="font-size: 26px; font-weight: 900; color: #34D399; font-family: monospace; margin-top: 4px;">0</div>
-                <div style="font-size: 10.5px; color: #64748B;">Al día con su suscripción</div>
-              </div>
-
-              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
-                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Por Vencer (≤ 7 días)</div>
-                <div id="asketch-expiring-barbers-display" style="font-size: 26px; font-weight: 900; color: #F59E0B; font-family: monospace; margin-top: 4px;">0</div>
-                <div style="font-size: 10.5px; color: #F59E0B;">Cobro inmediato</div>
-              </div>
-
-              <div style="background: rgba(6,12,24,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px;">
-                <div style="font-size: 11px; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Licencias Vencidas</div>
-                <div id="asketch-expired-barbers-display" style="font-size: 26px; font-weight: 900; color: #F87171; font-family: monospace; margin-top: 4px;">0</div>
-                <div style="font-size: 10.5px; color: #64748B;">Acceso suspendido</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </main>
-
-  </div>
-
+  
+<!-- VISTA UNIFICADA: ADMINISTRADOR Y BARBERO COMPARTEN APP-VIEW -->
 <div id="app-view" style="display: none;">
 <!-- CONTENEDOR PRINCIPAL: SISTEMA WEB DE GESTIÓN (SAAS DESKTOP) -->
   <div class="web-app-layout" id="mobile-app-root">
@@ -6892,32 +6711,90 @@
       const adminPhoneDisplay = document.getElementById('admin-phone-display');
       const dot = document.getElementById('topbar-barber-avatar-dot');
 
+      const headerAvatar = document.getElementById('header-avatar');
+      const headerBarberName = document.getElementById('header-barber-name');
+      const headerShopName = document.getElementById('header-shop-name');
+
+      const navM = document.getElementById('nav-btn-memberships');
+      const mobNavM = document.getElementById('mob-nav-memberships');
+      const navSettings = document.getElementById('nav-btn-settings');
+      const navEarnings = document.getElementById('nav-btn-earnings');
+
       if (currentAuthToken && currentAuthUser) {
         if (loginBtn) loginBtn.style.display = 'none';
 
         if (currentAuthUser.role === 'admin') {
+          // 1. Mostrar Header exclusivo del Administrador (según boceto del usuario) y ocultar el del Barbero
           if (adminHeader) adminHeader.style.display = 'flex';
           if (barberHeader) barberHeader.style.display = 'none';
           updateAdminHeaderStats();
-          if (barberBox) barberBox.style.display = 'none';
-          if (adminBox) adminBox.style.display = 'flex';
-          if (adminPhoneDisplay) adminPhoneDisplay.textContent = currentAuthUser.phone || 'WhatsApp';
-          const navM = document.getElementById('nav-btn-memberships');
-          if (navM) navM.style.display = 'flex';
-          const mobNavM = document.getElementById('mob-nav-memberships');
+
+          // 2. Personalizar la tarjeta de perfil en el Sidebar (misma posición y logo del barbero)
+          if (headerAvatar) headerAvatar.textContent = 'AD';
+          if (headerBarberName) {
+            headerBarberName.innerHTML = (currentAuthUser.name || 'Administrador Master') + ' <i class="fa-solid fa-crown" style="color: #F59E0B; font-size: 11px;"></i>';
+          }
+          if (headerShopName) {
+            headerShopName.innerHTML = '<span class="pulse-dot" style="background: #F59E0B;"></span> Control Maestro • SaaS';
+          }
+
+          // 3. Menú Lateral para el Administrador según el boceto: Registros, Configuración, Balance
+          if (navM) {
+            navM.style.display = 'flex';
+            const txt = navM.querySelector('.nav-item-text');
+            if (txt) txt.textContent = 'Registros';
+          }
           if (mobNavM) mobNavM.style.display = 'flex';
-          checkPendingBarbersCount();
+
+          if (navSettings) {
+            const txt = navSettings.querySelector('.nav-item-text');
+            if (txt) txt.textContent = 'Configuración';
+          }
+
+          if (navEarnings) {
+            const txt = navEarnings.querySelector('.nav-item-text');
+            if (txt) txt.textContent = 'Balance';
+          }
+
+          if (adminBox) adminBox.style.display = 'flex';
+          if (barberBox) barberBox.style.display = 'none';
+          if (adminPhoneDisplay) adminPhoneDisplay.textContent = currentAuthUser.phone || 'WhatsApp';
+          if (typeof checkPendingBarbersCount === 'function') checkPendingBarbersCount();
+
         } else {
-          // PARA BARBEROS: El header y todo exactamente como estaba anteriormente
+          // PARA BARBEROS: Todo exactamente como estaba anteriormente
           if (adminHeader) adminHeader.style.display = 'none';
           if (barberHeader) barberHeader.style.display = 'flex';
           if (adminBox) adminBox.style.display = 'none';
           if (barberBox) barberBox.style.display = 'flex';
-          const navM = document.getElementById('nav-btn-memberships');
+
+          // Ocultar opción de Registros / Membresías para barberos
           if (navM) navM.style.display = 'none';
-          const mobNavM = document.getElementById('mob-nav-memberships');
           if (mobNavM) mobNavM.style.display = 'none';
-          if (barberName) barberName.textContent = currentAuthUser.name || 'Barbero';
+
+          // Restaurar textos originales de las pestañas del barbero
+          if (navSettings) {
+            const txt = navSettings.querySelector('.nav-item-text');
+            if (txt) txt.textContent = 'Configuración Total';
+          }
+          if (navEarnings) {
+            const txt = navEarnings.querySelector('.nav-item-text');
+            if (txt) txt.textContent = 'Caja & Ganancias';
+          }
+
+          // Datos del barbero
+          const bName = currentAuthUser.name || 'Mateo Silva';
+          const initials = bName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'MS';
+
+          if (headerAvatar) headerAvatar.textContent = initials;
+          if (headerBarberName) {
+            headerBarberName.innerHTML = bName + ' <i class="fa-solid fa-circle-check" style="color: #38BDF8; font-size: 11px;"></i>';
+          }
+          if (headerShopName) {
+            headerShopName.innerHTML = '<span class="pulse-dot"></span> Disponible • Master Barber';
+          }
+
+          if (barberName) barberName.textContent = bName;
           if (phoneDisplay) phoneDisplay.textContent = currentAuthUser.phone || '+57 ...';
           if (dot && currentAuthUser.colorTag) dot.style.background = currentAuthUser.colorTag;
         }
@@ -6928,9 +6805,7 @@
         if (loginBtn) loginBtn.style.display = 'flex';
         if (barberBox) barberBox.style.display = 'none';
         if (adminBox) adminBox.style.display = 'none';
-        const navM = document.getElementById('nav-btn-memberships');
         if (navM) navM.style.display = 'none';
-        const mobNavM = document.getElementById('mob-nav-memberships');
         if (mobNavM) mobNavM.style.display = 'none';
       }
     }
@@ -6941,7 +6816,7 @@
     function openAdminPanelModal() {
       const m = document.getElementById('modal-admin-panel');
       if (m) m.style.display = 'flex';
-      loadAdminBarbersList();
+      loadAdminBarbersList(); if (typeof loadAdminMembershipsView === "function") loadAdminMembershipsView(); if (typeof updateAdminHeaderStats === "function") updateAdminHeaderStats();
     }
 
     function closeAdminPanelModal() {
@@ -6983,6 +6858,15 @@
     };
 
     function openRenewMembershipModal(barberId, encodedName, currentPlan, daysRemaining, expiresAt, price, notes) {
+      const bObj = Array.isArray(allAdminBarbers) ? allAdminBarbers.find(x => x.id === barberId) : null;
+      if (bObj) {
+        if (!encodedName) encodedName = encodeURIComponent(bObj.name || 'Barbero');
+        if (currentPlan === undefined && bObj.membership) currentPlan = bObj.membership.plan;
+        if (daysRemaining === undefined && bObj.membership) daysRemaining = bObj.membership.daysRemaining;
+        if (expiresAt === undefined && bObj.membership) expiresAt = bObj.membership.expiresAt;
+        if (price === undefined && bObj.membership) price = bObj.membership.price;
+        if (notes === undefined && bObj.membership) notes = bObj.membership.notes;
+      }
       const barberName = decodeURIComponent(encodedName || 'Barbero');
       const modal = document.getElementById('modal-renew-membership');
       const inputId = document.getElementById('renew-barber-id');
@@ -7403,20 +7287,29 @@
 
       const landing = document.getElementById('landing-view');
       const app = document.getElementById('app-view');
-      const adminPortal = document.getElementById('admin-portal-view'); if (adminPortal) adminPortal.style.display = 'none';
+      const adminPortal = document.getElementById('admin-portal-view'); 
+      if (adminPortal) adminPortal.style.display = 'none';
       if (landing) landing.style.display = 'none';
       if (app) app.style.display = 'contents';
       document.body.classList.remove('is-landing-view');
       localStorage.setItem('fam1969_preferred_view', 'app');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (typeof loadDashboardData === 'function') {
-        loadDashboardData();
-      }
+
       if (typeof updateAuthUI === 'function') {
         updateAuthUI();
       }
-      if (typeof loadActiveBarbersSelector === 'function') {
-        loadActiveBarbersSelector();
+
+      if (currentAuthUser.role === 'admin') {
+        if (typeof switchMobileTab === 'function') switchMobileTab('memberships');
+        if (typeof loadAdminMembershipsView === 'function') loadAdminMembershipsView();
+        if (typeof updateAdminHeaderStats === 'function') updateAdminHeaderStats();
+      } else {
+        if (typeof loadDashboardData === 'function') {
+          loadDashboardData();
+        }
+        if (typeof loadActiveBarbersSelector === 'function') {
+          loadActiveBarbersSelector();
+        }
       }
     }
 
@@ -7836,9 +7729,12 @@
 
             <!-- Botones de Acción de Tiempo & Membresía -->
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-              <button onclick="openRenewMembershipModal('${b.id}')" class="desktop-btn" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%); color: #FFF; font-weight: 800; border: none; font-size: 11.5px; height: 34px; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);">
+              <button onclick="quickAdd30DaysToBarber('${b.id}')" class="desktop-btn" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; font-weight: 800; border: none; font-size: 11.5px; height: 34px; padding: 0 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" title="Añadir +30 días de licencia con 1 solo clic">
+                <i class="fa-solid fa-plus"></i> +30 Días
+              </button>
+              <button onclick="openRenewMembershipModal('${b.id}')" class="desktop-btn" style="flex: 1; min-width: 130px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%); color: #FFF; font-weight: 800; border: none; font-size: 11.5px; height: 34px; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);" title="Ajustar días personalizados (+90d, +1 año), cambiar plan o fechas">
                 <i class="fa-solid fa-clock-rotate-left"></i>
-                <span>Gestionar Tiempo (+30d)</span>
+                <span>Ajustar Tiempo</span>
               </button>
 
               ${b.status === 'pending' ? `
@@ -7937,17 +7833,20 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
   function showAdminView() {
     const landing = document.getElementById('landing-view');
     const app = document.getElementById('app-view');
-    const admin = document.getElementById('admin-portal-view');
+    const adminPortal = document.getElementById('admin-portal-view');
+    if (adminPortal) adminPortal.style.display = 'none';
 
     if (landing) landing.style.display = 'none';
-    if (app) app.style.display = 'none';
-    if (admin) admin.style.display = 'flex';
+    if (app) app.style.display = 'contents';
 
     document.body.classList.remove('is-landing-view');
-    localStorage.setItem('fam1969_preferred_view', 'admin');
+    localStorage.setItem('fam1969_preferred_view', 'app');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    loadAdminPortalData();
+    if (typeof updateAuthUI === 'function') updateAuthUI();
+    if (typeof switchMobileTab === 'function') switchMobileTab('memberships');
+    if (typeof loadAdminMembershipsView === 'function') loadAdminMembershipsView();
+    if (typeof updateAdminHeaderStats === 'function') updateAdminHeaderStats();
   }
 
   function showAdminSection(sectionName) {
@@ -8180,10 +8079,7 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
   }
 
   function openAdminSimulator() {
-    // Abrir simulador integrado del sistema
-    switchMobileTab('whatsapp');
-    showAppView();
-    showMobileToast('Consola de simulación de WhatsApp Bot 24/7 abierta.');
+    openBriefSimulatorModal('bot');
   }
 
   function saveAdminSketchConfig() {

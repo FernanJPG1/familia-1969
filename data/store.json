@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-11-09T15:33:00.952Z",
+  "savedAt": "2026-11-09T17:51:30.978Z",
   "settings": {
     "shopName": "FAMILIA 1969",
     "barberName": "Jensy Gomez",
@@ -48,7 +48,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-04T00:12:10.280Z",
-      "updatedAt": "2026-11-09T15:33:00.523Z"
+      "updatedAt": "2026-11-09T14:31:57.802Z"
     },
     {
       "id": "barber-usr-1793944282588",
@@ -59,7 +59,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-09T02:13:15.640Z",
-      "updatedAt": "2026-11-09T15:33:00.523Z"
+      "updatedAt": "2026-11-09T14:31:57.802Z"
     },
     {
       "id": "barber-usr-1794190395916",
@@ -70,7 +70,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-09T02:13:15.962Z",
-      "updatedAt": "2026-11-09T15:33:00.524Z"
+      "updatedAt": "2026-11-09T14:31:57.802Z"
     },
     {
       "id": "barber-usr-1794195296590",
@@ -81,7 +81,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-09T03:34:56.640Z",
-      "updatedAt": "2026-11-09T15:33:00.524Z"
+      "updatedAt": "2026-11-09T14:31:57.802Z"
     },
     {
       "id": "barber-usr-1794234698825",
@@ -92,18 +92,7 @@
       "commissionPercentage": 100,
       "isActive": true,
       "createdAt": "2026-11-09T14:31:38.901Z",
-      "updatedAt": "2026-11-09T15:33:00.524Z"
-    },
-    {
-      "id": "barber-usr-1794236980866",
-      "tenantId": "tenant-demo-1",
-      "name": "Carlos Barbero",
-      "phone": "+57 300 987 6543",
-      "colorTag": "#10B981",
-      "commissionPercentage": 100,
-      "isActive": true,
-      "createdAt": "2026-11-09T15:33:00.524Z",
-      "updatedAt": "2026-11-09T15:33:00.524Z"
+      "updatedAt": "2026-11-09T14:31:57.802Z"
     }
   ],
   "services": [
@@ -363,9 +352,7 @@
         "price": 50000,
         "paymentMethod": "Nequi / Transferencia",
         "notes": "Membresía asignada automáticamente."
-      },
-      "isEmailVerified": true,
-      "isPhoneVerified": true
+      }
     },
     {
       "id": "usr-admin-master",
@@ -379,9 +366,7 @@
       "tenantId": "tenant-demo-1",
       "createdAt": "2026-11-09T02:13:15.621Z",
       "updatedAt": "2026-11-09T02:13:15.621Z",
-      "colorTag": "#3B82F6",
-      "isEmailVerified": true,
-      "isPhoneVerified": true
+      "colorTag": "#3B82F6"
     },
     {
       "id": "usr-barber-master",
@@ -405,9 +390,7 @@
         "price": 50000,
         "paymentMethod": "Nequi / Transferencia",
         "notes": "Membresía asignada automáticamente."
-      },
-      "isEmailVerified": true,
-      "isPhoneVerified": true
+      }
     },
     {
       "id": "usr-1794190395916",
@@ -433,9 +416,7 @@
         "price": 50000,
         "paymentMethod": "Nequi / Transferencia",
         "notes": "Membresía asignada automáticamente."
-      },
-      "isEmailVerified": true,
-      "isPhoneVerified": true
+      }
     },
     {
       "id": "usr-1794194273835",
@@ -507,9 +488,7 @@
       "updatedAt": "2026-11-09T03:34:56.673Z",
       "approvedAt": "2026-11-09T03:34:56.640Z",
       "approvedBy": "admin@familia1969.com",
-      "barberId": "barber-usr-1794195296590",
-      "isEmailVerified": true,
-      "isPhoneVerified": true
+      "barberId": "barber-usr-1794195296590"
     },
     {
       "id": "usr-1794234698825",
@@ -535,9 +514,7 @@
       "updatedAt": "2026-11-09T14:31:38.952Z",
       "approvedAt": "2026-11-09T14:31:38.901Z",
       "approvedBy": "admin@familia1969.com",
-      "barberId": "barber-usr-1794234698825",
-      "isEmailVerified": true,
-      "isPhoneVerified": true
+      "barberId": "barber-usr-1794234698825"
     },
     {
       "id": "usr-1794234727087",
@@ -615,55 +592,54 @@
       "updatedAt": "2026-11-09T15:09:40.001Z"
     },
     {
-      "id": "usr-1794236980866",
-      "email": "barbero_test_1794236980619@test.com",
-      "passwordHash": "v2:b4e7d959776e6cdfe6fc322ea641817f:43d41d2911395b2dd78090104e95da7bacae3fb4606b0b72cc89b8b4242cf9e8",
-      "name": "Carlos Barbero",
-      "phone": "+57 300 987 6543",
+      "id": "usr-1794246427036",
+      "email": "mateo.barber.1794246427017@familia1969.com",
+      "passwordHash": "v2:be46f56141a0f67e953c742c619d4d21:9522d47c2bc9441bc0c51f861c7acdca2b85adddbad88bd7d5cd657af5c39424",
+      "name": "Mateo Membership Test",
+      "phone": "+57 319 888 9900",
       "role": "barber",
-      "status": "active",
-      "isActive": true,
-      "isEmailVerified": true,
-      "isPhoneVerified": true,
-      "colorTag": "#10B981",
+      "status": "pending",
+      "isActive": false,
+      "colorTag": "#EC4899",
       "commissionPercentage": 100,
       "membership": {
-        "plan": "trial",
-        "startDate": "2026-11-09T15:09:40.866Z",
-        "expiresAt": "2026-11-24T15:09:40.866Z",
-        "price": 0,
-        "paymentMethod": "Prueba Gratuita",
-        "notes": "Período de prueba inicial de 15 días asignado al registrarse."
+        "plan": "anual",
+        "startDate": "2026-11-09T17:47:07.036Z",
+        "expiresAt": "2027-12-24T17:47:07.036Z",
+        "price": 480000,
+        "autoRenew": false,
+        "lastPaymentDate": "2026-11-09T17:47:07.053Z",
+        "paymentMethod": "Bancolombia Transferencia",
+        "notes": "Pago mensualidad recibido por Nequi"
       },
       "tenantId": "tenant-demo-1",
-      "createdAt": "2026-11-09T15:09:40.866Z",
-      "updatedAt": "2026-11-09T15:09:40.954Z",
-      "barberId": "barber-usr-1794236980866"
+      "createdAt": "2026-11-09T17:47:07.036Z",
+      "updatedAt": "2026-11-09T17:47:07.053Z"
     },
     {
-      "id": "usr-1794238380871",
-      "email": "barbero_test_1794238380630@test.com",
-      "passwordHash": "v2:91d6fd510c070a48c48fdbd19f85bda8:5580e801621d6c4d75dbf8d66362625d81ad16101d74e309c3fd9c7e3a1c9e17",
-      "name": "Carlos Barbero",
-      "phone": "+57 300 987 6543",
+      "id": "usr-1794246690961",
+      "email": "mateo.barber.1794246690942@familia1969.com",
+      "passwordHash": "v2:479bdfcb91507e4053eb7fbd731a94ad:87970041faa96641c118eb59c765eb8c2024951260fa3cdfa23fdf2fdfeed5c0",
+      "name": "Mateo Membership Test",
+      "phone": "+57 319 888 9900",
       "role": "barber",
-      "status": "active",
-      "isActive": true,
-      "isEmailVerified": true,
-      "isPhoneVerified": true,
-      "colorTag": "#3B82F6",
+      "status": "pending",
+      "isActive": false,
+      "colorTag": "#06B6D4",
       "commissionPercentage": 100,
       "membership": {
-        "plan": "trial",
-        "startDate": "2026-11-09T15:33:00.871Z",
-        "expiresAt": "2026-11-24T15:33:00.872Z",
-        "price": 0,
-        "paymentMethod": "Prueba Gratuita",
-        "notes": "Período de prueba inicial de 15 días asignado al registrarse."
+        "plan": "anual",
+        "startDate": "2026-11-09T17:51:30.961Z",
+        "expiresAt": "2027-12-24T17:51:30.961Z",
+        "price": 480000,
+        "autoRenew": false,
+        "lastPaymentDate": "2026-11-09T17:51:30.978Z",
+        "paymentMethod": "Bancolombia Transferencia",
+        "notes": "Pago mensualidad recibido por Nequi"
       },
       "tenantId": "tenant-demo-1",
-      "createdAt": "2026-11-09T15:33:00.871Z",
-      "updatedAt": "2026-11-09T15:33:00.952Z"
+      "createdAt": "2026-11-09T17:51:30.961Z",
+      "updatedAt": "2026-11-09T17:51:30.978Z"
     }
   ]
 }
