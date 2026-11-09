@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-11-09T14:32:07.115Z",
+  "savedAt": "2026-11-09T14:40:04.946Z",
   "settings": {
     "shopName": "FAMILIA 1969",
     "barberName": "Jensy Gomez",
@@ -540,6 +540,31 @@
       "tenantId": "tenant-demo-1",
       "createdAt": "2026-11-09T14:32:07.087Z",
       "updatedAt": "2026-11-09T14:32:07.115Z"
+    },
+    {
+      "id": "usr-1794235204924",
+      "email": "mateo.barber.1794235204899@familia1969.com",
+      "passwordHash": "v2:82f103241df47234247923214b66ad7e:329d8b92996540cf82fd56b36796ccf34da7d489929fdb0df3f17fd99d42f370",
+      "name": "Mateo Membership Test",
+      "phone": "+57 319 888 9900",
+      "role": "barber",
+      "status": "pending",
+      "isActive": false,
+      "colorTag": "#06B6D4",
+      "commissionPercentage": 100,
+      "membership": {
+        "plan": "anual",
+        "startDate": "2026-11-09T14:40:04.924Z",
+        "expiresAt": "2027-12-24T14:40:04.924Z",
+        "price": 480000,
+        "autoRenew": false,
+        "lastPaymentDate": "2026-11-09T14:40:04.946Z",
+        "paymentMethod": "Bancolombia Transferencia",
+        "notes": "Pago mensualidad recibido por Nequi"
+      },
+      "tenantId": "tenant-demo-1",
+      "createdAt": "2026-11-09T14:40:04.924Z",
+      "updatedAt": "2026-11-09T14:40:04.946Z"
     }
   ]
 }

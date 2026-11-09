@@ -2982,9 +2982,9 @@
           <i class="fa-solid fa-user-plus"></i>
           <span>Registrarse como Barbero</span>
         </button>
-        <button onclick="showAppView()" class="landing-btn landing-btn-gold" title="Entrar directo a la agenda de reservas del sistema">
-          <i class="fa-solid fa-calendar-check"></i>
-          <span>Entrar al Sistema</span>
+        <button onclick="openBriefSimulatorModal()" class="landing-btn landing-btn-gold" title="Probar simulador interactivo breve del sistema">
+          <i class="fa-solid fa-play"></i>
+          <span>Probar Simulador</span>
         </button>
       </div>
     </header>
@@ -3010,9 +3010,9 @@
       </p>
 
       <div class="landing-hero-actions">
-        <button onclick="showAppView()" class="landing-btn landing-btn-gold landing-btn-hero-main">
-          <i class="fa-solid fa-calendar-day"></i>
-          <span>Agendar Cita en Línea</span>
+        <button onclick="openBriefSimulatorModal()" class="landing-btn landing-btn-gold landing-btn-hero-main" title="Probar simulador interactivo del sistema">
+          <i class="fa-solid fa-play"></i>
+          <span>Probar Simulador Breve</span>
           <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i>
         </button>
 
@@ -3203,7 +3203,7 @@
               </div>
 
               <div style="margin-top: 14px; text-align: center;">
-                <button onclick="showAppView()" class="landing-btn landing-btn-sapphire" style="width: 100%; padding: 8px; font-size: 12px;">
+                <button onclick="openBriefSimulatorModal()" class="landing-btn landing-btn-sapphire" style="width: 100%; padding: 8px; font-size: 12px;">
                   <i class="fa-solid fa-bolt"></i> Abrir Selector de Horarios en Vivo
                 </button>
               </div>
@@ -3278,7 +3278,7 @@
               <li class="scrolly-feature-item"><i class="fa-solid fa-check"></i> Visualización de turnos libres en bloques optimizados de tiempo.</li>
               <li class="scrolly-feature-item"><i class="fa-solid fa-check"></i> Sincronización instantánea en la nube para todo el equipo.</li>
             </ul>
-            <button onclick="showAppView()" class="landing-btn landing-btn-gold" style="font-size: 12px; padding: 7px 16px;">
+            <button onclick="openBriefSimulatorModal()" class="landing-btn landing-btn-gold" style="font-size: 12px; padding: 7px 16px;">
               <i class="fa-solid fa-calendar-day"></i> Ver Agenda en Vivo
             </button>
           </div>
@@ -3311,7 +3311,7 @@
           </div>
           <div>
             <div class="vip-service-price">$35.000 <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">/ 45 min</span></div>
-            <button onclick="selectServiceAndGoToApp('srv-1', 'Corte Clásico & Fade Texturizado')" class="landing-btn landing-btn-outline" style="width: 100%; font-size: 12px;">
+            <button onclick="selectServiceForSimulator('srv-1', 'Corte Clásico & Fade Texturizado')" class="landing-btn landing-btn-outline" style="width: 100%; font-size: 12px;">
               <i class="fa-solid fa-calendar-plus"></i> Reservar Este Corte
             </button>
           </div>
@@ -3328,7 +3328,7 @@
           </div>
           <div>
             <div class="vip-service-price">$25.000 <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">/ 35 min</span></div>
-            <button onclick="selectServiceAndGoToApp('srv-2', 'Ritual Barba Imperial')" class="landing-btn landing-btn-outline" style="width: 100%; font-size: 12px;">
+            <button onclick="selectServiceForSimulator('srv-2', 'Ritual Barba Imperial')" class="landing-btn landing-btn-outline" style="width: 100%; font-size: 12px;">
               <i class="fa-solid fa-calendar-plus"></i> Reservar Barba
             </button>
           </div>
@@ -3346,7 +3346,7 @@
           </div>
           <div>
             <div class="vip-service-price">$55.000 <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">/ 75 min</span></div>
-            <button onclick="selectServiceAndGoToApp('srv-3', 'Combo VIP Familia 1969')" class="landing-btn landing-btn-gold" style="width: 100%; font-size: 12px;">
+            <button onclick="selectServiceForSimulator('srv-3', 'Combo VIP Familia 1969')" class="landing-btn landing-btn-gold" style="width: 100%; font-size: 12px;">
               <i class="fa-solid fa-gem"></i> Reservar Experiencia VIP
             </button>
           </div>
@@ -3363,7 +3363,7 @@
           </div>
           <div>
             <div class="vip-service-price">$18.000 <span style="font-size: 12px; color: #94A3B8; font-weight: 600;">/ 25 min</span></div>
-            <button onclick="selectServiceAndGoToApp('srv-4', 'Perfilado & Navaja Tradicional')" class="landing-btn landing-btn-outline" style="width: 100%; font-size: 12px;">
+            <button onclick="selectServiceForSimulator('srv-4', 'Perfilado & Navaja Tradicional')" class="landing-btn landing-btn-outline" style="width: 100%; font-size: 12px;">
               <i class="fa-solid fa-calendar-plus"></i> Reservar Perfilado
             </button>
           </div>
@@ -3383,7 +3383,7 @@
       </p>
 
       <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-        <button onclick="showAppView()" class="landing-btn landing-btn-gold landing-btn-hero-main">
+        <button onclick="openBriefSimulatorModal()" class="landing-btn landing-btn-gold landing-btn-hero-main">
           <i class="fa-solid fa-calendar-check"></i>
           <span>Agendar Cita Ahora</span>
         </button>
@@ -3410,7 +3410,7 @@
       <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 14px;">
         <a href="javascript:void(0)" onclick="openAuthModal('login')" style="color: #38BDF8; text-decoration: none;">Acceso Barberos</a>
         <a href="javascript:void(0)" onclick="openAuthModal('register')" style="color: #38BDF8; text-decoration: none;">Registro de Barberos</a>
-        <a href="javascript:void(0)" onclick="showAppView()" style="color: #F59E0B; text-decoration: none;">Sistema de Reservas</a>
+        <a href="javascript:void(0)" onclick="openBriefSimulatorModal()" style="color: #F59E0B; text-decoration: none;">Sistema de Reservas</a>
       </div>
       <p style="margin: 0; opacity: 0.6; font-size: 11px;">
         &copy; 2026 FAMILIA 1969 Barber Club. Todos los derechos reservados. Blindaje Criptográfico NIST scrypt v2.
@@ -3468,7 +3468,7 @@
           <span>Balance</span>
         </div>
 
-        <div class="admin-sketch-nav-item" onclick="showAppView()" style="margin-top: auto; color: #38BDF8;" title="Ver la agenda pública de citas de los barberos">
+        <div class="admin-sketch-nav-item" onclick="openBriefSimulatorModal()" style="margin-top: auto; color: #38BDF8;" title="Ver la agenda pública de citas de los barberos">
           <i class="fa-solid fa-calendar-days" style="width: 20px;"></i>
           <span>Ver Agenda</span>
         </div>
@@ -7240,6 +7240,14 @@
     }
 
     function showAppView() {
+      // PROTECCIÓN ESTRICTA: El sistema VIP NUNCA se puede abrir desde la Landing sin iniciar sesión
+      if (!currentAuthToken || !currentAuthUser) {
+        showLandingView();
+        openAuthModal('login');
+        showMobileToast('🔒 El Sistema VIP es exclusivo para miembros. Inicia sesión con tu cuenta.');
+        return;
+      }
+
       const landing = document.getElementById('landing-view');
       const app = document.getElementById('app-view');
       const adminPortal = document.getElementById('admin-portal-view'); if (adminPortal) adminPortal.style.display = 'none';
@@ -7335,22 +7343,23 @@
 
     // Comprobación de vista inicial al cargar
     function checkInitialViewRouting() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const viewParam = urlParams.get('view');
       const token = localStorage.getItem('fam1969_token');
-      const pref = localStorage.getItem('fam1969_preferred_view');
+      const savedUser = localStorage.getItem('fam1969_user');
 
-      if (viewParam === 'app') {
-        showAppView();
-      } else if (viewParam === 'landing') {
-        showLandingView();
-      } else if (token) {
-        // Usuario logueado (barbero o admin) entra directo al sistema
-        showAppView();
-      } else if (pref === 'app') {
-        showAppView();
+      // Solo si el usuario tiene sesión activa ingresa al sistema VIP
+      if (token && savedUser) {
+        try {
+          currentAuthUser = JSON.parse(savedUser);
+          currentAuthToken = token;
+          showAppView();
+          if (currentAuthUser.role === 'admin') {
+            switchMobileTab('memberships');
+          }
+        } catch {
+          showLandingView();
+        }
       } else {
-        // Por primera vez o usuario no logueado: LANDING SCROLLYTELLING
+        // En el Landing NUNCA se abre el sistema VIP a visitantes públicos
         showLandingView();
       }
 
@@ -8024,6 +8033,95 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
     showMobileToast('✓ Configuración de tarifas y membresías guardada con éxito.');
   }
 
+  
+    // ======================================================================
+    // CONTROLADOR DEL SIMULADOR BREVE (LANDING PAGE DEMO)
+    // ======================================================================
+    function openBriefSimulatorModal(tab = 'bot', customService = '') {
+      const modal = document.getElementById('modal-brief-simulator');
+      if (modal) {
+        modal.style.display = 'flex';
+        switchSimulatorTab(tab);
+      }
+      if (customService) {
+        showMobileToast('💡 Demostración de servicio: ' + customService);
+      }
+    }
+
+    function closeBriefSimulatorModal() {
+      const modal = document.getElementById('modal-brief-simulator');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function switchSimulatorTab(tab) {
+      const views = {
+        bot: document.getElementById('sim-view-bot'),
+        agenda: document.getElementById('sim-view-agenda'),
+        saas: document.getElementById('sim-view-saas')
+      };
+      const btns = {
+        bot: document.getElementById('sim-tab-bot-btn'),
+        agenda: document.getElementById('sim-tab-agenda-btn'),
+        saas: document.getElementById('sim-tab-saas-btn')
+      };
+
+      Object.keys(views).forEach(k => {
+        if (views[k]) views[k].style.display = k === tab ? 'flex' : 'none';
+        if (btns[k]) {
+          btns[k].style.borderBottomColor = k === tab ? (k === 'saas' ? '#F59E0B' : '#38BDF8') : 'transparent';
+          btns[k].style.color = k === tab ? '#FFF' : '#94A3B8';
+        }
+      });
+    }
+
+    function sendSimulatorBotMessage(userText) {
+      const chatBox = document.getElementById('sim-chat-box');
+      if (!chatBox) return;
+
+      // Mensaje del usuario
+      const userMsg = document.createElement('div');
+      userMsg.style.cssText = 'align-self: flex-end; max-width: 80%; background: #2563EB; color: #FFF; padding: 8px 12px; border-radius: 12px; font-size: 11.5px;';
+      userMsg.textContent = userText;
+      chatBox.appendChild(userMsg);
+
+      // Respuesta simulada inteligente
+      setTimeout(() => {
+        const botMsg = document.createElement('div');
+        botMsg.style.cssText = 'align-self: flex-start; max-width: 82%; background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(255,255,255,0.08); padding: 9px 12px; border-radius: 12px; color: #E2E8F0; line-height: 1.35;';
+        
+        if (userText.includes('agendar')) {
+          botMsg.innerHTML = '✨ <strong>¡Con gusto!</strong> En el sistema real, el bot te pide el nombre, te muestra los horarios disponibles en tiempo real y te envía tu confirmación por WhatsApp en segundos.';
+        } else if (userText.includes('precios')) {
+          botMsg.innerHTML = '✂️ <strong>Tarifas VIP FAMILIA 1969:</strong><br>• Corte Clásico: $35.000<br>• Barba Ritual: $25.000<br>• Combo Imperial: $50.000<br><em>*Todos incluyen lavado y bebida de cortesía.</em>';
+        } else {
+          botMsg.innerHTML = '📍 Estamos ubicados en la Sede Principal de FAMILIA 1969. Atendemos de Lunes a Sábado de 9:00 AM a 7:00 PM con agendamiento previo.';
+        }
+
+        chatBox.appendChild(botMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 400);
+    }
+
+    function simulateSlotClick(time) {
+      const feedback = document.getElementById('sim-agenda-feedback');
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.innerHTML = '✓ <strong>¡Simulación Exitosa!</strong> Slot de las ' + time + ' apartado. En el sistema real este horario queda bloqueado y se genera recordatorio automático 20 minutos antes.';
+      }
+    }
+
+    function simulateExtendDays(days) {
+      const feedback = document.getElementById('sim-saas-feedback');
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.textContent = '⚡ Simulación: Se añadieron +' + days + ' días a la membresía del barbero. Nuevo balance registrado en MRR.';
+      }
+    }
+
+    function selectServiceForSimulator(svcId, svcName) {
+      openBriefSimulatorModal('agenda', svcName);
+    }
+
   </script>
   <!-- ====================================================================== -->
   <!-- MODAL: LOGIN Y REGISTRO DE BARBERO CON SEGURIDAD Y PRIVACIDAD          -->
@@ -8294,6 +8392,162 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
           </button>
         </div>
       </form>
+
+    </div>
+  </div>
+
+
+  <!-- ====================================================================== -->
+  <!-- MODAL: SIMULADOR BREVE DEL SISTEMA (EXCLUSIVO PARA LA LANDING PAGE)     -->
+  <!-- ====================================================================== -->
+  <div id="modal-brief-simulator" class="valmont-modal-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(12px); z-index: 10002; justify-content: center; align-items: center; padding: 18px;">
+    <div style="background: #090E1D; border: 1.5px solid rgba(56, 189, 248, 0.5); border-radius: 24px; width: 100%; max-width: 640px; box-shadow: 0 30px 80px rgba(0,0,0,0.9); overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;">
+      
+      <!-- Encabezado del Simulador -->
+      <div style="padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; background: radial-gradient(circle at top right, rgba(56,189,248,0.2) 0%, rgba(9,14,29,0.95) 70%, transparent 100%);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 42px; height: 42px; border-radius: 50%; background: #060912; border: 2px solid #38BDF8; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);">
+            <i class="fa-solid fa-play" style="color: #38BDF8; font-size: 16px; margin-left: 2px;"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 9.5px; font-weight: 800; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #38BDF8; padding: 1px 7px; border-radius: 10px; letter-spacing: 0.5px;">DEMOSTRACIÓN INTERACTIVA</span>
+            </div>
+            <h3 style="font-size: 17px; font-weight: 900; color: #FFF; font-family: 'Outfit', sans-serif; margin: 2px 0 0 0;">Simulador Breve del Sistema VIP</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeBriefSimulatorModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 26px; cursor: pointer; padding: 4px;" aria-label="Cerrar Simulador">&times;</button>
+      </div>
+
+      <!-- Selector de Pestañas del Simulador -->
+      <div style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(6, 12, 24, 0.6); padding: 0 16px;">
+        <button type="button" id="sim-tab-bot-btn" onclick="switchSimulatorTab('bot')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid #38BDF8; color: #FFF; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+          <span>Bot 24/7 Simulador</span>
+        </button>
+        <button type="button" id="sim-tab-agenda-btn" onclick="switchSimulatorTab('agenda')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #94A3B8; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-calendar-check" style="color: #38BDF8;"></i>
+          <span>Agenda de Turnos</span>
+        </button>
+        <button type="button" id="sim-tab-saas-btn" onclick="switchSimulatorTab('saas')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #94A3B8; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-crown" style="color: #F59E0B;"></i>
+          <span>Membresías SaaS</span>
+        </button>
+      </div>
+
+      <!-- Contenido del Simulador -->
+      <div style="padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px;">
+        
+        <!-- PESTAÑA 1: SIMULADOR DE BOT WHATSAPP -->
+        <div id="sim-view-bot" style="display: flex; flex-direction: column; gap: 14px;">
+          <p style="font-size: 12px; color: #94A3B8; margin: 0; line-height: 1.4;">
+            Haz clic en los mensajes de prueba para ver cómo responde el Bot con IA y agenda turnos automáticamente:
+          </p>
+
+          <!-- Chat interactivo simulado -->
+          <div style="background: rgba(6, 12, 24, 0.95); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px; min-height: 180px; display: flex; flex-direction: column; gap: 10px; font-size: 12px;" id="sim-chat-box">
+            <div style="align-self: flex-start; max-width: 82%; background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(255,255,255,0.08); padding: 9px 12px; border-radius: 12px; color: #E2E8F0; line-height: 1.35;">
+              💈 ¡Hola! Bienvenido al asistente oficial de <strong>FAMILIA 1969</strong>. ¿En qué puedo ayudarte hoy?
+            </div>
+          </div>
+
+          <!-- Opciones interactivas rápidas -->
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button type="button" onclick="sendSimulatorBotMessage('¿Cómo puedo agendar un corte hoy?')" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 6px 12px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
+              <i class="fa-solid fa-calendar-plus"></i> "¿Cómo puedo agendar?"
+            </button>
+            <button type="button" onclick="sendSimulatorBotMessage('¿Qué precios tienen los servicios VIP?')" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 6px 12px; border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;">
+              <i class="fa-solid fa-tag"></i> "Ver precios de servicios"
+            </button>
+            <button type="button" onclick="sendSimulatorBotMessage('¿Dónde están ubicados y qué horarios manejan?')" class="desktop-btn desktop-btn-surface" style="font-size: 11px; padding: 6px 12px; border-color: rgba(52, 211, 153, 0.4); color: #34D399;">
+              <i class="fa-solid fa-location-dot"></i> "Ubicación y horarios"
+            </button>
+          </div>
+        </div>
+
+        <!-- PESTAÑA 2: SIMULADOR DE AGENDA DE TURNOS -->
+        <div id="sim-view-agenda" style="display: none; flex-direction: column; gap: 14px;">
+          <p style="font-size: 12px; color: #94A3B8; margin: 0; line-height: 1.4;">
+            Así visualiza el sistema los turnos en vivo sin solapamientos. Haz clic en un slot disponible:
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div onclick="simulateSlotClick('10:00 AM')" style="background: rgba(14, 23, 44, 0.8); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: not-allowed; opacity: 0.85;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 12px; font-weight: 800; color: #F87171; font-family: monospace;">10:00 AM</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 700; color: #FFF;">Corte Clásico Imperial • Carlos M.</div>
+                  <div style="font-size: 10.5px; color: #64748B;">Atendido por: Mateo Silva (Master Barber)</div>
+                </div>
+              </div>
+              <span style="font-size: 10px; font-weight: 800; background: rgba(239,68,68,0.2); color: #F87171; padding: 2px 8px; border-radius: 8px;">OCUPADO</span>
+            </div>
+
+            <div onclick="simulateSlotClick('11:00 AM')" style="background: rgba(14, 23, 44, 0.8); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#34D399'" onmouseout="this.style.borderColor='rgba(16, 185, 129, 0.4)'">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 12px; font-weight: 800; color: #34D399; font-family: monospace;">11:00 AM</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 700; color: #FFF;">Horario Libre Disponible</div>
+                  <div style="font-size: 10.5px; color: #34D399;">Clic para simular reserva de turno</div>
+                </div>
+              </div>
+              <span style="font-size: 10px; font-weight: 800; background: rgba(16,185,129,0.2); color: #34D399; padding: 2px 8px; border-radius: 8px;">DISPONIBLE</span>
+            </div>
+
+            <div onclick="simulateSlotClick('02:00 PM')" style="background: rgba(14, 23, 44, 0.8); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onmouseover="this.style.borderColor='#34D399'" onmouseout="this.style.borderColor='rgba(16, 185, 129, 0.4)'">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 12px; font-weight: 800; color: #34D399; font-family: monospace;">02:00 PM</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 700; color: #FFF;">Horario Libre Disponible</div>
+                  <div style="font-size: 10.5px; color: #34D399;">Clic para simular reserva de turno</div>
+                </div>
+              </div>
+              <span style="font-size: 10px; font-weight: 800; background: rgba(16,185,129,0.2); color: #34D399; padding: 2px 8px; border-radius: 8px;">DISPONIBLE</span>
+            </div>
+          </div>
+          <div id="sim-agenda-feedback" style="display: none; padding: 10px 14px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10B981; border-radius: 10px; font-size: 12px; color: #34D399;"></div>
+        </div>
+
+        <!-- PESTAÑA 3: SIMULADOR DE MEMBRESÍAS SAAS -->
+        <div id="sim-view-saas" style="display: none; flex-direction: column; gap: 14px;">
+          <p style="font-size: 12px; color: #94A3B8; margin: 0; line-height: 1.4;">
+            El Administrador controla en tiempo real cuánto tiempo de software tiene cada barbero:
+          </p>
+
+          <div style="background: rgba(6, 12, 24, 0.85); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 13px; font-weight: 800; color: #FFF;">Barbero: Jensy Gomez</span>
+              <span style="font-size: 11px; font-weight: 800; background: rgba(16,185,129,0.2); color: #34D399; padding: 2px 8px; border-radius: 10px;">🟢 30d RESTANTES</span>
+            </div>
+            <div style="font-size: 11.5px; color: #94A3B8;">Plan: <strong style="color: #38BDF8;">Mensual ($50.000 COP)</strong> • Renovación recurrente</div>
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
+              <button type="button" onclick="simulateExtendDays(30)" class="desktop-btn desktop-btn-surface" style="font-size: 11px; height: 32px; padding: 0 10px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
+                <i class="fa-solid fa-plus"></i> Simular +30 Días
+              </button>
+              <button type="button" onclick="simulateExtendDays(90)" class="desktop-btn desktop-btn-surface" style="font-size: 11px; height: 32px; padding: 0 10px; border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;">
+                <i class="fa-solid fa-plus"></i> Simular +90 Días
+              </button>
+            </div>
+            <div id="sim-saas-feedback" style="display: none; font-size: 11.5px; color: #F59E0B; font-weight: 700; margin-top: 4px;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pie del Modal: Llamado a la Acción para Miembros y Registro -->
+      <div style="padding: 16px 24px; background: rgba(6, 12, 24, 0.95); border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="font-size: 11.5px; color: #94A3B8;">
+          ¿Deseas acceder al sistema real?
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" onclick="closeBriefSimulatorModal(); openAuthModal('login');" class="desktop-btn desktop-btn-surface" style="font-size: 11.5px; height: 34px; padding: 0 12px; border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;">
+            <i class="fa-solid fa-crown"></i> Iniciar Sesión (VIP)
+          </button>
+          <button type="button" onclick="closeBriefSimulatorModal(); openAuthModal('register');" class="desktop-btn" style="background: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%); color: #FFF; font-weight: 800; font-size: 11.5px; height: 34px; padding: 0 12px; border: none;">
+            <i class="fa-solid fa-user-plus"></i> Registrarme (15d Gratis)
+          </button>
+        </div>
+      </div>
 
     </div>
   </div>
