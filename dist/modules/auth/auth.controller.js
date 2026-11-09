@@ -23,8 +23,33 @@ class AuthController {
             const status = error.statusCode || 401;
             res.status(status).json({
                 error: error.message || 'Error al iniciar sesión.',
-                isPending: Boolean(error.isPending)
+                isPending: Boolean(error.isPending),
+                requiresVerification: Boolean(error.requiresVerification),
+                userId: error.userId,
+                email: error.email,
+                phone: error.phone,
+                emailCodePreview: error.emailCodePreview,
+                phoneCodePreview: error.phoneCodePreview
             });
+        }
+    }
+    static async verify(req, res) {
+        try {
+            const response = await auth_service_1.AuthService.verify(req.body);
+            events_1.eventBus.emit('dashboard:refresh');
+            res.status(200).json(response);
+        }
+        catch (error) {
+            res.status(400).json({ error: error.message || 'Error en la verificación.' });
+        }
+    }
+    static async resendCode(req, res) {
+        try {
+            const response = await auth_service_1.AuthService.resendCode(req.body);
+            res.status(200).json(response);
+        }
+        catch (error) {
+            res.status(400).json({ error: error.message || 'Error al reenviar códigos.' });
         }
     }
     static getMe(req, res) {

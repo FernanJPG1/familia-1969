@@ -4736,16 +4736,18 @@
   <!-- JAVASCRIPT: LÓGICA COMPLETA DE NEGOCIO, SOCKET.IO Y ESTADOS            -->
   <!-- ====================================================================== -->
   <script>
-        // =========================================================================
+    // =========================================================================
     // VARIABLES GLOBALES DE SESIÓN Y AUTENTICACIÓN (HOISTED / BLINDADAS)
     // =========================================================================
-    var currentAuthToken = localStorage.getItem('fam1969_token') || null;
-    var currentAuthUser = null;
+    window.currentAuthToken = window.currentAuthToken || localStorage.getItem('fam1969_token') || null;
+    window.currentAuthUser = window.currentAuthUser || null;
     try {
-      currentAuthUser = JSON.parse(localStorage.getItem('fam1969_user') || 'null');
+      window.currentAuthUser = window.currentAuthUser || JSON.parse(localStorage.getItem('fam1969_user') || 'null');
     } catch (e) {
-      currentAuthUser = null;
+      window.currentAuthUser = null;
     }
+    var currentAuthToken = window.currentAuthToken;
+    var currentAuthUser = window.currentAuthUser;
 
 // Sistema Centralizado de Íconos Vectoriales de Alta Precisión (VALMONT Design System)
     const VALMONT_ICONS = {
@@ -6577,10 +6579,11 @@
         // ======================================================================
     // GESTIÓN DE AUTENTICACIÓN, PRIVACIDAD Y TELÉFONO DE WHATSAPP
     // ======================================================================
-    currentAuthToken = currentAuthToken || localStorage.getItem('fam1969_token') || null;
-    currentAuthUser = currentAuthUser || null;
+    window.currentAuthToken = window.currentAuthToken || localStorage.getItem('fam1969_token') || null;
+    currentAuthToken = window.currentAuthToken;
     try {
-      currentAuthUser = JSON.parse(localStorage.getItem('fam1969_user') || 'null');
+      window.currentAuthUser = window.currentAuthUser || JSON.parse(localStorage.getItem('fam1969_user') || 'null');
+      currentAuthUser = window.currentAuthUser;
     } catch (e) {
       currentAuthUser = null;
     }
@@ -6613,22 +6616,147 @@
       if (alertBox) alertBox.style.display = 'none';
     }
 
+    let pendingVerificationUserId = '';
+    let previewEmailCode = '';
+    let previewPhoneCode = '';
+
     function switchAuthTab(tab) {
       const formLogin = document.getElementById('form-auth-login');
       const formReg = document.getElementById('form-auth-register');
+      const formVerify = document.getElementById('form-auth-verify');
       const btnLogin = document.getElementById('tab-auth-login-btn');
       const btnReg = document.getElementById('tab-auth-register-btn');
+      const btnVerify = document.getElementById('tab-auth-verify-btn');
 
-      if (tab === 'login') {
-        if (formLogin) formLogin.style.display = 'flex';
-        if (formReg) formReg.style.display = 'none';
-        if (btnLogin) { btnLogin.style.borderBottom = '2px solid #3B82F6'; btnLogin.style.color = '#FFF'; }
-        if (btnReg) { btnReg.style.borderBottom = '2px solid transparent'; btnReg.style.color = '#94A3B8'; }
-      } else {
-        if (formLogin) formLogin.style.display = 'none';
-        if (formReg) formReg.style.display = 'flex';
-        if (btnReg) { btnReg.style.borderBottom = '2px solid #3B82F6'; btnReg.style.color = '#FFF'; }
-        if (btnLogin) { btnLogin.style.borderBottom = '2px solid transparent'; btnLogin.style.color = '#94A3B8'; }
+      if (formLogin) formLogin.style.display = tab === 'login' ? 'flex' : 'none';
+      if (formReg) formReg.style.display = tab === 'register' ? 'flex' : 'none';
+      if (formVerify) formVerify.style.display = tab === 'verify' ? 'flex' : 'none';
+
+      if (btnLogin) {
+        btnLogin.style.borderBottom = tab === 'login' ? '2px solid #3B82F6' : '2px solid transparent';
+        btnLogin.style.color = tab === 'login' ? '#FFF' : '#94A3B8';
+      }
+      if (btnReg) {
+        btnReg.style.borderBottom = tab === 'register' ? '2px solid #3B82F6' : '2px solid transparent';
+        btnReg.style.color = tab === 'register' ? '#FFF' : '#94A3B8';
+      }
+      if (btnVerify) {
+        btnVerify.style.display = tab === 'verify' ? 'block' : 'none';
+        btnVerify.style.borderBottom = tab === 'verify' ? '2px solid #10B981' : '2px solid transparent';
+        btnVerify.style.color = tab === 'verify' ? '#10B981' : '#94A3B8';
+      }
+    }
+
+    function openVerificationStep(userId, email, phone, emailCode, phoneCode) {
+      pendingVerificationUserId = userId || '';
+      previewEmailCode = emailCode || '';
+      previewPhoneCode = phoneCode || '';
+
+      const uInput = document.getElementById('verify-user-id');
+      if (uInput) uInput.value = pendingVerificationUserId;
+
+      const emailInfo = document.getElementById('verify-email-display');
+      if (emailInfo) emailInfo.textContent = email || 'tu correo';
+
+      const phoneInfo = document.getElementById('verify-phone-display');
+      if (phoneInfo) phoneInfo.textContent = phone || 'tu celular';
+
+      const emailPrevEl = document.getElementById('label-email-code-preview');
+      if (emailPrevEl) emailPrevEl.textContent = previewEmailCode || '123456';
+
+      const phonePrevEl = document.getElementById('label-phone-code-preview');
+      if (phonePrevEl) phonePrevEl.textContent = previewPhoneCode || '123456';
+
+      switchAuthTab('verify');
+    }
+
+    function autoFillEmailCode() {
+      const input = document.getElementById('verify-email-code');
+      if (input && previewEmailCode) {
+        input.value = previewEmailCode;
+        showMobileToast('✓ Código de correo auto-completado: ' + previewEmailCode);
+      }
+    }
+
+    function autoFillPhoneCode() {
+      const input = document.getElementById('verify-phone-code');
+      if (input && previewPhoneCode) {
+        input.value = previewPhoneCode;
+        showMobileToast('✓ Código de WhatsApp auto-completado: ' + previewPhoneCode);
+      }
+    }
+
+    async function handleVerificationSubmit(e) {
+      e.preventDefault();
+      const userId = document.getElementById('verify-user-id').value || pendingVerificationUserId;
+      const emailCode = document.getElementById('verify-email-code').value.trim();
+      const phoneCode = document.getElementById('verify-phone-code').value.trim();
+      const btn = document.getElementById('btn-submit-verify');
+
+      if (!emailCode || !phoneCode) {
+        alert('Por favor ingresa ambos códigos (Correo y Celular / WhatsApp).');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando...';
+      }
+
+      try {
+        const res = await fetch('/api/auth/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, emailCode, phoneCode })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al verificar códigos');
+
+        setAuthSession(data.token, data.user);
+        closeAuthModal();
+        showMobileToast('✨ ¡Verificación exitosa! Bienvenido a FAMILIA 1969');
+        if (data.user.role === 'admin') {
+          switchMobileTab('memberships');
+        } else {
+          switchMobileTab('agenda');
+          loadDashboardData();
+          loadSettings();
+        }
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Verificar y Activar Cuenta';
+        }
+      }
+    }
+
+    async function resendVerificationCodes() {
+      const userId = document.getElementById('verify-user-id').value || pendingVerificationUserId;
+      if (!userId) {
+        alert('No se encontró el ID de usuario para reenviar códigos.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/resend-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al reenviar códigos');
+
+        previewEmailCode = data.emailCodePreview || '';
+        previewPhoneCode = data.phoneCodePreview || '';
+        const emailPrevEl = document.getElementById('label-email-code-preview');
+        if (emailPrevEl) emailPrevEl.textContent = previewEmailCode;
+        const phonePrevEl = document.getElementById('label-phone-code-preview');
+        if (phonePrevEl) phonePrevEl.textContent = previewPhoneCode;
+
+        showMobileToast('✓ Nuevos códigos generados y enviados.');
+      } catch (e) {
+        alert(e.message);
       }
     }
 
@@ -6653,6 +6781,11 @@
         const data = await res.json();
         
         if (!res.ok) {
+          if (data.requiresVerification) {
+            openVerificationStep(data.userId, data.email, data.phone, data.emailCodePreview, data.phoneCodePreview);
+            showMobileToast('⚠️ Cuenta pendiente de verificación. Ingresa tus códigos.');
+            return;
+          }
           if (data.isPending) {
             showAuthPendingAlert(data.error);
             return;
@@ -6701,6 +6834,12 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Error en el registro');
 
+        if (data.requiresVerification) {
+          openVerificationStep(data.userId, data.email, data.phone, data.emailCodePreview, data.phoneCodePreview);
+          showMobileToast('📱 Códigos de verificación generados para Correo y WhatsApp.');
+          return;
+        }
+
         switchAuthTab('login');
         showAuthPendingAlert(data.message || 'Tu cuenta ha sido creada y está pendiente de activación por el Administrador.');
         showMobileToast('✓ Solicitud de registro enviada con éxito');
@@ -6710,6 +6849,8 @@
     }
 
     function setAuthSession(token, user) {
+      window.currentAuthToken = token;
+      window.currentAuthUser = user;
       currentAuthToken = token;
       currentAuthUser = user;
       localStorage.setItem('fam1969_token', token);
@@ -6724,6 +6865,8 @@
     }
 
     function logoutBarber() {
+      window.currentAuthToken = null;
+      window.currentAuthUser = null;
       currentAuthToken = null;
       currentAuthUser = null;
       localStorage.removeItem('fam1969_token');
@@ -8141,10 +8284,11 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
         <button onclick="closeAuthModal()" style="background: transparent; border: none; color: #94A3B8; font-size: 24px; cursor: pointer; padding: 4px;">&times;</button>
       </div>
 
-      <!-- Selector de Pestaña: Login / Registro -->
+      <!-- Selector de Pestaña: Login / Registro / Verificación -->
       <div style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); background: #080D1A;">
         <button id="tab-auth-login-btn" onclick="switchAuthTab('login')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid #3B82F6; color: #FFF; font-weight: 700; font-size: 13px; cursor: pointer;">Iniciar Sesión</button>
         <button id="tab-auth-register-btn" onclick="switchAuthTab('register')" style="flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #94A3B8; font-weight: 700; font-size: 13px; cursor: pointer;">Registrar Cuenta</button>
+        <button id="tab-auth-verify-btn" onclick="switchAuthTab('verify')" style="display: none; flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #10B981; font-weight: 700; font-size: 13px; cursor: pointer;">Verificación</button>
       </div>
 
       <!-- Formulario Login -->
@@ -8183,6 +8327,51 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
         <button type="submit" id="btn-submit-register" style="width: 100%; height: 44px; background: linear-gradient(135deg, #38BDF8 0%, #2563EB 50%, #1D4ED8 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
           <i class="fa-solid fa-user-plus"></i> Crear Cuenta de Barbero
         </button>
+      </form>
+
+      <!-- Formulario Verificación 2 Pasos (Email y Celular/WhatsApp) -->
+      <form id="form-auth-verify" onsubmit="handleVerificationSubmit(event)" style="padding: 24px; display: none; flex-direction: column; gap: 14px;">
+        <input type="hidden" id="verify-user-id">
+        
+        <div style="background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 12px; padding: 12px; font-size: 11.5px; color: #94A3B8; line-height: 1.45;">
+          <div style="font-weight: 800; color: #38BDF8; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 12.5px;">
+            <i class="fa-solid fa-shield-halved"></i> Verificación en 2 Pasos Requerida
+          </div>
+          Ingresa los códigos de 6 dígitos enviados para validar tu correo (<span id="verify-email-display" style="color: #FFF; font-weight: 700;"></span>) y tu WhatsApp (<span id="verify-phone-display" style="color: #FFF; font-weight: 700;"></span>).
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 12px; font-weight: 700; color: #94A3B8;"><i class="fa-solid fa-envelope" style="color: #38BDF8;"></i> Código de Correo (6 dígitos)</label>
+            <button type="button" onclick="autoFillEmailCode()" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; color: #38BDF8; font-size: 10.5px; font-weight: 700; padding: 2px 8px; cursor: pointer;">
+              ⚡ Auto-completar: <span id="label-email-code-preview">------</span>
+            </button>
+          </div>
+          <input type="text" id="verify-email-code" required maxlength="6" placeholder="000000" style="width: 100%; height: 42px; background: #060912; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 0 14px; color: #FFF; font-size: 18px; font-weight: 800; font-family: monospace; letter-spacing: 4px; text-align: center; outline: none;">
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 12px; font-weight: 700; color: #38BDF8;"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Código WhatsApp / Celular (6 dígitos)</label>
+            <button type="button" onclick="autoFillPhoneCode()" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.4); border-radius: 6px; color: #25D366; font-size: 10.5px; font-weight: 700; padding: 2px 8px; cursor: pointer;">
+              ⚡ Auto-completar: <span id="label-phone-code-preview">------</span>
+            </button>
+          </div>
+          <input type="text" id="verify-phone-code" required maxlength="6" placeholder="000000" style="width: 100%; height: 42px; background: #060912; border: 1.5px solid #2563EB; border-radius: 10px; padding: 0 14px; color: #FFF; font-size: 18px; font-weight: 800; font-family: monospace; letter-spacing: 4px; text-align: center; outline: none;">
+        </div>
+
+        <button type="submit" id="btn-submit-verify" style="width: 100%; height: 44px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
+          <i class="fa-solid fa-circle-check"></i> Verificar y Activar Cuenta
+        </button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+          <button type="button" onclick="resendVerificationCodes()" style="background: transparent; border: none; color: #38BDF8; font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-arrows-rotate"></i> Reenviar Códigos
+          </button>
+          <button type="button" onclick="switchAuthTab('login')" style="background: transparent; border: none; color: #94A3B8; font-size: 11.5px; cursor: pointer;">
+            Volver al Inicio
+          </button>
+        </div>
       </form>
     </div>
   </div>

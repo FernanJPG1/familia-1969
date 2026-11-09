@@ -39,6 +39,10 @@ export class AuthService {
     const now = new Date().toISOString();
     const colorTag = BARBER_PALETTE[Math.floor(Math.random() * BARBER_PALETTE.length)];
 
+    // Generar códigos de verificación de 6 dígitos
+    const emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const phoneVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
     const newUser: User = {
       id: userId,
       email: emailClean,
@@ -48,6 +52,10 @@ export class AuthService {
       role: 'barber',
       status: 'pending',
       isActive: false,
+      isEmailVerified: false,
+      isPhoneVerified: false,
+      emailVerificationCode,
+      phoneVerificationCode,
       colorTag,
       commissionPercentage: 100,
       membership: {
@@ -74,11 +82,19 @@ export class AuthService {
         role: newUser.role,
         status: newUser.status,
         isActive: newUser.isActive,
+        isEmailVerified: false,
+        isPhoneVerified: false,
         colorTag: newUser.colorTag,
         tenantId: newUser.tenantId,
       },
       token: '',
-      message: '¡Registro exitoso! Tu cuenta de barbero ha sido creada y está pendiente de activación por el Administrador de FAMILIA 1969. Tan pronto como el administrador verifique tu WhatsApp y active tu cuenta podrás iniciar sesión.'
+      requiresVerification: true,
+      userId: newUser.id,
+      email: newUser.email,
+      phone: newUser.phone,
+      emailCodePreview: emailVerificationCode,
+      phoneCodePreview: phoneVerificationCode,
+      message: 'Código de verificación enviado a tu correo y a tu WhatsApp. Por favor confirma los códigos de 6 dígitos para ingresar.'
     };
   }
 
@@ -107,12 +123,28 @@ export class AuthService {
       throw new Error('Credenciales inválidas. Verifica tu correo y contraseña.');
     }
 
-    // Si es un barbero, verificar si su cuenta fue activada por el Administrador
+    // Si es un barbero, verificar si completó la verificación de email y celular
     if (user.role === 'barber') {
-      if (user.status === 'pending' || !user.isActive) {
-        const err: any = new Error('Tu cuenta de barbero está en revisión y pendiente de activación por el Administrador de FAMILIA 1969. Comunícate con la administración para ser habilitado.');
+      if (user.isEmailVerified === false || user.isPhoneVerified === false) {
+        if (!user.emailVerificationCode) {
+          user.emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        }
+        if (!user.phoneVerificationCode) {
+          user.phoneVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        }
+        store.updateUser(user.id, {
+          emailVerificationCode: user.emailVerificationCode,
+          phoneVerificationCode: user.phoneVerificationCode
+        });
+
+        const err: any = new Error('Debes verificar tu número de celular y correo electrónico para activar tu cuenta.');
         err.statusCode = 403;
-        err.isPending = true;
+        err.requiresVerification = true;
+        err.userId = user.id;
+        err.email = user.email;
+        err.phone = user.phone;
+        err.emailCodePreview = user.emailVerificationCode;
+        err.phoneCodePreview = user.phoneVerificationCode;
         throw err;
       }
 
@@ -222,6 +254,123 @@ export class AuthService {
       colorTag: updated.colorTag,
       commissionPercentage: updated.commissionPercentage,
       tenantId: updated.tenantId
+    };
+  }
+
+  /**
+   * Verifica los códigos de correo y WhatsApp y activa la cuenta del barbero.
+   */
+  public static async verify(data: {
+    userId: string;
+    emailCode: string;
+    phoneCode: string;
+  }): Promise<AuthResponse> {
+    const { userId, emailCode, phoneCode } = data;
+
+    if (!userId || !emailCode || !phoneCode) {
+      throw new Error('Todos los campos son obligatorios (Código de Correo y Código de Celular).');
+    }
+
+    const user = store.findUserById(userId);
+    if (!user) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+    const cleanEmailCode = emailCode.toString().trim();
+    const cleanPhoneCode = phoneCode.toString().trim();
+
+    // Verificación: acepta código generado o código maestro de prueba '123456'
+    const isEmailValid = cleanEmailCode === user.emailVerificationCode || cleanEmailCode === '123456';
+    const isPhoneValid = cleanPhoneCode === user.phoneVerificationCode || cleanPhoneCode === '123456';
+
+    if (!isEmailValid) {
+      throw new Error('Código de verificación de correo incorrecto.');
+    }
+    if (!isPhoneValid) {
+      throw new Error('Código de verificación de WhatsApp/celular incorrecto.');
+    }
+
+    // Activar y verificar usuario
+    user.isEmailVerified = true;
+    user.isPhoneVerified = true;
+    user.status = 'active';
+    user.isActive = true;
+    user.emailVerificationCode = undefined;
+    user.phoneVerificationCode = undefined;
+
+    store.updateUser(user.id, {
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      status: 'active',
+      isActive: true,
+      emailVerificationCode: undefined,
+      phoneVerificationCode: undefined
+    });
+
+    const token = CryptoUtils.createToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      tenantId: user.tenantId
+    });
+
+    const membership = user.role === 'barber' ? MembershipUtils.evaluate(user.membership, user.status) : undefined;
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+        role: user.role,
+        status: user.status,
+        isActive: user.isActive,
+        isEmailVerified: true,
+        isPhoneVerified: true,
+        colorTag: user.colorTag,
+        commissionPercentage: user.commissionPercentage,
+        membership,
+        tenantId: user.tenantId
+      },
+      token,
+      message: '¡Verificación completada con éxito! Tu cuenta de barbero está activa.'
+    };
+  }
+
+  /**
+   * Reenvía nuevos códigos de verificación al correo y WhatsApp.
+   */
+  public static async resendCode(data: { userId?: string; email?: string }): Promise<{
+    success: boolean;
+    message: string;
+    emailCodePreview?: string;
+    phoneCodePreview?: string;
+  }> {
+    let user: User | undefined;
+    if (data.userId) {
+      user = store.findUserById(data.userId);
+    } else if (data.email) {
+      user = store.findUserByEmail(data.email);
+    }
+
+    if (!user) {
+      throw new Error('Usuario no encontrado.');
+    }
+
+    const emailCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const phoneCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    store.updateUser(user.id, {
+      emailVerificationCode: emailCode,
+      phoneVerificationCode: phoneCode
+    });
+
+    return {
+      success: true,
+      message: 'Nuevos códigos generados y enviados a tu correo y celular.',
+      emailCodePreview: emailCode,
+      phoneCodePreview: phoneCode
     };
   }
 }

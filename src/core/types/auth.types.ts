@@ -44,6 +44,10 @@ export interface User {
     paymentMethod?: string;
     notes?: string;
   };
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
+  emailVerificationCode?: string;
+  phoneVerificationCode?: string;
   tenantId: string;
   createdAt: string;
   updatedAt: string;
@@ -60,6 +64,8 @@ export interface UserSafeProfile {
   barberId?: string;
   colorTag?: string;
   commissionPercentage?: number;
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
   membership?: BarberMembership;
   tenantId: string;
 }
@@ -68,6 +74,12 @@ export interface AuthResponse {
   user: UserSafeProfile;
   token: string;
   message?: string;
+  requiresVerification?: boolean;
+  userId?: string;
+  email?: string;
+  phone?: string;
+  emailCodePreview?: string;
+  phoneCodePreview?: string;
 }
 
 export interface AdminBarberItem {

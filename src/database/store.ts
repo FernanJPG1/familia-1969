@@ -517,6 +517,8 @@ export class DataStore {
         role: 'admin',
         status: 'active',
         isActive: true,
+        isEmailVerified: true,
+        isPhoneVerified: true,
         tenantId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -525,6 +527,8 @@ export class DataStore {
       admin.role = 'admin';
       admin.status = 'active';
       admin.isActive = true;
+      admin.isEmailVerified = true;
+      admin.isPhoneVerified = true;
       if (!admin.passwordHash.startsWith('v2:')) {
         admin.passwordHash = CryptoUtils.hashPassword('FamiliaAdmin1969*');
       }
@@ -542,6 +546,8 @@ export class DataStore {
         role: 'barber',
         status: 'active',
         isActive: true,
+        isEmailVerified: true,
+        isPhoneVerified: true,
         barberId: 'barber-1',
         colorTag: '#3B82F6',
         commissionPercentage: 100,
@@ -561,6 +567,8 @@ export class DataStore {
       masterBarber.role = 'barber';
       masterBarber.status = 'active';
       masterBarber.isActive = true;
+      masterBarber.isEmailVerified = true;
+      masterBarber.isPhoneVerified = true;
       if (!masterBarber.barberId) masterBarber.barberId = 'barber-1';
       if (!masterBarber.passwordHash.startsWith('v2:')) {
         masterBarber.passwordHash = CryptoUtils.hashPassword('Familia1969*');
@@ -572,6 +580,10 @@ export class DataStore {
       if (!u.status) {
         u.status = u.isActive === false ? 'pending' : 'active';
         u.isActive = u.status === 'active';
+      }
+      if (u.role === 'admin') {
+        u.isEmailVerified = true;
+        u.isPhoneVerified = true;
       }
       if (!u.colorTag) {
         u.colorTag = '#3B82F6';
