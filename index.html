@@ -3681,10 +3681,15 @@
             </div>
             <!-- Badge de Membresía del Barbero -->
             <div id="barber-membership-badge" style="display: none; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; font-family: monospace;"></div>
-            <button class="desktop-btn desktop-btn-surface" onclick="openQuickPhoneModal()" title="Clic para cambiar mi WhatsApp de atención" style="background: rgba(37, 99, 235, 0.18); border-color: #3B82F6; color: #FFF;">
-              <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 15px;"></i>
-              <span id="topbar-phone-display" style="font-weight: 700; font-family: monospace;">+57 ...</span>
-            </button>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <button class="desktop-btn desktop-btn-surface" onclick="openQuickPhoneModal()" title="Clic para cambiar mi número de WhatsApp" style="background: rgba(37, 99, 235, 0.18); border-color: #3B82F6; color: #FFF; padding-right: 8px;">
+                <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 15px;"></i>
+                <span id="topbar-phone-display" style="font-weight: 700; font-family: monospace;">+57 ...</span>
+              </button>
+              <a id="topbar-phone-wa-link" href="#" target="_blank" class="desktop-btn desktop-btn-surface" title="Abrir mi WhatsApp vinculado" style="display: none; background: rgba(37, 211, 102, 0.15); border-color: #25D366; color: #25D366; padding: 0 10px; height: 38px; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 12px;"></i>
+              </a>
+            </div>
             <button class="desktop-btn desktop-btn-surface" onclick="logoutBarber()" title="Cerrar Sesión" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.3);">
               <i class="fa-solid fa-right-from-bracket"></i>
             </button>
@@ -6486,6 +6491,13 @@
       const phonePrevEl = document.getElementById('label-phone-code-preview');
       if (phonePrevEl) phonePrevEl.textContent = previewPhoneCode || '123456';
 
+      const verifyNormPhone = formatWhatsAppPhone(phone);
+      const verifyWaLink = document.getElementById('verify-wa-direct-link');
+      if (verifyWaLink) {
+        verifyWaLink.href = verifyNormPhone.waUrl ? (verifyNormPhone.waUrl + '?text=' + encodeURIComponent('Hola, mi código de verificación en FAMILIA 1969 es: ' + (previewPhoneCode || ''))) : '#';
+        verifyWaLink.style.display = verifyNormPhone.clean ? 'inline-flex' : 'none';
+      }
+
       switchAuthTab('verify');
     }
 
@@ -6795,7 +6807,13 @@
           }
 
           if (barberName) barberName.textContent = bName;
-          if (phoneDisplay) phoneDisplay.textContent = currentAuthUser.phone || '+57 ...';
+          const barberNormPhone = formatWhatsAppPhone(currentAuthUser.phone || '+57 ...');
+          if (phoneDisplay) phoneDisplay.textContent = barberNormPhone.display || '+57 ...';
+          const topbarWaLink = document.getElementById('topbar-phone-wa-link');
+          if (topbarWaLink) {
+            topbarWaLink.href = barberNormPhone.waUrl ? (barberNormPhone.waUrl + '?text=' + encodeURIComponent('Hola, este es mi WhatsApp oficial vinculado en FAMILIA 1969')) : '#';
+            topbarWaLink.style.display = barberNormPhone.clean ? 'inline-flex' : 'none';
+          }
           if (dot && currentAuthUser.colorTag) dot.style.background = currentAuthUser.colorTag;
         }
       } else {
@@ -7209,6 +7227,50 @@
       }
     }
 
+    
+    // =========================================================================
+    // VINCULACIÓN AUTOMÁTICA DE TELÉFONO CON WHATSAPP OFICIAL DEL BARBERO
+    // =========================================================================
+    function formatWhatsAppPhone(rawPhone) {
+      if (!rawPhone) return { raw: '', clean: '', display: '+57 ...', waUrl: '#' };
+      let digits = String(rawPhone).replace(/\D/g, '');
+      
+      // Si tiene 10 dígitos y empieza por 3 (móvil estándar Colombia), agregar prefijo país 57
+      if (digits.length === 10 && digits.startsWith('3')) {
+        digits = '57' + digits;
+      }
+
+      // Si empieza por 57 y tiene 12 dígitos, formatear legible: +57 3XX XXX XXXX
+      let display = '+' + digits;
+      if (digits.startsWith('57') && digits.length === 12) {
+        display = `+57 ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`;
+      }
+
+      const waUrl = digits ? `https://wa.me/${digits}` : '#';
+      return { raw: rawPhone, clean: digits, display, waUrl };
+    }
+
+    function onBarberPhoneInput(val, context) {
+      const norm = formatWhatsAppPhone(val);
+      const isReg = context === 'reg';
+      const previewEl = document.getElementById(isReg ? 'reg-phone-wa-preview' : 'quick-phone-wa-preview');
+      const labelEl = document.getElementById(isReg ? 'reg-phone-formatted' : 'quick-phone-formatted');
+      const linkEl = document.getElementById(isReg ? 'reg-phone-test-link' : 'quick-phone-test-link');
+
+      if (!previewEl || !labelEl) return;
+
+      if (norm.clean.length >= 10) {
+        previewEl.style.display = 'flex';
+        labelEl.textContent = norm.display;
+        if (linkEl) {
+          linkEl.href = norm.waUrl + '?text=' + encodeURIComponent('Hola, este es mi WhatsApp oficial vinculado en FAMILIA 1969');
+          linkEl.style.display = 'inline-flex';
+        }
+      } else {
+        previewEl.style.display = 'none';
+      }
+    }
+
     function openQuickPhoneModal() {
       const m = document.getElementById('modal-quick-phone');
       const inp = document.getElementById('quick-phone-input');
@@ -7224,8 +7286,11 @@
 
     async function handleSaveQuickPhone(e) {
       e.preventDefault();
-      const newPhone = document.getElementById('quick-phone-input').value.trim();
-      if (!newPhone) return;
+      const rawPhone = document.getElementById('quick-phone-input').value.trim();
+      if (!rawPhone) return;
+
+      const norm = formatWhatsAppPhone(rawPhone);
+      const newPhone = norm.display || rawPhone;
 
       if (!currentAuthToken) {
         alert('Debes iniciar sesión para actualizar tu número oficial.');
@@ -7252,7 +7317,7 @@
 
         closeQuickPhoneModal();
         updateAuthUI();
-        showMobileToast(`📱 WhatsApp oficial actualizado a ${newPhone}`);
+        showMobileToast(`📱 WhatsApp oficial vinculado exitosamente: ${newPhone}`);
         loadDashboardData();
         loadSettings();
       } catch (err) {
@@ -8224,7 +8289,11 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
         </div>
         <div>
           <label style="display: block; font-size: 12px; font-weight: 700; color: #38BDF8; margin-bottom: 6px;"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Número de WhatsApp Oficial</label>
-          <input type="tel" id="reg-phone" required placeholder="+57 300 123 4567" style="width: 100%; height: 40px; background: #060912; border: 1.5px solid #2563EB; border-radius: 10px; padding: 0 14px; color: #FFF; font-size: 14px; font-family: monospace; outline: none;">
+          <input type="tel" id="reg-phone" oninput="onBarberPhoneInput(this.value, 'reg')" required placeholder="+57 300 123 4567" style="width: 100%; height: 40px; background: #060912; border: 1.5px solid #2563EB; border-radius: 10px; padding: 0 14px; color: #FFF; font-size: 14px; font-family: monospace; outline: none;">
+          <div id="reg-phone-wa-preview" style="display: none; align-items: center; justify-content: space-between; gap: 8px; font-size: 11.5px; color: #34D399; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 6px 12px; margin-top: 6px;">
+            <span><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Vinculado: <strong id="reg-phone-formatted">+57 ...</strong></span>
+            <a id="reg-phone-test-link" href="#" target="_blank" style="color: #38BDF8; font-weight: 800; text-decoration: underline; font-size: 11px;">Probar Chat</a>
+          </div>
         </div>
         <div>
           <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Correo Electrónico</label>
@@ -8263,6 +8332,11 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
         <div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <label style="font-size: 12px; font-weight: 700; color: #38BDF8;"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Código WhatsApp / Celular (6 dígitos)</label>
+          <div style="margin-bottom: 4px; display: flex; justify-content: flex-end;">
+            <a id="verify-wa-direct-link" href="#" target="_blank" style="font-size: 11px; color: #25D366; text-decoration: underline; display: none; align-items: center; gap: 4px; font-weight: 700;">
+              <i class="fa-brands fa-whatsapp"></i> Abrir WhatsApp de este número
+            </a>
+          </div>
             <button type="button" onclick="autoFillPhoneCode()" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.4); border-radius: 6px; color: #25D366; font-size: 10.5px; font-weight: 700; padding: 2px 8px; cursor: pointer;">
               ⚡ Auto-completar: <span id="label-phone-code-preview">------</span>
             </button>
@@ -8307,8 +8381,14 @@ Para renovar o adicionar tiempo a tu cuenta (+30, +90 o +365 días), comunícate
       <form onsubmit="handleSaveQuickPhone(event)" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
         <div>
           <label style="display: block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Número Telefónico / WhatsApp Oficial</label>
-          <input type="tel" id="quick-phone-input" required placeholder="+57 300 123 4567" style="width: 100%; height: 46px; background: #060912; border: 1.5px solid #3B82F6; border-radius: 10px; padding: 0 16px; color: #FFF; font-size: 16px; font-weight: 700; font-family: monospace; outline: none;">
-          <p style="font-size: 11px; color: #94A3B8; margin-top: 6px;">Este número recibirá todas las citas del bot, recordatorios automáticos y mensajes de clientes.</p>
+          <input type="tel" id="quick-phone-input" oninput="onBarberPhoneInput(this.value, 'quick')" required placeholder="+57 300 123 4567" style="width: 100%; height: 46px; background: #060912; border: 1.5px solid #3B82F6; border-radius: 10px; padding: 0 16px; color: #FFF; font-size: 16px; font-weight: 700; font-family: monospace; outline: none;">
+          <div id="quick-phone-wa-preview" style="display: none; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: #34D399; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 8px 12px; margin-top: 8px;">
+            <span><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Enlace WhatsApp vinculado: <strong id="quick-phone-formatted">+57 ...</strong></span>
+            <a id="quick-phone-test-link" href="#" target="_blank" style="background: #25D366; color: #000; border-radius: 6px; padding: 4px 10px; font-weight: 800; font-size: 11px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+              <i class="fa-brands fa-whatsapp"></i> Probar Chat
+            </a>
+          </div>
+          <p style="font-size: 11px; color: #94A3B8; margin-top: 6px;">Este número se vincula directamente a WhatsApp y recibirá todas las citas del bot, recordatorios automáticos y mensajes directos de clientes.</p>
         </div>
 
         <button type="submit" style="width: 100%; height: 44px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; border-radius: 10px; color: #FFF; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">

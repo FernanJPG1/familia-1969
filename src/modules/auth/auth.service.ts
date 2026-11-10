@@ -5,6 +5,19 @@ import { MembershipUtils } from '../../core/utils/membership.utils';
 
 const BARBER_PALETTE = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#06B6D4', '#14B8A6'];
 
+export function normalizePhoneForWhatsApp(phone: string): { clean: string; formatted: string; waUrl: string } {
+  let digits = String(phone || '').replace(/\D/g, '');
+  if (digits.length === 10 && digits.startsWith('3')) {
+    digits = '57' + digits;
+  }
+  let formatted = '+' + digits;
+  if (digits.startsWith('57') && digits.length === 12) {
+    formatted = `+57 ${digits.slice(2, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`;
+  }
+  const waUrl = digits ? `https://wa.me/${digits}` : '';
+  return { clean: digits, formatted, waUrl };
+}
+
 export class AuthService {
   /**
    * Registra un nuevo barbero en el sistema.
@@ -43,12 +56,13 @@ export class AuthService {
     const emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const phoneVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+    const phoneNorm = normalizePhoneForWhatsApp(phone);
     const newUser: User = {
       id: userId,
       email: emailClean,
       passwordHash,
       name: name.trim(),
-      phone: phone.trim(),
+      phone: phoneNorm.formatted,
       role: 'barber',
       status: 'pending',
       isActive: false,
@@ -221,7 +235,8 @@ export class AuthService {
     const updates: Partial<User> = {};
     if (data.name) updates.name = data.name.trim();
     if (data.phone) {
-      updates.phone = data.phone.trim();
+      const phoneNorm = normalizePhoneForWhatsApp(data.phone);
+      updates.phone = phoneNorm.formatted;
 
       // Sincronizar en store.barbers si tiene registro de barbero
       if (user.barberId) {
