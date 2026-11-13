@@ -1,7 +1,9 @@
+import crypto from 'crypto';
 import { store } from '../../database/store';
 import { CryptoUtils } from '../../core/utils/crypto.utils';
 import { User, UserSafeProfile, AuthResponse } from '../../core/types';
 import { MembershipUtils } from '../../core/utils/membership.utils';
+import { NotificationService } from '../../core/services/notification.service';
 
 const BARBER_PALETTE = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#06B6D4', '#14B8A6'];
 
@@ -52,9 +54,9 @@ export class AuthService {
     const now = new Date().toISOString();
     const colorTag = BARBER_PALETTE[Math.floor(Math.random() * BARBER_PALETTE.length)];
 
-    // Generar códigos de verificación de 6 dígitos
-    const emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const phoneVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generar códigos de verificación de 6 dígitos criptográficamente seguros
+    const emailVerificationCode = crypto.randomInt(100000, 1000000).toString();
+    const phoneVerificationCode = crypto.randomInt(100000, 1000000).toString();
 
     const phoneNorm = normalizePhoneForWhatsApp(phone);
     const newUser: User = {
@@ -87,6 +89,16 @@ export class AuthService {
 
     store.createUser(newUser);
 
+    const dispatch = await NotificationService.dispatchVerificationCodes({
+      email: newUser.email,
+      phoneDigits: phoneNorm.clean,
+      name: newUser.name,
+      emailCode: emailVerificationCode,
+      phoneCode: phoneVerificationCode,
+    });
+
+    const isProd = process.env.NODE_ENV === 'production';
+
     return {
       user: {
         id: newUser.id,
@@ -106,9 +118,11 @@ export class AuthService {
       userId: newUser.id,
       email: newUser.email,
       phone: newUser.phone,
-      emailCodePreview: emailVerificationCode,
-      phoneCodePreview: phoneVerificationCode,
-      message: 'Código de verificación enviado a tu correo y a tu WhatsApp. Por favor confirma los códigos de 6 dígitos para ingresar.'
+      emailCodePreview: !isProd && !dispatch.emailSent ? emailVerificationCode : undefined,
+      phoneCodePreview: !isProd && !dispatch.whatsappSent ? phoneVerificationCode : undefined,
+      message: dispatch.emailSent || dispatch.whatsappSent
+        ? 'Código de verificación enviado. Por favor confirma los códigos de 6 dígitos para ingresar.'
+        : 'Código de verificación generado. Configura RESEND_API_KEY / META_WA_ACCESS_TOKEN en Vercel para envío real.'
     };
   }
 
@@ -294,9 +308,9 @@ export class AuthService {
     const cleanEmailCode = emailCode.toString().trim();
     const cleanPhoneCode = phoneCode.toString().trim();
 
-    // Verificación: acepta código generado o código maestro de prueba '123456'
-    const isEmailValid = cleanEmailCode === user.emailVerificationCode || cleanEmailCode === '123456';
-    const isPhoneValid = cleanPhoneCode === user.phoneVerificationCode || cleanPhoneCode === '123456';
+    const allowTestCode = process.env.NODE_ENV === 'test';
+    const isEmailValid = cleanEmailCode === user.emailVerificationCode || (allowTestCode && cleanEmailCode === '123456');
+    const isPhoneValid = cleanPhoneCode === user.phoneVerificationCode || (allowTestCode && cleanPhoneCode === '123456');
 
     if (!isEmailValid) {
       throw new Error('Código de verificación de correo incorrecto.');
@@ -373,19 +387,30 @@ export class AuthService {
       throw new Error('Usuario no encontrado.');
     }
 
-    const emailCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const phoneCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const emailCode = crypto.randomInt(100000, 1000000).toString();
+    const phoneCode = crypto.randomInt(100000, 1000000).toString();
 
     store.updateUser(user.id, {
       emailVerificationCode: emailCode,
       phoneVerificationCode: phoneCode
     });
 
+    const phoneNorm = normalizePhoneForWhatsApp(user.phone || '');
+    const dispatch = await NotificationService.dispatchVerificationCodes({
+      email: user.email,
+      phoneDigits: phoneNorm.clean,
+      name: user.name,
+      emailCode,
+      phoneCode,
+    });
+
+    const isProd = process.env.NODE_ENV === 'production';
+
     return {
       success: true,
       message: 'Nuevos códigos generados y enviados a tu correo y celular.',
-      emailCodePreview: emailCode,
-      phoneCodePreview: phoneCode
+      emailCodePreview: !isProd && !dispatch.emailSent ? emailCode : undefined,
+      phoneCodePreview: !isProd && !dispatch.whatsappSent ? phoneCode : undefined
     };
   }
 }

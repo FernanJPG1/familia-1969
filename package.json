@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "vercel-build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsc -w",
     "test": "npm run build && node tests/suite.test.js && node tests/services.test.js && node tests/reminders_and_notifications.test.js && node tests/bot_conversation.test.js && node tests/calendar_and_day_off.test.js"

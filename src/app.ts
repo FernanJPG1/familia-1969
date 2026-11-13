@@ -4,14 +4,41 @@ import path from 'path';
 import fs from 'fs';
 import apiRoutes from './routes';
 import { errorHandler } from './middlewares/error-handler';
+import { securityHeaders } from './middlewares/security.middleware';
 
 export function createApp() {
   const app = express();
 
-  // Middlewares estándar
-  app.use(cors({ origin: '*' }));
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Seguridad y configuración para proxy inverso (Vercel)
+  app.disable('x-powered-by');
+  app.set('trust proxy', 1);
+  app.use(securityHeaders);
+
+  const allowedOrigins = (process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Permitir peticiones del mismo origen (sin header Origin), localhost en dev, o dominios autorizados
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.length === 0) {
+          const isLocalOrVercel =
+            origin.startsWith('http://localhost') ||
+            origin.startsWith('http://127.0.0.1') ||
+            origin.endsWith('.vercel.app');
+          return callback(null, isLocalOrVercel);
+        }
+        return callback(null, allowedOrigins.includes(origin));
+      },
+      credentials: true,
+    })
+  );
+
+  app.use(express.json({ limit: '1mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
   // Redirección inmediata a index.html en raíz
   app.get('/', (req, res) => {
